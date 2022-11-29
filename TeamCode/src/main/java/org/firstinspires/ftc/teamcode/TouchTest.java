@@ -144,17 +144,17 @@ public class TouchTest extends advAutoR {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         if (opModeIsActive()) {
-            while (!touchSensor.isPressed()) { //while touch sensor is not pressed //!calibrate dist also
+            if (touchSensor.isPressed()) { //while touch sensor is not pressed //!calibrate dist also
+                motorFrontRight.setPower(0);
+                motorFrontLeft.setPower(0);
+                motorBackRight.setPower(0);
+                motorBackLeft.setPower(0);
+            }
+            else {
                 motorFrontRight.setPower(-0.75);
                 motorFrontLeft.setPower(-0.75);
                 motorBackRight.setPower(-0.75);
                 motorBackLeft.setPower(-0.75);
-                if (touchSensor.isPressed()) {
-                    motorFrontRight.setPower(0);
-                    motorFrontLeft.setPower(0);
-                    motorBackRight.setPower(0);
-                    motorBackLeft.setPower(0);
-                }
             }
             telemetry.update();
         }

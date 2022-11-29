@@ -198,18 +198,18 @@ public class advAutoR extends scrap {
             //}
             //! using touch sensor
             //!to use uncomment next lines and line 91, 117
-            while (!touchSensor.isPressed()) { //while touch sensor is not pressed //!calibrate dist also
-                motorFrontRight.setPower(-0.75);
-                motorFrontLeft.setPower(-0.75);
-                motorBackRight.setPower(-0.75);
-                motorBackLeft.setPower(-0.75);
-                if (touchSensor.isPressed()) {
-                    motorFrontRight.setPower(0);
-                    motorFrontLeft.setPower(0);
-                    motorBackRight.setPower(0);
-                    motorBackLeft.setPower(0);
-                }
-            }
+            //!in touch test.java ;) while (!touchSensor.isPressed()) { //while touch sensor is not pressed //!calibrate dist also
+            //!in touch test.java ;)     motorFrontRight.setPower(-0.75);
+            //!in touch test.java ;)     motorFrontLeft.setPower(-0.75);
+            //!in touch test.java ;)     motorBackRight.setPower(-0.75);
+            //!in touch test.java ;)     motorBackLeft.setPower(-0.75);
+            //!in touch test.java ;)     if (touchSensor.isPressed()) {
+            //!in touch test.java ;)         motorFrontRight.setPower(0);
+            //!in touch test.java ;)         motorFrontLeft.setPower(0);
+            //!in touch test.java ;)         motorBackRight.setPower(0);
+            //!in touch test.java ;)         motorBackLeft.setPower(0);
+            //!in touch test.java ;)     }
+            //!in touch test.java ;) }
             //! using 2 touch sensors, one on each side
             //touchSensorR.isPressed();
             //touchSensorL.isPressed();
