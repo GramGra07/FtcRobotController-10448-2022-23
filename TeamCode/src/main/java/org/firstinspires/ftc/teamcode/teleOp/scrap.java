@@ -81,7 +81,7 @@ public class scrap extends LinearOpMode {//declaring the class
     public static final int lowPoleVal = 1740;//should be about 1/3 of arm limit
     public static final int midPoleVal = 3100;//should be about 2/3 of arm limit
     public static final int fiveTallConeVal = 928;
-    public final int topPoleVal = armLimit;//should be close to armLimit
+    public static final int topPoleVal = armLimit;//should be close to armLimit
     public boolean limiter = true;//declaring the limiter variable, is on or off
     public boolean limiting = false;//declaring the limiting variable
 

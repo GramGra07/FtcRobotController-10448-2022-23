@@ -53,31 +53,9 @@ public class maintainance extends scrap {
     static final double COUNTS_PER_INCH_arm = (COUNTS_PER_MOTOR_REV_arm * DRIVE_GEAR_REDUCTION_arm) /
             (WHEEL_DIAMETER_INCHES_arm * 3.1415);
 
-    static final double COUNTS_PER_INCH_Side_dead = -665.08;
-    static final double COUNTS_PER_INCH_Side = -100;
-    public final int baseClawVal = 30;
-    public final int magicNumOpen = 60;
     public double position = 0;//sets servo position to 0-1 multiplier
     public final double degree_mult = 0.00555555554;//100/180
 
-    private static final String TFOD_MODEL_ASSET = "custom.tflite";
-
-    private static final String[] LABELS = {
-            "capacitor",//3
-            "led",//1
-            "resistor"//2
-    };
-
-    private static final String VUFORIA_KEY =
-            "AXmzBcj/////AAABme5HSJ/H3Ucup73WSIaV87tx/sFHYaWfor9OZVg6afr2Bw7kNolHd+mF5Ps91SlQpgBHulieI0jcd86kqJSwx46BZ8v8DS5S5x//eQWMEGjMDnvco4/oTcDwuSOLIVZG2UtLmJXPS1L3CipjabePFlqAL2JtBlN78p6ZZbRFSHW680hWEMSimZuQy/cMudD7J/MjMjMs7b925b8BkijlnTQYr7CbSlXrpDh5K+9fLlk2OyEZ4w7tm7e4UJDInJ/T3oi8PqqKCqkUaTkJWlQsvoELbDu5L2FgzsuDhBLe2rHtJRqfORd7n+6M30UdFSsxqq5TaZztkWgzRUr1GC3yBSTS6iFqEuL3g06GrfwOJF0F";
-
-    private VuforiaLocalizer vuforia;
-
-    private TFObjectDetector tfod;
-    public int spot = 0;
-    public double IN_distanceR = 0;//in distance for distance sensor 1
-    public double IN_distanceL = 0;
-    public double myMagic = 7;
     public DigitalChannel red1;
     public DigitalChannel green1;
     public DigitalChannel red2;
@@ -86,19 +64,13 @@ public class maintainance extends scrap {
     public DigitalChannel green3;
     public DigitalChannel red4;
     public DigitalChannel green4;
-    //color
-    final float[] hsvValues = new float[3];//gets values for color sensor
-    private int redVal = 0;//the red value in rgb
-    private int greenVal = 0;//the green value in rgb
-    private int blueVal = 0;//the blue value in rgb
-    private String colorName = "N/A";//gets color name
     NormalizedColorSensor colorSensor;//declaring the colorSensor variable
     public TouchSensor touchSensorArm;
     public TouchSensor touchSensorFlipper;
     public TouchSensor touchSensorClaw;
     public TouchSensor touchSensorEject;
-    public boolean armUp=true;
-    public boolean clawOpen=true;
+    public boolean armUp=false;
+    public boolean clawOpen=false;
     public boolean ejectUp=false;
     public boolean flipperUp=true;
 
@@ -122,37 +94,10 @@ public class maintainance extends scrap {
         touchSensorFlipper = hardwareMap.get(TouchSensor.class, ("touchSensorFlipper"));
         touchSensorClaw = hardwareMap.get(TouchSensor.class, ("touchSensorClaw"));
         touchSensorEject = hardwareMap.get(TouchSensor.class, ("touchSensorEject"));
-
-        motorFrontLeft = hardwareMap.get(DcMotor.class, "motorFrontLeft");
-        motorBackLeft = hardwareMap.get(DcMotor.class, "motorBackLeft");
-        motorFrontRight = hardwareMap.get(DcMotor.class, "motorFrontRight");
-        motorBackRight = hardwareMap.get(DcMotor.class, "motorBackRight");
-        deadWheel = hardwareMap.get(DcMotor.class, "deadWheel");
-        deadWheelL = hardwareMap.get(DcMotor.class, "deadWheelL");
-        deadWheelR = hardwareMap.get(DcMotor.class, "deadWheelR");
         clawServo = hardwareMap.get(Servo.class, "clawServo");
         sparkLong = hardwareMap.get(DcMotor.class, "sparkLong");
-
-        //onInit();
-        motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
-        motorBackRight.setDirection(DcMotor.Direction.REVERSE);
-
-        resetEncoders();
         sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-
         sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        deadWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        deadWheelL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-
-        motorBackRight.setZeroPowerBehavior(BRAKE);
-        motorBackLeft.setZeroPowerBehavior(BRAKE);
-        motorFrontRight.setZeroPowerBehavior(BRAKE);
-        motorFrontLeft.setZeroPowerBehavior(BRAKE);
         sparkLong.setZeroPowerBehavior(BRAKE);
         red1.setMode(DigitalChannel.Mode.OUTPUT);//setting the red1 light to output
         green1.setMode(DigitalChannel.Mode.OUTPUT);//setting the green1 light to output
@@ -187,7 +132,7 @@ public class maintainance extends scrap {
                 flipperUp = !flipperUp;
             }
             if (armUp) {
-                armEncoder(scrap.armLimit, 0.8, 6, false);
+                armEncoder(scrap.topPoleVal, 0.8, 6, false);
                 switchLed(1,true);
             }else{
                 armEncoder(0, 0.8, 6, true);
@@ -220,97 +165,5 @@ public class maintainance extends scrap {
             telemetry.addData("flipperUp", flipperUp);
             telemetry.update();
         }
-    }
-    //precise if exact 180, if not, then use the following
-    //final int actualF=50;
-    //final int actualR=100;
-    //final int actualL=44;
-    //double myMagic2;
-    //if ( fDistance.getDistance(DistanceUnit.INCH)<actualF){
-    //    myMagic2=actualF-fDistance.getDistance(DistanceUnit.INCH);
-    //    encoderDrive(0.75,-myMagic2,-myMagic2,3);
-    //}
-    //the following
-    //while(fDistance.getDistance(DistanceUnit.INCH)<actualF){
-    //    telemetry.addData("is working",fDistance.getDistance(DistanceUnit.INCH)<actualF);
-    //    telemetry.addData("inches",fDistance.getDistance(DistanceUnit.INCH));
-    //    telemetry.addData("actualF",actualF);
-    //    telemetry.update();
-    //    motorBackLeft.setPower(-0.8);
-    //    motorBackRight.setPower(-0.8);
-    //    motorFrontLeft.setPower(-0.8);
-    //    motorFrontRight.setPower(-0.8);
-    //}
-
-
-    public void runVu(int timeoutS, boolean giveSpot) {
-        runtime.reset();
-        while (opModeIsActive() && (spot == 0)) {
-            if (runtime.seconds() > timeoutS) {
-                spot = 4;
-            }
-            if (tfod != null) {
-                // getUpdatedRecognitions() will return null if no new information is available since
-                // the last time that call was made.
-                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                if (updatedRecognitions != null) {
-                    telemetry.addData("# Objects Detected", updatedRecognitions.size());
-
-                    // step through the list of recognitions and display image position/size information for each one
-                    // Note: "Image number" refers to the randomized image orientation/number
-                    for (Recognition recognition : updatedRecognitions) {
-                        double col = (recognition.getLeft() + recognition.getRight()) / 2;
-                        double row = (recognition.getTop() + recognition.getBottom()) / 2;
-                        double width = Math.abs(recognition.getRight() - recognition.getLeft());
-                        double height = Math.abs(recognition.getTop() - recognition.getBottom());
-
-                        telemetry.addData("", " ");
-                        telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
-                        telemetry.addData("- Position (Row/Col)", "%.0f / %.0f", row, col);
-                        telemetry.addData("- Size (Width/Height)", "%.0f / %.0f", width, height);
-                        if (giveSpot && spot == 0) {
-                            if (Objects.equals(recognition.getLabel(), "led")) {
-                                spot += 1;
-                                break;
-                            }
-                            if (Objects.equals(recognition.getLabel(), "resistor")) {
-                                spot += 2;
-                                break;
-                            }
-                            if (Objects.equals(recognition.getLabel(), "capacitor")) {
-                                spot += 3;
-                                break;
-                            }
-                        }
-                    }
-                    telemetry.update();
-                }
-            }
-        }
-    }
-
-    private void initVuforia() {
-        /*
-         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-         */
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
-
-        //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-    }
-
-    private void initTfod() {
-        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minResultConfidence = 0.75f;
-        tfodParameters.isModelTensorFlow2 = true;
-        tfodParameters.inputSize = 300;
-        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-
-        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
     }
 }
