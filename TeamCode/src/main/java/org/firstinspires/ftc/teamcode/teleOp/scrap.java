@@ -117,8 +117,14 @@ public class scrap extends LinearOpMode {//declaring the class
     public Servo clawServo = null;
     public Servo flipper = null;
     public Servo unConer = null;
+    public DigitalChannel red1;
+    public DigitalChannel green1;
     public DigitalChannel red2;
     public DigitalChannel green2;
+    public DigitalChannel red3;
+    public DigitalChannel green3;
+    public DigitalChannel red4;
+    public DigitalChannel green4;
 
     //vuforia
 
@@ -172,10 +178,14 @@ public class scrap extends LinearOpMode {//declaring the class
         lDistance = hardwareMap.get(DistanceSensor.class, "lDistance");//getting the lDistance sensor
         fDistance = hardwareMap.get(DistanceSensor.class, "fDistance");//getting the fDistance sensor
         bDistance = hardwareMap.get(DistanceSensor.class, "bDistance");//getting the bDistance sensor
-        DigitalChannel red1 = hardwareMap.get(DigitalChannel.class, "red1");//getting the red1 light
-        DigitalChannel green1 = hardwareMap.get(DigitalChannel.class, "green1");//getting the green1 light
-        DigitalChannel red2 = hardwareMap.get(DigitalChannel.class, "red2");//getting the red2 light
-        DigitalChannel green2 = hardwareMap.get(DigitalChannel.class, "green2");//getting the green2 light
+        red1 = hardwareMap.get(DigitalChannel.class, "red1");//getting the red1 light
+        green1 = hardwareMap.get(DigitalChannel.class, "green1");//getting the green1 light
+        red2 = hardwareMap.get(DigitalChannel.class, "red2");//getting the red2 light
+        green2 = hardwareMap.get(DigitalChannel.class, "green2");//getting the green2 light
+        red3 = hardwareMap.get(DigitalChannel.class, "red3");//getting the red3 light
+        green3 = hardwareMap.get(DigitalChannel.class, "green3");//getting the green3 light
+        red4 = hardwareMap.get(DigitalChannel.class, "red4");//getting the red4 light
+        green4 = hardwareMap.get(DigitalChannel.class, "green4");//getting the green4 light
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
         // Declare our motors
         // Make sure your ID's match your configuration
@@ -222,6 +232,10 @@ public class scrap extends LinearOpMode {//declaring the class
         green1.setMode(DigitalChannel.Mode.OUTPUT);//setting the green1 light to output
         red2.setMode(DigitalChannel.Mode.OUTPUT);//setting the red2 light to output
         green2.setMode(DigitalChannel.Mode.OUTPUT);//setting the green2 light to output
+        red3.setMode(DigitalChannel.Mode.OUTPUT);//setting the red3 light to output
+        green3.setMode(DigitalChannel.Mode.OUTPUT);//setting the green3 light to output
+        red4.setMode(DigitalChannel.Mode.OUTPUT);//setting the red4 light to output
+        green4.setMode(DigitalChannel.Mode.OUTPUT);//setting the green4 light to output
 
         //flipper.setPosition(setServo(magicFlip));//setting the flipper servo to the magicFlip position
         runtime.reset();//resetting the runtime variable
@@ -450,6 +464,44 @@ public class scrap extends LinearOpMode {//declaring the class
     }
     public void ejectDown() {
         unConer.setPosition(setServo(baseEject));
+    }
+    public void switchLed(int led, boolean on){
+        if (led==1){
+            if (on){
+                green1.setState(true);
+                red1.setState(false);
+            }else{
+                green1.setState(false);
+                red1.setState(true);
+            }
+        }
+        if (led==2){
+            if (on){
+                green2.setState(true);
+                red2.setState(false);
+            }else{
+                green2.setState(false);
+                red2.setState(true);
+            }
+        }
+        if(led==3){
+            if (on){
+                green3.setState(true);
+                red3.setState(false);
+            }else{
+                green3.setState(false);
+                red3.setState(true);
+            }
+        }
+        if (led==4){
+            if (on){
+                green4.setState(true);
+                red4.setState(false);
+            }else{
+                green4.setState(false);
+                red4.setState(true);
+            }
+        }
     }
 
     public void teleSpace() {

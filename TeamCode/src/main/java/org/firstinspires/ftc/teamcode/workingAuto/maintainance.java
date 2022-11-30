@@ -78,8 +78,14 @@ public class maintainance extends scrap {
     public double IN_distanceR = 0;//in distance for distance sensor 1
     public double IN_distanceL = 0;
     public double myMagic = 7;
-    private DigitalChannel red2;
-    private DigitalChannel green2;
+    public DigitalChannel red1;
+    public DigitalChannel green1;
+    public DigitalChannel red2;
+    public DigitalChannel green2;
+    public DigitalChannel red3;
+    public DigitalChannel green3;
+    public DigitalChannel red4;
+    public DigitalChannel green4;
     //color
     final float[] hsvValues = new float[3];//gets values for color sensor
     private int redVal = 0;//the red value in rgb
@@ -103,10 +109,14 @@ public class maintainance extends scrap {
         lDistance = hardwareMap.get(DistanceSensor.class, "lDistance");
         fDistance = hardwareMap.get(DistanceSensor.class, "fDistance");
         bDistance = hardwareMap.get(DistanceSensor.class, "bDistance");
-        DigitalChannel red1 = hardwareMap.get(DigitalChannel.class, "red1");
-        DigitalChannel green1 = hardwareMap.get(DigitalChannel.class, "green1");
-        red2 = hardwareMap.get(DigitalChannel.class, "red2");
-        green2 = hardwareMap.get(DigitalChannel.class, "green2");
+        red1 = hardwareMap.get(DigitalChannel.class, "red1");//getting the red1 light
+        green1 = hardwareMap.get(DigitalChannel.class, "green1");//getting the green1 light
+        red2 = hardwareMap.get(DigitalChannel.class, "red2");//getting the red2 light
+        green2 = hardwareMap.get(DigitalChannel.class, "green2");//getting the green2 light
+        red3 = hardwareMap.get(DigitalChannel.class, "red3");//getting the red3 light
+        green3 = hardwareMap.get(DigitalChannel.class, "green3");//getting the green3 light
+        red4 = hardwareMap.get(DigitalChannel.class, "red4");//getting the red4 light
+        green4 = hardwareMap.get(DigitalChannel.class, "green4");//getting the green4 light
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
         touchSensorArm = hardwareMap.get(TouchSensor.class, ("touchSensorArm"));
         touchSensorFlipper = hardwareMap.get(TouchSensor.class, ("touchSensorFlipper"));
@@ -144,8 +154,14 @@ public class maintainance extends scrap {
         motorFrontRight.setZeroPowerBehavior(BRAKE);
         motorFrontLeft.setZeroPowerBehavior(BRAKE);
         sparkLong.setZeroPowerBehavior(BRAKE);
-        red2.setMode(DigitalChannel.Mode.OUTPUT);
-        green2.setMode(DigitalChannel.Mode.OUTPUT);
+        red1.setMode(DigitalChannel.Mode.OUTPUT);//setting the red1 light to output
+        green1.setMode(DigitalChannel.Mode.OUTPUT);//setting the green1 light to output
+        red2.setMode(DigitalChannel.Mode.OUTPUT);//setting the red2 light to output
+        green2.setMode(DigitalChannel.Mode.OUTPUT);//setting the green2 light to output
+        red3.setMode(DigitalChannel.Mode.OUTPUT);//setting the red3 light to output
+        green3.setMode(DigitalChannel.Mode.OUTPUT);//setting the green3 light to output
+        red4.setMode(DigitalChannel.Mode.OUTPUT);//setting the red4 light to output
+        green4.setMode(DigitalChannel.Mode.OUTPUT);//setting the green4 light to output
         waitForStart();
         while (opModeIsActive()){
             if (touchSensorArm.isPressed()){
@@ -162,23 +178,31 @@ public class maintainance extends scrap {
             }
             if (armUp) {
                 armEncoder(scrap.armLimit, 0.8, 6, false);
+                switchLed(1,true);
             }else{
                 armEncoder(0, 0.8, 6, true);
+                switchLed(1,false);
             }
             if (clawOpen) {
                 openClaw();
+                switchLed(2,false);
             }else{
                 closeClaw();
+                switchLed(2,true);
             }
             if (ejectUp) {
                 ejectUp();
+                switchLed(3,true);
             }else{
                 ejectDown();
+                switchLed(3,false);
             }
             if (flipperUp) {
                 flipUp();
+                switchLed(4,false);
             }else{
                 flipDown();
+                switchLed(4,true);
             }
             telemetry.addData("armUp", armUp);
             telemetry.addData("clawOpen", clawOpen);
