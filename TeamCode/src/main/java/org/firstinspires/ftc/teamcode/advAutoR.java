@@ -13,7 +13,6 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
@@ -90,7 +89,7 @@ public class advAutoR extends scrap {
     private String colorName = "N/A";//gets color name
     NormalizedColorSensor colorSensor;//declaring the colorSensor variable
     public TouchSensor touchSensor;
-    public boolean touchPressed=false;
+    public boolean touchPressed = false;
     public int ovrCurrX = 2;
     public int ovrCurrY = 1;
     private final boolean bypassCam = true;
@@ -178,25 +177,9 @@ public class advAutoR extends scrap {
             //should now be lined up with the cone stack
             int stackDist = 16;//primary distance to go to stack
             encoderComboFwd(1, stackDist, stackDist, midPoleVal, 3, true);
+            openClaw();
             final double prevEncoder = motorFrontRight.getCurrentPosition() / COUNTS_PER_INCH;
             //approach cone stack
-            //!using distance
-            //while ((fDistanceVal > 1)) {
-            //    updateDistance();
-            //    fDistanceVal = (fDistance.getDistance(DistanceUnit.CM) + fOffset);
-            //    telemetry.addData("Distance", fDistanceVal);
-            //    telemetry.update();
-            //    motorFrontLeft.setPower(-0.75);
-            //    motorFrontRight.setPower(-0.75);
-            //    motorBackLeft.setPower(-0.75);
-            //    motorBackRight.setPower(-0.75);
-            //    if (fDistanceVal <= 1) {
-            //        motorFrontLeft.setPower(0);
-            //        motorFrontRight.setPower(0);
-            //        motorBackLeft.setPower(0);
-            //        motorBackRight.setPower(0);
-            //    }
-            //}
             //! using touch sensor
             //!to use uncomment next lines and line 91, 117
             while (!touchPressed) {
@@ -205,42 +188,21 @@ public class advAutoR extends scrap {
                     motorFrontLeft.setPower(0);
                     motorBackRight.setPower(0);
                     motorBackLeft.setPower(0);
-                    touchPressed=true;
+                    touchPressed = true;
                 } else {
                     motorFrontRight.setPower(-0.75);
                     motorFrontLeft.setPower(-0.75);
                     motorBackRight.setPower(-0.75);
                     motorBackLeft.setPower(-0.75);
                 }
-                telemetry.update();
             }
-            //! using 2 touch sensors, one on each side
-            //touchSensorR.isPressed();
-            //touchSensorL.isPressed();
-            //while (!touchSensorR.isPressed() && !touchSensorL.isPressed()) { //while touch sensor is not pressed
-            //    setUniPower(-0.75);
-            //    if (touchSensorR.isPressed()) {
-            //        motorFrontRight.setPower(0);
-            //        motorBackRight.setPower(0);
-            //    }
-            //    if (touchSensorL.isPressed()) {
-            //        motorFrontLeft.setPower(0);
-            //        motorBackLeft.setPower(0);
-            //    }
-            //    if (touchSensorR.isPressed() && touchSensorL.isPressed()) {
-            //        setUniPower(0);
-            //    }
-            //}
-            //
             //should now be at the cone stack
             //gets total usable stack distance from stack to cone, x val
             stackDist += (motorFrontRight.getCurrentPosition() / COUNTS_PER_INCH) - (prevEncoder);
             //!these lines can be deleted, just for first test
             telemetry.addData("Stack Dist", stackDist);
             telemetry.update();
-            sleep(3000);
             //!end deletable lines
-
             armEncoder(fiveTallConeVal, 1, 2, true);//arm down to five tall
             closeClaw();
             armEncoder(midPoleVal, 1, 2, false);//clear gap
@@ -256,6 +218,7 @@ public class advAutoR extends scrap {
                 openClaw();
                 sideWaysEncoderDrive(1, sdw, 3);
                 encoderComboFwd(1.0, fwd, fwd, midPoleVal, 6, true);//should be at cone stack after this
+                openClaw();
                 // gets every pole val 5tall-((928/5)*finished poles)
                 armEncoder(fiveTallConeVal - (coneSubtraction * finished), 1, 2, true);
                 closeClaw();

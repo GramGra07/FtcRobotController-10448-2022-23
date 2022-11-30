@@ -87,8 +87,14 @@ public class maintainance extends scrap {
     private int blueVal = 0;//the blue value in rgb
     private String colorName = "N/A";//gets color name
     NormalizedColorSensor colorSensor;//declaring the colorSensor variable
-    public TouchSensor touchSensor;
+    public TouchSensor touchSensorArm;
+    public TouchSensor touchSensorFlipper;
+    public TouchSensor touchSensorClaw;
+    public TouchSensor touchSensorEject;
     public boolean armUp=true;
+    public boolean clawOpen=true;
+    public boolean ejectUp=false;
+    public boolean flipperUp=true;
 
 
     @Override
@@ -102,7 +108,10 @@ public class maintainance extends scrap {
         red2 = hardwareMap.get(DigitalChannel.class, "red2");
         green2 = hardwareMap.get(DigitalChannel.class, "green2");
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
-        touchSensor = hardwareMap.get(TouchSensor.class, ("touchSensor"));
+        touchSensorArm = hardwareMap.get(TouchSensor.class, ("touchSensorArm"));
+        touchSensorFlipper = hardwareMap.get(TouchSensor.class, ("touchSensorFlipper"));
+        touchSensorClaw = hardwareMap.get(TouchSensor.class, ("touchSensorClaw"));
+        touchSensorEject = hardwareMap.get(TouchSensor.class, ("touchSensorEject"));
 
         motorFrontLeft = hardwareMap.get(DcMotor.class, "motorFrontLeft");
         motorBackLeft = hardwareMap.get(DcMotor.class, "motorBackLeft");
@@ -139,14 +148,43 @@ public class maintainance extends scrap {
         green2.setMode(DigitalChannel.Mode.OUTPUT);
         waitForStart();
         while (opModeIsActive()){
+            if (touchSensorArm.isPressed()){
+                armUp = !armUp;
+            }
+            if (touchSensorClaw.isPressed()){
+                clawOpen = !clawOpen;
+            }
+            if (touchSensorEject.isPressed()){
+                ejectUp = !ejectUp;
+            }
+            if (touchSensorFlipper.isPressed()){
+                flipperUp = !flipperUp;
+            }
             if (armUp) {
                 armEncoder(scrap.armLimit, 0.8, 6, false);
             }else{
                 armEncoder(0, 0.8, 6, true);
             }
-            if (touchSensor.isPressed()){
-                armUp = !armUp;
+            if (clawOpen) {
+                openClaw();
+            }else{
+                closeClaw();
             }
+            if (ejectUp) {
+                ejectUp();
+            }else{
+                ejectDown();
+            }
+            if (flipperUp) {
+                flipUp();
+            }else{
+                flipDown();
+            }
+            telemetry.addData("armUp", armUp);
+            telemetry.addData("clawOpen", clawOpen);
+            telemetry.addData("ejectUp", ejectUp);
+            telemetry.addData("flipperUp", flipperUp);
+            telemetry.update();
         }
     }
     //precise if exact 180, if not, then use the following

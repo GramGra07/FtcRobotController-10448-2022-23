@@ -115,6 +115,7 @@ public class scrap extends LinearOpMode {//declaring the class
     public DcMotor motorBackRight = null;
     public DcMotor sparkLong = null;
     public Servo clawServo = null;
+    public Servo flipper = null;
     public Servo unConer = null;
     public DigitalChannel red2;
     public DigitalChannel green2;
@@ -148,6 +149,8 @@ public class scrap extends LinearOpMode {//declaring the class
     public TouchSensor touchSensor;
     //isRight side
     public boolean right = true;//declaring the right variable
+    public final int baseEject=0;
+    public final int magicEject=baseEject+90;
 
     @Override
     public void runOpMode() {//if opmode is started
@@ -286,14 +289,14 @@ public class scrap extends LinearOpMode {//declaring the class
             //
             //flipper
             if (gamepad1.dpad_up) {
-                flipper.setPosition(setServo(magicFlip));
+                flipDown();
             } else if (gamepad1.dpad_down) {
-                flipper.setPosition(setServo(baseFlip));
+                flipUp();
             }
             if (gamepad1.dpad_right) {
-                unConer.setPosition(setServo(magicUnCone));
+                unConeDown();
             } else if (!unConed) {
-                unConer.setPosition(setServo(baseUnCone));
+                unConeUp();
             }
             //
             //
@@ -428,6 +431,26 @@ public class scrap extends LinearOpMode {//declaring the class
         motorFrontRight.setPower(power);
         motorBackRight.setPower(power);
     }
+    public void unConeUp() {
+        unConer.setPosition(setServo(magicUnCone));
+        unConed = true;
+    }
+    public void unConeDown() {
+        unConer.setPosition(setServo(baseUnCone));
+        unConed = false;
+    }
+    public void flipDown() {
+        flipper.setPosition(setServo(magicFlip));
+    }
+    public void flipUp() {
+        flipper.setPosition(setServo(baseFlip));
+    }
+    public void ejectUp() {
+        unConer.setPosition(setServo(magicEject));
+    }
+    public void ejectDown() {
+        unConer.setPosition(setServo(baseEject));
+    }
 
     public void teleSpace() {
         telemetry.addLine();
@@ -451,7 +474,6 @@ public class scrap extends LinearOpMode {//declaring the class
 
     public void dropArm(int prevHeight) {
         armEncoder(prevHeight - 50, 0.5, 2, true);
-        openClaw();
     }
 
 
