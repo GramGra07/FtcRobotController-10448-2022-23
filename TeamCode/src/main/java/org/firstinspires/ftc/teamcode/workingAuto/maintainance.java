@@ -164,6 +164,16 @@ public class maintainance extends scrap {
         green4.setMode(DigitalChannel.Mode.OUTPUT);//setting the green4 light to output
         waitForStart();
         while (opModeIsActive()){
+            //!control hub
+            //!red/green1 = 0:1
+            //!red/green2 = 2:3
+            //!red/green3 = 4:5
+            //!red/green4 = 6:7
+            //!expansion hub
+            //!touchSensorArm=1
+            //!touchSensorClaw=3
+            //!touchSensorEject=5
+            //!touchSensorFlipper=7
             if (touchSensorArm.isPressed()){
                 armUp = !armUp;
             }
