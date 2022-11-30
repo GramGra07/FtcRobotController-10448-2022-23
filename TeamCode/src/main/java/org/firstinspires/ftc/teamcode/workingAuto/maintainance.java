@@ -109,6 +109,7 @@ public class maintainance extends scrap {
         green4.setMode(DigitalChannel.Mode.OUTPUT);//setting the green4 light to output
         waitForStart();
         while (opModeIsActive()){
+            //TODO Config
             //!control hub
             //!red/green1 = 0:1
             //!red/green2 = 2:3
