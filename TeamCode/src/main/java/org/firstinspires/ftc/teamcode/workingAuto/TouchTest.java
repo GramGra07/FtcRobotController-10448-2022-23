@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.workingAuto;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
@@ -9,6 +9,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -16,13 +17,14 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.teamcode.advAutoR;
 import org.firstinspires.ftc.teamcode.teleOp.scrap;
 
 import java.util.List;
 import java.util.Objects;
 
 @Autonomous(name = "touchTest", group = "Robot")
-//@Disabled
+@Disabled
 public class TouchTest extends advAutoR {
     public int turn = 77;
 
@@ -88,6 +90,8 @@ public class TouchTest extends advAutoR {
     private int blueVal = 0;//the blue value in rgb
     private String colorName = "N/A";//gets color name
     NormalizedColorSensor colorSensor;//declaring the colorSensor variable
+    private TouchSensor touchSensor;
+    public boolean touchPressed=false;
 
 
     @Override
@@ -111,6 +115,7 @@ public class TouchTest extends advAutoR {
         deadWheelR = hardwareMap.get(DcMotor.class, "deadWheelR");
         clawServo = hardwareMap.get(Servo.class, "clawServo");
         sparkLong = hardwareMap.get(DcMotor.class, "sparkLong");
+        touchSensor = hardwareMap.get(TouchSensor.class, "touchSensor");
 
         //onInit();
         motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
@@ -143,14 +148,14 @@ public class TouchTest extends advAutoR {
         closeClaw();
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        if (opModeIsActive()) {
+        while (opModeIsActive()&& !touchPressed) {
             if (touchSensor.isPressed()) { //while touch sensor is not pressed //!calibrate dist also
                 motorFrontRight.setPower(0);
                 motorFrontLeft.setPower(0);
                 motorBackRight.setPower(0);
                 motorBackLeft.setPower(0);
-            }
-            else {
+                touchPressed=true;
+            } else {
                 motorFrontRight.setPower(-0.75);
                 motorFrontLeft.setPower(-0.75);
                 motorBackRight.setPower(-0.75);

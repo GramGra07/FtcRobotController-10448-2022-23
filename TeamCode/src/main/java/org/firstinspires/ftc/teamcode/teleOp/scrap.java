@@ -13,6 +13,7 @@ import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
+import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -144,6 +145,7 @@ public class scrap extends LinearOpMode {//declaring the class
     public double bDistanceVal = 0;
     public double lDistanceVal = 0;
     public double rDistanceVal = 0;
+    public TouchSensor touchSensor;
     //isRight side
     public boolean right = true;//declaring the right variable
 
@@ -185,6 +187,7 @@ public class scrap extends LinearOpMode {//declaring the class
         Servo flipper = hardwareMap.get(Servo.class, "flipper");//getting the flipper servo
         Servo unConer = hardwareMap.get(Servo.class, "unConer");
         sparkLong = hardwareMap.get(DcMotor.class, "sparkLong");//getting the sparkLong motor
+        touchSensor = hardwareMap.get(TouchSensor.class, ("touchSensor"));
 
         sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the sparkLong encoder
         motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorFrontLeft encoder
@@ -342,34 +345,34 @@ public class scrap extends LinearOpMode {//declaring the class
             //presets
             if (gamepad2.y) {//top level
                 if (sparkLong.getCurrentPosition() < topPoleVal) {//go up
-                    sparkLong.setPower(-1);
+                    sparkLong.setPower(1);
                 } else {
                     sparkLong.setPower(0);
                 }
             }
             if (gamepad2.a) {//base
                 if (sparkLong.getCurrentPosition() > baseArm) {//go down
-                    sparkLong.setPower(1);
+                    sparkLong.setPower(-1);
                 } else {
                     sparkLong.setPower(0);
                 }
             }
             if (gamepad2.b) {//middle
                 if (sparkLong.getCurrentPosition() > midPoleVal + 50) {//go down
-                    sparkLong.setPower(1);
+                    sparkLong.setPower(-1);
                 }
                 if (sparkLong.getCurrentPosition() < midPoleVal - 50) {//go up
-                    sparkLong.setPower(-1);
+                    sparkLong.setPower(1);
                 } else {
                     sparkLong.setPower(0);
                 }
             }
             if (gamepad2.x) {//low
                 if (sparkLong.getCurrentPosition() > lowPoleVal + 50) {//go down
-                    sparkLong.setPower(-1);
+                    sparkLong.setPower(1);
                 }
                 if (sparkLong.getCurrentPosition() < lowPoleVal - 50) {//go up
-                    sparkLong.setPower(1);
+                    sparkLong.setPower(-1);
                 } else {
                     sparkLong.setPower(0);
                 }

@@ -90,6 +90,7 @@ public class advAutoR extends scrap {
     private String colorName = "N/A";//gets color name
     NormalizedColorSensor colorSensor;//declaring the colorSensor variable
     public TouchSensor touchSensor;
+    public boolean touchPressed=false;
     public int ovrCurrX = 2;
     public int ovrCurrY = 1;
     private final boolean bypassCam = true;
@@ -198,18 +199,21 @@ public class advAutoR extends scrap {
             //}
             //! using touch sensor
             //!to use uncomment next lines and line 91, 117
-            //!in touch test.java ;) while (!touchSensor.isPressed()) { //while touch sensor is not pressed //!calibrate dist also
-            //!in touch test.java ;)     motorFrontRight.setPower(-0.75);
-            //!in touch test.java ;)     motorFrontLeft.setPower(-0.75);
-            //!in touch test.java ;)     motorBackRight.setPower(-0.75);
-            //!in touch test.java ;)     motorBackLeft.setPower(-0.75);
-            //!in touch test.java ;)     if (touchSensor.isPressed()) {
-            //!in touch test.java ;)         motorFrontRight.setPower(0);
-            //!in touch test.java ;)         motorFrontLeft.setPower(0);
-            //!in touch test.java ;)         motorBackRight.setPower(0);
-            //!in touch test.java ;)         motorBackLeft.setPower(0);
-            //!in touch test.java ;)     }
-            //!in touch test.java ;) }
+            while (!touchPressed) {
+                if (touchSensor.isPressed()) { //while touch sensor is not pressed //!calibrate dist also
+                    motorFrontRight.setPower(0);
+                    motorFrontLeft.setPower(0);
+                    motorBackRight.setPower(0);
+                    motorBackLeft.setPower(0);
+                    touchPressed=true;
+                } else {
+                    motorFrontRight.setPower(-0.75);
+                    motorFrontLeft.setPower(-0.75);
+                    motorBackRight.setPower(-0.75);
+                    motorBackLeft.setPower(-0.75);
+                }
+                telemetry.update();
+            }
             //! using 2 touch sensors, one on each side
             //touchSensorR.isPressed();
             //touchSensorL.isPressed();

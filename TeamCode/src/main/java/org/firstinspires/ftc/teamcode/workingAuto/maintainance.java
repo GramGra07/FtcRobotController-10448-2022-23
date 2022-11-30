@@ -4,6 +4,7 @@ import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -22,14 +23,11 @@ import org.firstinspires.ftc.teamcode.teleOp.scrap;
 import java.util.List;
 import java.util.Objects;
 
-@Autonomous(name = "blankAuto", group = "Robot")
-@Disabled
-public class blankAuto extends scrap {
+@TeleOp(name = "maintainanceMode", group = "Robot")
+//@Disabled
+public class maintainance extends scrap {
     public int turn = 77;
-
-
     private ElapsedTime runtime = new ElapsedTime();
-
     static final double COUNTS_PER_MOTOR_REV = 28;
     static final double WHEEL_DIAMETER_MM = 96;
     static final double WHEEL_DIAMETER_INCHES = WHEEL_DIAMETER_MM * 0.0393701;     // For figuring circumference
@@ -90,6 +88,7 @@ public class blankAuto extends scrap {
     private String colorName = "N/A";//gets color name
     NormalizedColorSensor colorSensor;//declaring the colorSensor variable
     public TouchSensor touchSensor;
+    public boolean armUp=true;
 
 
     @Override
@@ -135,30 +134,19 @@ public class blankAuto extends scrap {
         motorBackLeft.setZeroPowerBehavior(BRAKE);
         motorFrontRight.setZeroPowerBehavior(BRAKE);
         motorFrontLeft.setZeroPowerBehavior(BRAKE);
+        sparkLong.setZeroPowerBehavior(BRAKE);
         red2.setMode(DigitalChannel.Mode.OUTPUT);
         green2.setMode(DigitalChannel.Mode.OUTPUT);
-
-        telemetry.addData("Starting at", "%7d :%7d",
-                motorBackRight.getCurrentPosition(),
-                motorBackLeft.getCurrentPosition(),
-                motorFrontLeft.getCurrentPosition());
-        closeClaw();
-        initVuforia();
-        initTfod();
-
-        if (tfod != null) {
-            tfod.activate();
-            tfod.setZoom(1.0, 16.0 / 9.0);
-        }
-        runVu(6, false);
-        telemetry.update();
-        closeClaw();
-        // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        if (opModeIsActive()) {
-            runVu(6, true);
-
-            telemetry.update();
+        while (opModeIsActive()){
+            if (armUp) {
+                armEncoder(scrap.armLimit, 0.8, 6, false);
+            }else{
+                armEncoder(0, 0.8, 6, true);
+            }
+            if (touchSensor.isPressed()){
+                armUp = !armUp;
+            }
         }
     }
     //precise if exact 180, if not, then use the following
