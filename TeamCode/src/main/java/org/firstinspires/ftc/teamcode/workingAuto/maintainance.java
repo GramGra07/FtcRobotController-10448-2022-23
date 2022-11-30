@@ -65,10 +65,10 @@ public class maintainance extends scrap {
     public DigitalChannel red4;
     public DigitalChannel green4;
     NormalizedColorSensor colorSensor;//declaring the colorSensor variable
-    public TouchSensor touchSensorArm;
-    public TouchSensor touchSensorFlipper;
-    public TouchSensor touchSensorClaw;
-    public TouchSensor touchSensorEject;
+    DigitalChannel touchSensor;
+    DigitalChannel touchSensorFlipper;
+    DigitalChannel touchSensorClaw;
+    DigitalChannel touchSensorEject;
     public boolean armUp=false;
     public boolean clawOpen=false;
     public boolean ejectUp=false;
@@ -77,10 +77,6 @@ public class maintainance extends scrap {
 
     @Override
     public void runOpMode() {
-        rDistance = hardwareMap.get(DistanceSensor.class, "rDistance");
-        lDistance = hardwareMap.get(DistanceSensor.class, "lDistance");
-        fDistance = hardwareMap.get(DistanceSensor.class, "fDistance");
-        bDistance = hardwareMap.get(DistanceSensor.class, "bDistance");
         red1 = hardwareMap.get(DigitalChannel.class, "red1");//getting the red1 light
         green1 = hardwareMap.get(DigitalChannel.class, "green1");//getting the green1 light
         red2 = hardwareMap.get(DigitalChannel.class, "red2");//getting the red2 light
@@ -90,10 +86,14 @@ public class maintainance extends scrap {
         red4 = hardwareMap.get(DigitalChannel.class, "red4");//getting the red4 light
         green4 = hardwareMap.get(DigitalChannel.class, "green4");//getting the green4 light
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
-        touchSensorArm = hardwareMap.get(TouchSensor.class, ("touchSensorArm"));
-        touchSensorFlipper = hardwareMap.get(TouchSensor.class, ("touchSensorFlipper"));
-        touchSensorClaw = hardwareMap.get(TouchSensor.class, ("touchSensorClaw"));
-        touchSensorEject = hardwareMap.get(TouchSensor.class, ("touchSensorEject"));
+
+        touchSensorFlipper = hardwareMap.get(DigitalChannel.class, ("touchSensorFlipper"));
+        touchSensorClaw = hardwareMap.get(   DigitalChannel.class, ("touchSensorClaw"));
+        touchSensorEject = hardwareMap.get(  DigitalChannel  .class, ("touchSensorEject"));
+        touchSensor.setMode(DigitalChannel.Mode.INPUT);
+        touchSensorClaw.setMode(DigitalChannel.Mode.INPUT);
+        touchSensorEject.setMode(DigitalChannel.Mode.INPUT);
+        touchSensorFlipper.setMode(DigitalChannel.Mode.INPUT);
         clawServo = hardwareMap.get(Servo.class, "clawServo");
         sparkLong = hardwareMap.get(DcMotor.class, "sparkLong");
         sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -107,7 +107,15 @@ public class maintainance extends scrap {
         green3.setMode(DigitalChannel.Mode.OUTPUT);//setting the green3 light to output
         red4.setMode(DigitalChannel.Mode.OUTPUT);//setting the red4 light to output
         green4.setMode(DigitalChannel.Mode.OUTPUT);//setting the green4 light to output
+        touchSensor.setMode(DigitalChannel.Mode.INPUT);
+        touchSensorClaw.setMode(DigitalChannel.Mode.INPUT);
+        touchSensorEject.setMode(DigitalChannel.Mode.INPUT);
+        touchSensorFlipper.setMode(DigitalChannel.Mode.INPUT);
         waitForStart();
+        touchSensor.setMode(DigitalChannel.Mode.INPUT);
+        touchSensorClaw.setMode(DigitalChannel.Mode.INPUT);
+        touchSensorEject.setMode(DigitalChannel.Mode.INPUT);
+        touchSensorFlipper.setMode(DigitalChannel.Mode.INPUT);
         while (opModeIsActive()){
             //TODO Config
             //!control hub
@@ -116,20 +124,19 @@ public class maintainance extends scrap {
             //!red/green3 = 4:5
             //!red/green4 = 6:7
             //!expansion hub
-            //!touchSensorArm=1
             //!touchSensorClaw=3
             //!touchSensorEject=5
             //!touchSensorFlipper=7
-            if (touchSensorArm.isPressed()){
+            if (touchSensor.getState()){
                 armUp = !armUp;
             }
-            if (touchSensorClaw.isPressed()){
+            if (touchSensorClaw.getState()){
                 clawOpen = !clawOpen;
             }
-            if (touchSensorEject.isPressed()){
+            if (touchSensorEject.getState()){
                 ejectUp = !ejectUp;
             }
-            if (touchSensorFlipper.isPressed()){
+            if (touchSensorFlipper.getState()){
                 flipperUp = !flipperUp;
             }
             if (armUp) {
