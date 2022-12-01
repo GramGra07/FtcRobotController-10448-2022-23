@@ -178,17 +178,17 @@ public class advAutoR extends scrap {
             int stackDist = 22;//primary distance to go to stack
             encoderComboFwd(1, stackDist, stackDist, midPoleVal, 3, true);
             openClaw();
-            final double prevEncoder = motorFrontRight.getCurrentPosition() / COUNTS_PER_INCH;
+            double prevEncoder = motorFrontRight.getCurrentPosition() / COUNTS_PER_INCH;
             //approach cone stack
             //! using touch sensor
             //!to use uncomment next lines and line 91, 117
             while (!touchPressed) {
                 if (touchSensor.isPressed()) { //while touch sensor is not pressed //!calibrate dist also
-                    touchPressed = true;
                     motorFrontRight.setPower(0);
                     motorFrontLeft.setPower(0);
                     motorBackRight.setPower(0);
                     motorBackLeft.setPower(0);
+                    touchPressed = true;
                 } else if (!touchSensor.isPressed()) {
                     motorFrontRight.setPower(-0.75);
                     motorFrontLeft.setPower(-0.75);

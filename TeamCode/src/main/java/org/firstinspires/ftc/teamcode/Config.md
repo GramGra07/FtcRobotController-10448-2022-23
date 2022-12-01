@@ -18,6 +18,8 @@ Digital Device
  - Digital Device red3
  - Digital Device green4
  - Digital Device red4
+Analog Device
+ - None
 I2C Device
  - None
  - 2M Distance Sensor bDistance
