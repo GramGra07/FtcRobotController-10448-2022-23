@@ -105,10 +105,10 @@ public class scrap extends LinearOpMode {//declaring the class
     public DcMotor deadWheel = null;//declaring the deadWheel motor
     public DcMotor deadWheelL = null;//declaring the deadWheelL motor
     public DcMotor deadWheelR = null;//declaring the deadWheelR motor
-    public DistanceSensor rDistance;//declaring the rDistance sensor
-    public DistanceSensor lDistance;//declaring the lDistance sensor
-    public DistanceSensor fDistance;//declaring the fDistance sensor
-    public DistanceSensor bDistance;//declaring the bDistance sensor
+    //public DistanceSensor rDistance;//declaring the rDistance sensor
+    //public DistanceSensor lDistance;//declaring the lDistance sensor
+    //public DistanceSensor fDistance;//declaring the fDistance sensor
+    //public DistanceSensor bDistance;//declaring the bDistance sensor
     public DcMotor motorFrontLeft = null;
     public DcMotor motorBackLeft = null;
     public DcMotor motorFrontRight = null;
@@ -174,10 +174,10 @@ public class scrap extends LinearOpMode {//declaring the class
                 .addStep(1.0, 1.0, 1000)
                 .build();
         ElapsedTime runtime = new ElapsedTime();//declaring the runtime variable
-        rDistance = hardwareMap.get(DistanceSensor.class, "rDistance");//getting the rDistance sensor
-        lDistance = hardwareMap.get(DistanceSensor.class, "lDistance");//getting the lDistance sensor
-        fDistance = hardwareMap.get(DistanceSensor.class, "fDistance");//getting the fDistance sensor
-        bDistance = hardwareMap.get(DistanceSensor.class, "bDistance");//getting the bDistance sensor
+        //rDistance = hardwareMap.get(DistanceSensor.class, "rDistance");//getting the rDistance sensor
+        //lDistance = hardwareMap.get(DistanceSensor.class, "lDistance");//getting the lDistance sensor
+        //fDistance = hardwareMap.get(DistanceSensor.class, "fDistance");//getting the fDistance sensor
+        //bDistance = hardwareMap.get(DistanceSensor.class, "bDistance");//getting the bDistance sensor
         red1 = hardwareMap.get(DigitalChannel.class, "red1");//getting the red1 light
         green1 = hardwareMap.get(DigitalChannel.class, "green1");//getting the green1 light
         red2 = hardwareMap.get(DigitalChannel.class, "red2");//getting the red2 light
@@ -414,7 +414,8 @@ public class scrap extends LinearOpMode {//declaring the class
             teleSpace();
             //getAllColor();
             //teleSpace();
-            distanceTelemetry();
+            //!TODO can uncomment this after 8.1.1
+            //distanceTelemetry();
             updateStatus("Running");
             telemetry.update();
         }
@@ -529,15 +530,15 @@ public class scrap extends LinearOpMode {//declaring the class
     }
 
 
-    public void distanceTelemetry() {
-        updateDistance();
-        telemetry.addLine("Distance")
-                .addData("", "")
-                .addData("f", String.valueOf(fDistanceVal))
-                .addData("b", String.valueOf(bDistanceVal))
-                .addData("l", String.valueOf(lDistanceVal))
-                .addData("r", String.valueOf(rDistanceVal));
-    }
+    //public void distanceTelemetry() {
+    //    updateDistance();
+    //    telemetry.addLine("Distance")
+    //            .addData("", "")
+    //            .addData("f", String.valueOf(fDistanceVal))
+    //            .addData("b", String.valueOf(bDistanceVal))
+    //            .addData("l", String.valueOf(lDistanceVal))
+    //            .addData("r", String.valueOf(rDistanceVal));
+    //}
 
     public void situate() {
         encoderDrive(1, 4, 4, 1);
@@ -797,170 +798,170 @@ public class scrap extends LinearOpMode {//declaring the class
         return position;
     }
 
-    public void updateDistance() {
-        fDistanceVal = (fDistance.getDistance(DistanceUnit.CM) + fOffset);
-        bDistanceVal = (bDistance.getDistance(DistanceUnit.CM) + bOffset);
-        lDistanceVal = (lDistance.getDistance(DistanceUnit.CM) + lOffset);
-        rDistanceVal = (rDistance.getDistance(DistanceUnit.CM) + rOffset);
-    }
+    //public void updateDistance() {
+    //    fDistanceVal = (fDistance.getDistance(DistanceUnit.CM) + fOffset);
+    //    bDistanceVal = (bDistance.getDistance(DistanceUnit.CM) + bOffset);
+    //    lDistanceVal = (lDistance.getDistance(DistanceUnit.CM) + lOffset);
+    //    rDistanceVal = (rDistance.getDistance(DistanceUnit.CM) + rOffset);
+    //}
 
-    public void adjustWDist(String sensor, double dist, double power, boolean closerThanDist) {//less than goes opposite way
-        updateDistance();
-        if (Objects.equals(sensor, "f")) {
-            if (!closerThanDist) {
-                while (fDistanceVal > dist) {
-                    updateDistance();
-                    fDistanceVal = (fDistance.getDistance(DistanceUnit.CM) + fOffset);
-                    telemetry.addData("Distance", fDistanceVal);
-                    telemetry.update();
-                    motorFrontLeft.setPower(-power);
-                    motorFrontRight.setPower(-power);
-                    motorBackLeft.setPower(-power);
-                    motorBackRight.setPower(-power);
-                    if (fDistanceVal <= dist) {
-                        motorFrontLeft.setPower(0);
-                        motorFrontRight.setPower(0);
-                        motorBackLeft.setPower(0);
-                        motorBackRight.setPower(0);
-                    }
-                }
-            }
-            if (closerThanDist) {
-                power = -power;
-                while (fDistanceVal < dist) {
-                    updateDistance();
-                    fDistanceVal = (fDistance.getDistance(DistanceUnit.CM) + fOffset);
-                    telemetry.addData("Distance", fDistanceVal);
-                    telemetry.update();
-                    motorFrontLeft.setPower(-power);
-                    motorFrontRight.setPower(-power);
-                    motorBackLeft.setPower(-power);
-                    motorBackRight.setPower(-power);
-                    if (fDistanceVal >= dist) {
-                        motorFrontLeft.setPower(0);
-                        motorFrontRight.setPower(0);
-                        motorBackLeft.setPower(0);
-                        motorBackRight.setPower(0);
-                    }
-                }
-            }
-        }
-        if (Objects.equals(sensor, "b")) {
-            if (!closerThanDist) {
-                while (bDistanceVal > dist) {
-                    updateDistance();
-                    telemetry.addData("Distance", bDistanceVal);
-                    telemetry.update();
-                    bDistanceVal = (bDistance.getDistance(DistanceUnit.CM) + bOffset);
-                    motorFrontLeft.setPower(power);
-                    motorFrontRight.setPower(power);
-                    motorBackLeft.setPower(power);
-                    motorBackRight.setPower(power);
-                    if (bDistanceVal <= dist) {
-                        motorFrontLeft.setPower(0);
-                        motorFrontRight.setPower(0);
-                        motorBackLeft.setPower(0);
-                        motorBackRight.setPower(0);
-                    }
-                }
-            }
-            if (closerThanDist) {
-                power = -power;
-                while (bDistanceVal < dist) {
-                    updateDistance();
-                    telemetry.addData("Distance", bDistanceVal);
-                    telemetry.update();
-                    bDistanceVal = (bDistance.getDistance(DistanceUnit.CM) + bOffset);
-                    motorFrontLeft.setPower(power);
-                    motorFrontRight.setPower(power);
-                    motorBackLeft.setPower(power);
-                    motorBackRight.setPower(power);
-                    if (bDistanceVal >= dist) {
-                        motorFrontLeft.setPower(0);
-                        motorFrontRight.setPower(0);
-                        motorBackLeft.setPower(0);
-                        motorBackRight.setPower(0);
-                    }
-                }
-            }
-        }
-        if (Objects.equals(sensor, "r")) {//shift right
-            if (!closerThanDist) {
-                while (rDistanceVal > dist) {
-                    updateDistance();
-                    telemetry.addData("Distance", rDistanceVal);
-                    telemetry.update();
-                    rDistanceVal = (rDistance.getDistance(DistanceUnit.CM) + rOffset);
-                    motorFrontLeft.setPower(-power);
-                    motorFrontRight.setPower(power);
-                    motorBackLeft.setPower(power);
-                    motorBackRight.setPower(-power);
-                    if (rDistanceVal <= dist) {
-                        motorFrontLeft.setPower(0);
-                        motorFrontRight.setPower(0);
-                        motorBackLeft.setPower(0);
-                        motorBackRight.setPower(0);
-                    }
-                }
-            }
-            if (closerThanDist) {
-                while (rDistanceVal < dist) {
-                    updateDistance();
-                    telemetry.addData("Distance", rDistanceVal);
-                    telemetry.update();
-                    rDistanceVal = (rDistance.getDistance(DistanceUnit.CM) + rOffset);
-                    motorFrontLeft.setPower(power);
-                    motorFrontRight.setPower(-power);
-                    motorBackLeft.setPower(-power);
-                    motorBackRight.setPower(power);
-                    if (rDistanceVal >= dist) {
-                        motorFrontLeft.setPower(0);
-                        motorFrontRight.setPower(0);
-                        motorBackLeft.setPower(0);
-                        motorBackRight.setPower(0);
-                    }
-                }
-            }
-        }
-        if (Objects.equals(sensor, "l")) {//shift left
-            if (!closerThanDist) {
-                while (lDistanceVal > dist) {
-                    updateDistance();
-                    telemetry.addData("Distance", lDistanceVal);
-                    telemetry.update();
-                    lDistanceVal = (lDistance.getDistance(DistanceUnit.CM) + lOffset);
-                    motorFrontLeft.setPower(power);
-                    motorFrontRight.setPower(-power);
-                    motorBackLeft.setPower(-power);
-                    motorBackRight.setPower(power);
-                    if (lDistanceVal <= dist) {
-                        motorFrontLeft.setPower(0);
-                        motorFrontRight.setPower(0);
-                        motorBackLeft.setPower(0);
-                        motorBackRight.setPower(0);
-                    }
-                }
-            }
-            if (closerThanDist) {
-                while (lDistanceVal < dist) {
-                    updateDistance();
-                    telemetry.addData("Distance", lDistanceVal);
-                    telemetry.update();
-                    lDistanceVal = (lDistance.getDistance(DistanceUnit.CM) + lOffset);
-                    motorFrontLeft.setPower(-power);
-                    motorFrontRight.setPower(power);
-                    motorBackLeft.setPower(power);
-                    motorBackRight.setPower(-power);
-                    if (lDistanceVal >= dist) {
-                        motorFrontLeft.setPower(0);
-                        motorFrontRight.setPower(0);
-                        motorBackLeft.setPower(0);
-                        motorBackRight.setPower(0);
-                    }
-                }
-            }
-        }
-    }
+    //public void adjustWDist(String sensor, double dist, double power, boolean closerThanDist) {//less than goes opposite way
+    //    updateDistance();
+    //    if (Objects.equals(sensor, "f")) {
+    //        if (!closerThanDist) {
+    //            while (fDistanceVal > dist) {
+    //                updateDistance();
+    //                fDistanceVal = (fDistance.getDistance(DistanceUnit.CM) + fOffset);
+    //                telemetry.addData("Distance", fDistanceVal);
+    //                telemetry.update();
+    //                motorFrontLeft.setPower(-power);
+    //                motorFrontRight.setPower(-power);
+    //                motorBackLeft.setPower(-power);
+    //                motorBackRight.setPower(-power);
+    //                if (fDistanceVal <= dist) {
+    //                    motorFrontLeft.setPower(0);
+    //                    motorFrontRight.setPower(0);
+    //                    motorBackLeft.setPower(0);
+    //                    motorBackRight.setPower(0);
+    //                }
+    //            }
+    //        }
+    //        if (closerThanDist) {
+    //            power = -power;
+    //            while (fDistanceVal < dist) {
+    //                updateDistance();
+    //                fDistanceVal = (fDistance.getDistance(DistanceUnit.CM) + fOffset);
+    //                telemetry.addData("Distance", fDistanceVal);
+    //                telemetry.update();
+    //                motorFrontLeft.setPower(-power);
+    //                motorFrontRight.setPower(-power);
+    //                motorBackLeft.setPower(-power);
+    //                motorBackRight.setPower(-power);
+    //                if (fDistanceVal >= dist) {
+    //                    motorFrontLeft.setPower(0);
+    //                    motorFrontRight.setPower(0);
+    //                    motorBackLeft.setPower(0);
+    //                    motorBackRight.setPower(0);
+    //                }
+    //            }
+    //        }
+    //    }
+    //    if (Objects.equals(sensor, "b")) {
+    //        if (!closerThanDist) {
+    //            while (bDistanceVal > dist) {
+    //                updateDistance();
+    //                telemetry.addData("Distance", bDistanceVal);
+    //                telemetry.update();
+    //                bDistanceVal = (bDistance.getDistance(DistanceUnit.CM) + bOffset);
+    //                motorFrontLeft.setPower(power);
+    //                motorFrontRight.setPower(power);
+    //                motorBackLeft.setPower(power);
+    //                motorBackRight.setPower(power);
+    //                if (bDistanceVal <= dist) {
+    //                    motorFrontLeft.setPower(0);
+    //                    motorFrontRight.setPower(0);
+    //                    motorBackLeft.setPower(0);
+    //                    motorBackRight.setPower(0);
+    //                }
+    //            }
+    //        }
+    //        if (closerThanDist) {
+    //            power = -power;
+    //            while (bDistanceVal < dist) {
+    //                updateDistance();
+    //                telemetry.addData("Distance", bDistanceVal);
+    //                telemetry.update();
+    //                bDistanceVal = (bDistance.getDistance(DistanceUnit.CM) + bOffset);
+    //                motorFrontLeft.setPower(power);
+    //                motorFrontRight.setPower(power);
+    //                motorBackLeft.setPower(power);
+    //                motorBackRight.setPower(power);
+    //                if (bDistanceVal >= dist) {
+    //                    motorFrontLeft.setPower(0);
+    //                    motorFrontRight.setPower(0);
+    //                    motorBackLeft.setPower(0);
+    //                    motorBackRight.setPower(0);
+    //                }
+    //            }
+    //        }
+    //    }
+    //    if (Objects.equals(sensor, "r")) {//shift right
+    //        if (!closerThanDist) {
+    //            while (rDistanceVal > dist) {
+    //                updateDistance();
+    //                telemetry.addData("Distance", rDistanceVal);
+    //                telemetry.update();
+    //                rDistanceVal = (rDistance.getDistance(DistanceUnit.CM) + rOffset);
+    //                motorFrontLeft.setPower(-power);
+    //                motorFrontRight.setPower(power);
+    //                motorBackLeft.setPower(power);
+    //                motorBackRight.setPower(-power);
+    //                if (rDistanceVal <= dist) {
+    //                    motorFrontLeft.setPower(0);
+    //                    motorFrontRight.setPower(0);
+    //                    motorBackLeft.setPower(0);
+    //                    motorBackRight.setPower(0);
+    //                }
+    //            }
+    //        }
+    //        if (closerThanDist) {
+    //            while (rDistanceVal < dist) {
+    //                updateDistance();
+    //                telemetry.addData("Distance", rDistanceVal);
+    //                telemetry.update();
+    //                rDistanceVal = (rDistance.getDistance(DistanceUnit.CM) + rOffset);
+    //                motorFrontLeft.setPower(power);
+    //                motorFrontRight.setPower(-power);
+    //                motorBackLeft.setPower(-power);
+    //                motorBackRight.setPower(power);
+    //                if (rDistanceVal >= dist) {
+    //                    motorFrontLeft.setPower(0);
+    //                    motorFrontRight.setPower(0);
+    //                    motorBackLeft.setPower(0);
+    //                    motorBackRight.setPower(0);
+    //                }
+    //            }
+    //        }
+    //    }
+    //    if (Objects.equals(sensor, "l")) {//shift left
+    //        if (!closerThanDist) {
+    //            while (lDistanceVal > dist) {
+    //                updateDistance();
+    //                telemetry.addData("Distance", lDistanceVal);
+    //                telemetry.update();
+    //                lDistanceVal = (lDistance.getDistance(DistanceUnit.CM) + lOffset);
+    //                motorFrontLeft.setPower(power);
+    //                motorFrontRight.setPower(-power);
+    //                motorBackLeft.setPower(-power);
+    //                motorBackRight.setPower(power);
+    //                if (lDistanceVal <= dist) {
+    //                    motorFrontLeft.setPower(0);
+    //                    motorFrontRight.setPower(0);
+    //                    motorBackLeft.setPower(0);
+    //                    motorBackRight.setPower(0);
+    //                }
+    //            }
+    //        }
+    //        if (closerThanDist) {
+    //            while (lDistanceVal < dist) {
+    //                updateDistance();
+    //                telemetry.addData("Distance", lDistanceVal);
+    //                telemetry.update();
+    //                lDistanceVal = (lDistance.getDistance(DistanceUnit.CM) + lOffset);
+    //                motorFrontLeft.setPower(-power);
+    //                motorFrontRight.setPower(power);
+    //                motorBackLeft.setPower(power);
+    //                motorBackRight.setPower(-power);
+    //                if (lDistanceVal >= dist) {
+    //                    motorFrontLeft.setPower(0);
+    //                    motorFrontRight.setPower(0);
+    //                    motorBackLeft.setPower(0);
+    //                    motorBackRight.setPower(0);
+    //                }
+    //            }
+    //        }
+    //    }
+    //}
 
     public void setOvr(double x, double y) {
         ovrCurrX = x;
@@ -1030,12 +1031,12 @@ public class scrap extends LinearOpMode {//declaring the class
                 }
             }
         }
-        if (checkDistanceX) {
-            adjustWDist(xSensor, xDist, power, lessThanX);
-        }
-        if (checkDistanceY) {
-            adjustWDist(ySensor, yDist, power, lessThanY);
-        }
+        //if (checkDistanceX) {
+        //    adjustWDist(xSensor, xDist, power, lessThanX);
+        //}
+        //if (checkDistanceY) {
+        //    adjustWDist(ySensor, yDist, power, lessThanY);
+        //}
         if (endTurn) {
             turn(turn);
         }
