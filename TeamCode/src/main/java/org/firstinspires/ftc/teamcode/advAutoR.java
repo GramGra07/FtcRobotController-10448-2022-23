@@ -88,7 +88,7 @@ public class advAutoR extends scrap {
     private int blueVal = 0;//the blue value in rgb
     private String colorName = "N/A";//gets color name
     NormalizedColorSensor colorSensor;//declaring the colorSensor variable
-    public TouchSensor touchSensor;
+    //public TouchSensor touchSensor;
     public boolean touchPressed = false;
     public int ovrCurrX = 2;
     public int ovrCurrY = 1;
@@ -115,7 +115,7 @@ public class advAutoR extends scrap {
         deadWheelR = hardwareMap.get(DcMotor.class, "deadWheelR");
         clawServo = hardwareMap.get(Servo.class, "clawServo");
         sparkLong = hardwareMap.get(DcMotor.class, "sparkLong");
-        touchSensor = hardwareMap.get(TouchSensor.class, ("touchSensor"));
+        //touchSensor = hardwareMap.get(TouchSensor.class, ("touchSensor"));
 
         //onInit();
         motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
@@ -167,7 +167,7 @@ public class advAutoR extends scrap {
             if (spot == 0) {
                 spot = (int) (Math.floor(Math.random() * (3 - 1 + 1) + 1));
             }
-            advGoSpot(ovrCurrX, ovrCurrY, 2, 3.5, 0.8, true, topPoleVal, false,
+            advGoSpot(ovrCurrX, ovrCurrY, 2, 3.3, 0.8, true, topPoleVal, false,
                     "|", 1, true, -rotation, false, false, null, 0,
                     false, null, 0, false);
             //by now should be at pole, facing it with arm extended to top
@@ -175,34 +175,32 @@ public class advAutoR extends scrap {
             final int halfTile = 6;
             sideWaysEncoderDrive(1, halfTile, 2);
             //should now be lined up with the cone stack
-            int stackDist = 16;//primary distance to go to stack
+            int stackDist = 22;//primary distance to go to stack
             encoderComboFwd(1, stackDist, stackDist, midPoleVal, 3, true);
             openClaw();
-            final double prevEncoder = motorFrontRight.getCurrentPosition() / COUNTS_PER_INCH;
+            //!uncomment when touchSensor fixed
+            //final double prevEncoder = motorFrontRight.getCurrentPosition() / COUNTS_PER_INCH;
             //approach cone stack
             //! using touch sensor
             //!to use uncomment next lines and line 91, 117
-            while (!touchPressed) {
-                if (touchSensor.isPressed()) { //while touch sensor is not pressed //!calibrate dist also
-                    motorFrontRight.setPower(0);
-                    motorFrontLeft.setPower(0);
-                    motorBackRight.setPower(0);
-                    motorBackLeft.setPower(0);
-                    touchPressed = true;
-                } else {
-                    motorFrontRight.setPower(-0.75);
-                    motorFrontLeft.setPower(-0.75);
-                    motorBackRight.setPower(-0.75);
-                    motorBackLeft.setPower(-0.75);
-                }
-            }
+            //while (!touchPressed) {
+            //    if (touchSensor.isPressed()) { //while touch sensor is not pressed //!calibrate dist also
+            //        motorFrontRight.setPower(0);
+            //        motorFrontLeft.setPower(0);
+            //        motorBackRight.setPower(0);
+            //        motorBackLeft.setPower(0);
+            //        touchPressed = true;
+            //    } else {
+            //        motorFrontRight.setPower(-0.75);
+            //        motorFrontLeft.setPower(-0.75);
+            //        motorBackRight.setPower(-0.75);
+            //        motorBackLeft.setPower(-0.75);
+            //    }
+            //}
             //should now be at the cone stack
             //gets total usable stack distance from stack to cone, x val
-            stackDist += (motorFrontRight.getCurrentPosition() / COUNTS_PER_INCH) - (prevEncoder);
-            //!these lines can be deleted, just for first test
-            telemetry.addData("Stack Dist", stackDist);
-            telemetry.update();
-            //!end deletable lines
+            //!uncomment as soon as touch sensor is
+            //stackDist += (motorFrontRight.getCurrentPosition() / COUNTS_PER_INCH) - (prevEncoder);
             armEncoder(fiveTallConeVal, 1, 2, true);//arm down to five tall
             closeClaw();
             armEncoder(midPoleVal, 1, 2, false);//clear gap

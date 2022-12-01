@@ -152,7 +152,7 @@ public class scrap extends LinearOpMode {//declaring the class
     public double bDistanceVal = 0;
     public double lDistanceVal = 0;
     public double rDistanceVal = 0;
-    public TouchSensor touchSensor;
+    //public TouchSensor touchSensor;
     //isRight side
     public boolean right = true;//declaring the right variable
     public final int baseEject=0;
@@ -200,7 +200,7 @@ public class scrap extends LinearOpMode {//declaring the class
         Servo flipper = hardwareMap.get(Servo.class, "flipper");//getting the flipper servo
         Servo unConer = hardwareMap.get(Servo.class, "unConer");
         sparkLong = hardwareMap.get(DcMotor.class, "sparkLong");//getting the sparkLong motor
-        touchSensor = hardwareMap.get(TouchSensor.class, ("touchSensor"));
+        //touchSensor = hardwareMap.get(TouchSensor.class, ("touchSensor"));
 
         sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the sparkLong encoder
         motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorFrontLeft encoder
