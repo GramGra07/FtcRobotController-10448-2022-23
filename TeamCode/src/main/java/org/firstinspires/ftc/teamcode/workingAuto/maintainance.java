@@ -65,10 +65,10 @@ public class maintainance extends scrap {
     public DigitalChannel red4;
     public DigitalChannel green4;
     NormalizedColorSensor colorSensor;//declaring the colorSensor variable
-    TouchSensor touchSensor;
-    TouchSensor touchSensorFlipper;
-    TouchSensor touchSensorClaw;
-    TouchSensor touchSensorEject;
+    public TouchSensor touchSensor;
+    public TouchSensor touchSensorFlipper;
+    public TouchSensor touchSensorClaw;
+    public TouchSensor touchSensorEject;
     public boolean armUp=false;
     public boolean clawOpen=false;
     public boolean ejectUp=false;
