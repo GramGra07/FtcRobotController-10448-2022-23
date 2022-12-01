@@ -73,7 +73,7 @@ public class maintainance extends scrap {
     public boolean clawOpen=false;
     public boolean ejectUp=false;
     public boolean flipperUp=true;
-
+    public final int timeout=1;
 
     @Override
     public void runOpMode() {
@@ -87,6 +87,7 @@ public class maintainance extends scrap {
         green4 = hardwareMap.get(DigitalChannel.class, "green4");//getting the green4 light
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
 
+        touchSensor = hardwareMap.get(TouchSensor.class, ("touchSensor"));
         touchSensorFlipper = hardwareMap.get(TouchSensor.class, ("touchSensorFlipper"));
         touchSensorClaw = hardwareMap.get(   TouchSensor.class, ("touchSensorClaw"));
         touchSensorEject = hardwareMap.get(  TouchSensor  .class, ("touchSensorEject"));
@@ -103,9 +104,13 @@ public class maintainance extends scrap {
         green3.setMode(DigitalChannel.Mode.OUTPUT);//setting the green3 light to output
         red4.setMode(DigitalChannel.Mode.OUTPUT);//setting the red4 light to output
         green4.setMode(DigitalChannel.Mode.OUTPUT);//setting the green4 light to output
+        ElapsedTime runtime = new ElapsedTime();
+        if (isStopRequested()) {
+            return;
+        }
         waitForStart();
+        runtime.reset();
         while (opModeIsActive()){
-            //TODO Config
             //!control hub
             //!red/green1 = 0:1
             //!red/green2 = 2:3
@@ -115,45 +120,60 @@ public class maintainance extends scrap {
             //!touchSensorClaw=3
             //!touchSensorEject=5
             //!touchSensorFlipper=7
-            if (touchSensor.isPressed()){
-                armUp = !armUp;
-            }
-            if (touchSensorClaw.isPressed()){
-                clawOpen = !clawOpen;
-            }
-            if (touchSensorEject.isPressed()){
-                ejectUp = !ejectUp;
-            }
-            if (touchSensorFlipper.isPressed()){
-                flipperUp = !flipperUp;
+            if (runtime.seconds()>timeout) { // if runtime is greater than timeout, allow it to switch
+                //should prevent it from just cycling on and off
+                if (touchSensor.isPressed()) {
+                    armUp = !armUp;
+                    runtime.reset();
+                }
+                if (touchSensorClaw.isPressed()) {
+                    clawOpen = !clawOpen;
+                    runtime.reset();
+                }
+                if (touchSensorEject.isPressed()) {
+                    ejectUp = !ejectUp;
+                    runtime.reset();
+                }
+                if (touchSensorFlipper.isPressed()) {
+                    flipperUp = !flipperUp;
+                    runtime.reset();
+                }
             }
             if (armUp) {
                 armEncoder(scrap.topPoleVal, 0.8, 6, false);
-                switchLed(1,true);
+                green1.setState(true);
+                red1.setState(false);
             }else{
                 armEncoder(0, 0.8, 6, true);
-                switchLed(1,false);
+                green1.setState(false);
+                red1.setState(true);
             }
             if (clawOpen) {
                 openClaw();
-                switchLed(2,false);
+                green2.setState(false);
+                red2.setState(true);
             }else{
                 closeClaw();
-                switchLed(2,true);
+                green2.setState(true);
+                red2.setState(false);
             }
             if (ejectUp) {
-                ejectUp();
-                switchLed(3,true);
+                //ejectUp();
+                green3.setState(true);
+                red3.setState(false);
             }else{
-                ejectDown();
-                switchLed(3,false);
+                //ejectDown();
+                green3.setState(false);
+                red3.setState(true);
             }
             if (flipperUp) {
-                flipUp();
-                switchLed(4,false);
+                //flipUp();
+                green4.setState(false);
+                red4.setState(true);
             }else{
-                flipDown();
-                switchLed(4,true);
+                //flipDown();
+                green4.setState(true);
+                red4.setState(false);
             }
             telemetry.addData("armUp", armUp);
             telemetry.addData("clawOpen", clawOpen);

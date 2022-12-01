@@ -99,7 +99,7 @@ public class scrap extends LinearOpMode {//declaring the class
     public final int magicFlip = baseFlip + 50;//declaring the magicFlip variable
     public final int baseUnCone = 0;
     public final int magicUnCone = baseUnCone + 90;
-    public boolean unConed = false;
+    //public boolean unConed = false;
 
     //motors/servos
     public DcMotor deadWheel = null;//declaring the deadWheel motor
@@ -116,7 +116,7 @@ public class scrap extends LinearOpMode {//declaring the class
     public DcMotor sparkLong = null;
     public Servo clawServo = null;
     public Servo flipper = null;
-    public Servo unConer = null;
+    //public Servo unConer = null;
     public DigitalChannel red1;
     public DigitalChannel green1;
     public DigitalChannel red2;
@@ -198,7 +198,7 @@ public class scrap extends LinearOpMode {//declaring the class
         deadWheelR = hardwareMap.get(DcMotor.class, "deadWheelR");//getting the deadWheelR motor
         Servo clawServo = hardwareMap.get(Servo.class, "clawServo");//getting the clawServo servo
         Servo flipper = hardwareMap.get(Servo.class, "flipper");//getting the flipper servo
-        Servo unConer = hardwareMap.get(Servo.class, "unConer");
+        //Servo unConer = hardwareMap.get(Servo.class, "unConer");
         sparkLong = hardwareMap.get(DcMotor.class, "sparkLong");//getting the sparkLong motor
         touchSensor = hardwareMap.get(TouchSensor.class, ("touchSensor"));
 
@@ -307,11 +307,11 @@ public class scrap extends LinearOpMode {//declaring the class
             } else if (gamepad1.dpad_down) {
                 flipUp();
             }
-            if (gamepad1.dpad_right) {
-                unConeDown();
-            } else if (!unConed) {
-                unConeUp();
-            }
+            //if (gamepad1.dpad_right) {
+            //    unConeDown();
+            //} else if (!unConed) {
+            //    unConeUp();
+            //}
             //
             //
             if (sparkLong.getCurrentPosition() >= armLimit - 200 || sparkLong.getCurrentPosition() <= baseArm + 500) {
@@ -445,64 +445,26 @@ public class scrap extends LinearOpMode {//declaring the class
         motorFrontRight.setPower(power);
         motorBackRight.setPower(power);
     }
-    public void unConeUp() {
-        unConer.setPosition(setServo(magicUnCone));
-        unConed = true;
-    }
-    public void unConeDown() {
-        unConer.setPosition(setServo(baseUnCone));
-        unConed = false;
-    }
+    //public void unConeUp() {
+    //    unConer.setPosition(setServo(magicUnCone));
+    //    unConed = true;
+    //}
+    //public void unConeDown() {
+    //    unConer.setPosition(setServo(baseUnCone));
+    //    unConed = false;
+    //}
     public void flipDown() {
         flipper.setPosition(setServo(magicFlip));
     }
     public void flipUp() {
         flipper.setPosition(setServo(baseFlip));
     }
-    public void ejectUp() {
-        unConer.setPosition(setServo(magicEject));
-    }
-    public void ejectDown() {
-        unConer.setPosition(setServo(baseEject));
-    }
-    public void switchLed(int led, boolean on){
-        if (led==1){
-            if (on){
-                green1.setState(true);
-                red1.setState(false);
-            }else{
-                green1.setState(false);
-                red1.setState(true);
-            }
-        }
-        if (led==2){
-            if (on){
-                green2.setState(true);
-                red2.setState(false);
-            }else{
-                green2.setState(false);
-                red2.setState(true);
-            }
-        }
-        if(led==3){
-            if (on){
-                green3.setState(true);
-                red3.setState(false);
-            }else{
-                green3.setState(false);
-                red3.setState(true);
-            }
-        }
-        if (led==4){
-            if (on){
-                green4.setState(true);
-                red4.setState(false);
-            }else{
-                green4.setState(false);
-                red4.setState(true);
-            }
-        }
-    }
+    //public void ejectUp() {
+    //    unConer.setPosition(setServo(magicEject));
+    //}
+    //public void ejectDown() {
+    //    unConer.setPosition(setServo(baseEject));
+    //}
 
     public void teleSpace() {
         telemetry.addLine();
