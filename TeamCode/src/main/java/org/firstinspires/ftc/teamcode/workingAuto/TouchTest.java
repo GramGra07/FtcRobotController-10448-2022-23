@@ -148,6 +148,7 @@ public class TouchTest extends advAutoR {
         closeClaw();
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
+        double prevEncoder = deadWheelL.getCurrentPosition()/COUNTS_PER_INCH_dead;
         while (opModeIsActive()&& !touchPressed) {
             if (touchSensor.isPressed()) { //while touch sensor is not pressed //!calibrate dist also
                 motorFrontRight.setPower(0);
@@ -161,99 +162,12 @@ public class TouchTest extends advAutoR {
                 motorBackRight.setPower(-0.75);
                 motorBackLeft.setPower(-0.75);
             }
+        }
+        if (touchPressed) {
+            double currentEncoder = deadWheelL.getCurrentPosition()/COUNTS_PER_INCH_dead;
+            double distance = currentEncoder - prevEncoder;
+            telemetry.addData("Distance", distance);
             telemetry.update();
         }
-    }
-    //precise if exact 180, if not, then use the following
-    //final int actualF=50;
-    //final int actualR=100;
-    //final int actualL=44;
-    //double myMagic2;
-    //if ( fDistance.getDistance(DistanceUnit.INCH)<actualF){
-    //    myMagic2=actualF-fDistance.getDistance(DistanceUnit.INCH);
-    //    encoderDrive(0.75,-myMagic2,-myMagic2,3);
-    //}
-    //the following
-    //while(fDistance.getDistance(DistanceUnit.INCH)<actualF){
-    //    telemetry.addData("is working",fDistance.getDistance(DistanceUnit.INCH)<actualF);
-    //    telemetry.addData("inches",fDistance.getDistance(DistanceUnit.INCH));
-    //    telemetry.addData("actualF",actualF);
-    //    telemetry.update();
-    //    motorBackLeft.setPower(-0.8);
-    //    motorBackRight.setPower(-0.8);
-    //    motorFrontLeft.setPower(-0.8);
-    //    motorFrontRight.setPower(-0.8);
-    //}
-
-
-    public void runVu(int timeoutS, boolean giveSpot) {
-        runtime.reset();
-        while (opModeIsActive() && (spot == 0)) {
-            if (runtime.seconds() > timeoutS) {
-                spot = 4;
-            }
-            if (tfod != null) {
-                // getUpdatedRecognitions() will return null if no new information is available since
-                // the last time that call was made.
-                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                if (updatedRecognitions != null) {
-                    telemetry.addData("# Objects Detected", updatedRecognitions.size());
-
-                    // step through the list of recognitions and display image position/size information for each one
-                    // Note: "Image number" refers to the randomized image orientation/number
-                    for (Recognition recognition : updatedRecognitions) {
-                        double col = (recognition.getLeft() + recognition.getRight()) / 2;
-                        double row = (recognition.getTop() + recognition.getBottom()) / 2;
-                        double width = Math.abs(recognition.getRight() - recognition.getLeft());
-                        double height = Math.abs(recognition.getTop() - recognition.getBottom());
-
-                        telemetry.addData("", " ");
-                        telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
-                        telemetry.addData("- Position (Row/Col)", "%.0f / %.0f", row, col);
-                        telemetry.addData("- Size (Width/Height)", "%.0f / %.0f", width, height);
-                        if (giveSpot && spot == 0) {
-                            if (Objects.equals(recognition.getLabel(), "led")) {
-                                spot += 1;
-                                break;
-                            }
-                            if (Objects.equals(recognition.getLabel(), "resistor")) {
-                                spot += 2;
-                                break;
-                            }
-                            if (Objects.equals(recognition.getLabel(), "capacitor")) {
-                                spot += 3;
-                                break;
-                            }
-                        }
-                    }
-                    telemetry.update();
-                }
-            }
-        }
-    }
-
-    private void initVuforia() {
-        /*
-         * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
-         */
-        VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
-
-        parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraName = hardwareMap.get(WebcamName.class, "Webcam 1");
-
-        //  Instantiate the Vuforia engine
-        vuforia = ClassFactory.getInstance().createVuforia(parameters);
-    }
-
-    private void initTfod() {
-        int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
-                "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
-        TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);
-        tfodParameters.minResultConfidence = 0.75f;
-        tfodParameters.isModelTensorFlow2 = true;
-        tfodParameters.inputSize = 300;
-        tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
-
-        tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
     }
 }
