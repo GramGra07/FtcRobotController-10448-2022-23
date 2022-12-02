@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Autonomous(name = "touchTest", group = "Robot")
-@Disabled
+//@Disabled
 public class TouchTest extends advAutoR {
     public int turn = 77;
 

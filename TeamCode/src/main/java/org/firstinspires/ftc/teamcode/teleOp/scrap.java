@@ -76,7 +76,7 @@ public class scrap extends LinearOpMode {//declaring the class
 
     //arm labels
     public final int baseArmPosition = 0;
-    public static final int armLimit = 4150;//declaring the armLimit variable
+    public static final int armLimit = 4250;//declaring the armLimit variable
     public final int baseArm = 100;//declaring the baseArm variable
     public static final int lowPoleVal = 1740;//should be about 1/3 of arm limit
     public static final int midPoleVal = 3100;//should be about 2/3 of arm limit
@@ -244,6 +244,10 @@ public class scrap extends LinearOpMode {//declaring the class
         if (isStopRequested()) return;//if the stop button is pressed, stop the program
 
         while (opModeIsActive()) {//while the op mode is active
+            if (gamepad2.dpad_down){
+                sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            }
             if (gamepad1.touchpad_finger_1) {       //if the touchpad is pressed
                 telemetry.addData("Finger 1: ", "%2f : %2f", gamepad1.touchpad_finger_1_x, gamepad1.touchpad_finger_1_y);
                 if (gamepad1.touchpad_finger_1_x > 0) {//right side
