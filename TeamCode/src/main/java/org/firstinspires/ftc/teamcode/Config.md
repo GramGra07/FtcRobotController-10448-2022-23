@@ -9,6 +9,7 @@ Motors
 Servos
  - Servo clawServo
  - Servo flipper
+ - Rev Blinkin LED Driver blinkin
 Digital Device
  - Digital Device green1
  - Digital Device red1
