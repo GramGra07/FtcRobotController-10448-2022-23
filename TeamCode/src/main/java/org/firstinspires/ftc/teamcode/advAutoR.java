@@ -159,7 +159,7 @@ public class advAutoR extends scrap {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         if (opModeIsActive()) {
-            final int rotation = 90;
+            final int rotation = 92;
             final double coneSubtraction = (fiveTallConeVal * 0.2);
             if (!bypassCam) {
                 runVu(6, true);
@@ -167,38 +167,41 @@ public class advAutoR extends scrap {
             if (spot == 0) {
                 spot = (int) (Math.floor(Math.random() * (3 - 1 + 1) + 1));
             }
-            advGoSpot(ovrCurrX, ovrCurrY, 2, 3.3, 0.8, true, topPoleVal, false,
+            advGoSpot(ovrCurrX, ovrCurrY, 2.15, 3.3, 0.8, true, topPoleVal, false,
                     "|", 1, true, -rotation, false, false, null, 0,
                     false, null, 0, false);
-            //by now should be at pole, facing it with arm extended to top
+                        //by now should be at pole, facing it with arm extended to top
+            sideWaysEncoderDrive(1,-1,1);
             dropArm(topPoleVal);
-            final int halfTile = 6;
+            openClaw();
+            final int halfTile = 2;
             sideWaysEncoderDrive(1, halfTile, 2);
+            closeClaw();
             //should now be lined up with the cone stack
-            int stackDist = 22;//primary distance to go to stack
+            int stackDist = 34;//primary distance to go to stack
             encoderComboFwd(1, stackDist, stackDist, midPoleVal, 3, true);
             openClaw();
-            double prevEncoder = motorFrontRight.getCurrentPosition() / COUNTS_PER_INCH;
-            //approach cone stack
-            //! using touch sensor
-            //!to use uncomment next lines and line 91, 117
-            while (!touchPressed) {
-                if (touchSensor.isPressed()) { //while touch sensor is not pressed //!calibrate dist also
-                    motorFrontRight.setPower(0);
-                    motorFrontLeft.setPower(0);
-                    motorBackRight.setPower(0);
-                    motorBackLeft.setPower(0);
-                    touchPressed = true;
-                } else if (!touchSensor.isPressed()) {
-                    motorFrontRight.setPower(-0.75);
-                    motorFrontLeft.setPower(-0.75);
-                    motorBackRight.setPower(-0.75);
-                    motorBackLeft.setPower(-0.75);
-                }
-            }
-            //should now be at the cone stack
-            //gets total usable stack distance from stack to cone, x val
-            stackDist += (motorFrontRight.getCurrentPosition() / COUNTS_PER_INCH) - (prevEncoder);
+            //double prevEncoder = motorFrontRight.getCurrentPosition() / COUNTS_PER_INCH;
+            ////approach cone stack
+            ////! using touch sensor
+            ////!to use uncomment next lines and line 91, 117
+            //while (!touchPressed) {
+            //    if (touchSensor.isPressed()) { //while touch sensor is not pressed //!calibrate dist also
+            //        motorFrontRight.setPower(0);
+            //        motorFrontLeft.setPower(0);
+            //        motorBackRight.setPower(0);
+            //        motorBackLeft.setPower(0);
+            //        touchPressed = true;
+            //    } else if (!touchSensor.isPressed()) {
+            //        motorFrontRight.setPower(-0.75);
+            //        motorFrontLeft.setPower(-0.75);
+            //        motorBackRight.setPower(-0.75);
+            //        motorBackLeft.setPower(-0.75);
+            //    }
+            //}
+            ////should now be at the cone stack
+            ////gets total usable stack distance from stack to cone, x val
+            //stackDist += (motorFrontRight.getCurrentPosition() / COUNTS_PER_INCH) - (prevEncoder);
             armEncoder(fiveTallConeVal, 1, 2, true);//arm down to five tall
             closeClaw();
             armEncoder(midPoleVal, 1, 2, false);//clear gap
@@ -210,6 +213,7 @@ public class advAutoR extends scrap {
                 double sdw = halfTile;
                 encoderComboFwd(1, -fwd, -fwd, topPoleVal, 6, false);//back up
                 sideWaysEncoderDrive(1, -sdw, 3);
+                sideWaysEncoderDrive(1,-1,1);
                 dropArm(topPoleVal);
                 openClaw();
                 sideWaysEncoderDrive(1, sdw, 3);

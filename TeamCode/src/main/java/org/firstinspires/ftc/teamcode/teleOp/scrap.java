@@ -548,9 +548,9 @@ public class scrap extends LinearOpMode {//declaring the class
             sparkLong.setPower(-speed);
         }
         motorBackLeft.setPower((speed));
+        motorBackRight.setPower((speed));
         motorFrontRight.setPower((speed));
         motorFrontLeft.setPower((speed));
-        motorBackRight.setPower((speed));
         while (opModeIsActive() &&
                 (runtime.seconds() < timeoutS) && sparkLong.isBusy()) {
 
@@ -949,9 +949,9 @@ public class scrap extends LinearOpMode {//declaring the class
             telemetry.addData("fwdInches", fwdInches);
             telemetry.addData("sidewaysInches", sidewaysInches);
             if (currX < targetX) {
-                sideWaysEncoderDrive(power, sidewaysInches, 6);
+                sideWaysEncoderDrive(power, sidewaysInches, 1);
             } else if (currX > targetX) {
-                sideWaysEncoderDrive(power, -sidewaysInches, 6);
+                sideWaysEncoderDrive(power, -sidewaysInches, 1);
             }
             if (currY < targetY) {
                 if (!combo) {
