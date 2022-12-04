@@ -63,7 +63,7 @@ public class SampleRevBlinkinLedDriverV2 extends OpMode {
      */
     private final static int GAMEPAD_LOCKOUT = 500;
 
-    RevBlinkinLedDriver blinkinLedDriver;
+    RevBlinkinLedDriver lights;
     RevBlinkinLedDriver.BlinkinPattern pattern;
 
     Telemetry.Item patternName;
@@ -82,9 +82,9 @@ public class SampleRevBlinkinLedDriverV2 extends OpMode {
     {
         displayKind = DisplayKind.AUTO;
 
-        blinkinLedDriver = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
+        lights = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
         pattern = RevBlinkinLedDriver.BlinkinPattern.RAINBOW_RAINBOW_PALETTE;
-        blinkinLedDriver.setPattern(pattern);
+        lights.setPattern(pattern);
 
         display = telemetry.addData("Display Kind: ", displayKind.toString());
         patternName = telemetry.addData("Pattern: ", pattern.toString());
@@ -158,7 +158,7 @@ public class SampleRevBlinkinLedDriverV2 extends OpMode {
 
     protected void displayPattern()
     {
-        blinkinLedDriver.setPattern(pattern);
+        lights.setPattern(pattern);
         patternName.setValue(pattern.toString());
     }
 }
