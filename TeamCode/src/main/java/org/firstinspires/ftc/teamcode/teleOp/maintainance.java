@@ -1,7 +1,8 @@
-package org.firstinspires.ftc.teamcode.workingAuto;
+package org.firstinspires.ftc.teamcode.teleOp;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -74,6 +75,8 @@ public class maintainance extends scrap {
     public boolean ejectUp=false;
     public boolean flipperUp=true;
     public final int timeout=1;
+    public final int delay =1;
+    RevBlinkinLedDriver lights;
 
     @Override
     public void runOpMode() {
@@ -86,13 +89,13 @@ public class maintainance extends scrap {
         red4 = hardwareMap.get(DigitalChannel.class, "red4");//getting the red4 light
         green4 = hardwareMap.get(DigitalChannel.class, "green4");//getting the green4 light
         colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
-
         touchSensor = hardwareMap.get(TouchSensor.class, ("touchSensor"));
         touchSensorFlipper = hardwareMap.get(TouchSensor.class, ("touchSensorFlipper"));
         touchSensorClaw = hardwareMap.get(   TouchSensor.class, ("touchSensorClaw"));
         touchSensorEject = hardwareMap.get(  TouchSensor  .class, ("touchSensorEject"));
         clawServo = hardwareMap.get(Servo.class, "clawServo");
         sparkLong = hardwareMap.get(DcMotor.class, "sparkLong");
+        lights = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
         sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         sparkLong.setZeroPowerBehavior(BRAKE);
@@ -105,37 +108,30 @@ public class maintainance extends scrap {
         red4.setMode(DigitalChannel.Mode.OUTPUT);//setting the red4 light to output
         green4.setMode(DigitalChannel.Mode.OUTPUT);//setting the green4 light to output
         ElapsedTime runtime = new ElapsedTime();
-        if (isStopRequested()) {
-            return;
-        }
+        if (isStopRequested()) return;
         waitForStart();
         runtime.reset();
         while (opModeIsActive()){
-            //!control hub
-            //!red/green1 = 0:1
-            //!red/green2 = 2:3
-            //!red/green3 = 4:5
-            //!red/green4 = 6:7
-            //!expansion hub
-            //!touchSensorClaw=3
-            //!touchSensorEject=5
-            //!touchSensorFlipper=7
             if (runtime.seconds()>timeout) { // if runtime is greater than timeout, allow it to switch
                 //should prevent it from just cycling on and off
                 if (touchSensor.isPressed()) {
                     armUp = !armUp;
+                    greenRed();
                     runtime.reset();
                 }
                 if (touchSensorClaw.isPressed()) {
                     clawOpen = !clawOpen;
+                    greenRed();
                     runtime.reset();
                 }
                 if (touchSensorEject.isPressed()) {
                     ejectUp = !ejectUp;
+                    greenRed();
                     runtime.reset();
                 }
                 if (touchSensorFlipper.isPressed()) {
                     flipperUp = !flipperUp;
+                    greenRed();
                     runtime.reset();
                 }
             }
@@ -181,5 +177,10 @@ public class maintainance extends scrap {
             telemetry.addData("flipperUp", flipperUp);
             telemetry.update();
         }
+    }
+    public void greenRed(){
+        lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
+        sleep(delay*1000);
+        lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
     }
 }
