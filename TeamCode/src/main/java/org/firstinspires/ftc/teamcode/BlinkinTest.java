@@ -63,6 +63,8 @@ public class BlinkinTest extends OpMode {
     {
         lights = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(favColors[colorIndex]));
+        //for random
+        //lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
     }
 
     @Override
