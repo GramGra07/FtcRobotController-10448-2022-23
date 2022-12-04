@@ -54,8 +54,8 @@ public class BlinkinTest extends OpMode {
             "BLUE"
     };
     public int colorIndex = 0;
-    int min=0;
-    int max= favColors.length;
+    final int min=0;
+    final int max= favColors.length;
     double random = (Math.floor(Math.random() * (max - min + 1) + min));
 
     @Override
@@ -83,5 +83,11 @@ public class BlinkinTest extends OpMode {
             }
             lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(favColors[colorIndex]));
         }
+    }
+    public String getColor(){
+        return favColors[random()];
+    }
+    public int random(){
+        return (int) Math.floor(Math.random() * (max - min + 1) + min);
     }
 }
