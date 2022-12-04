@@ -54,6 +54,9 @@ public class BlinkinTest extends OpMode {
             "BLUE"
     };
     public int colorIndex = 0;
+    int min=0;
+    int max= favColors.length;
+    double random = (Math.floor(Math.random() * (max - min + 1) + min));
 
     @Override
     public void init()
@@ -65,6 +68,7 @@ public class BlinkinTest extends OpMode {
     @Override
     public void loop()
     {
+        //for manual control
         if (gamepad1.right_bumper){
             colorIndex++;
             if (colorIndex >= favColors.length){
