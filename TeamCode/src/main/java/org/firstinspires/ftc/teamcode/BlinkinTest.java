@@ -30,6 +30,7 @@
 package org.firstinspires.ftc.teamcode;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -44,18 +45,29 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
  * Displays the first pattern upon init.
  */
 @TeleOp(name="BlinkinTest")
-//@Disabled
+@Disabled
 public class BlinkinTest extends OpMode {
 
     RevBlinkinLedDriver lights;
     private static final String[] favColors = {
-            "GREEN",
-            "RED",
-            "BLUE"
+            "RAINBOW_RAINBOW_PALETTE",
+            "RAINBOW_PARTY_PALETTE",
+            "BEATS_PER_MINUTE_RAINBOW_PALETTE",
+            "BEATS_PER_MINUTE_PARTY_PALETTE",
+            //"FIRE_MEDIUM",
+            "COLOR_WAVES_RAINBOW_PALETTE",
+            "COLOR_WAVES_PARTY_PALETTE",
+            "CP2_END_TO_END_BLEND_TO_BLACK",
+            "CP2_BREATH_SLOW",
+            "CP1_2_END_TO_END_BLEND_1_TO_2",
+            "CP1_2_END_TO_END_BLEND",
+            "HOT_PINK",
+            "GOLD",
+            "VIOLET"
     };
     public int colorIndex = 0;
     final int min=0;
-    final int max= favColors.length;
+    final int max= favColors.length-1;
     double random = (Math.floor(Math.random() * (max - min + 1) + min));
 
 
@@ -64,7 +76,6 @@ public class BlinkinTest extends OpMode {
     {
         lights = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(favColors[colorIndex]));
-        //lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.G);
         //for random
         //lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
     }
@@ -86,6 +97,9 @@ public class BlinkinTest extends OpMode {
                 colorIndex = favColors.length - 1;
             }
             lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(favColors[colorIndex]));
+        }
+        if (gamepad1.a){
+            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
         }
     }
     public String getColor(){
