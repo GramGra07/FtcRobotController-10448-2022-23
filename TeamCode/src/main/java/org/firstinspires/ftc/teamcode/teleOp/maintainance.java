@@ -112,6 +112,7 @@ public class maintainance extends scrap {
         waitForStart();
         runtime.reset();
         while (opModeIsActive()){
+            //lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
             if (runtime.seconds()>timeout) { // if runtime is greater than timeout, allow it to switch
                 //should prevent it from just cycling on and off
                 if (touchSensor.isPressed()) {
@@ -157,7 +158,7 @@ public class maintainance extends scrap {
                 //ejectUp();
                 green3.setState(true);
                 red3.setState(false);
-            }else{
+            }else {
                 //ejectDown();
                 green3.setState(false);
                 red3.setState(true);
@@ -166,10 +167,13 @@ public class maintainance extends scrap {
                 //flipUp();
                 green4.setState(false);
                 red4.setState(true);
-            }else{
+            }else {
                 //flipDown();
                 green4.setState(true);
                 red4.setState(false);
+            }
+            if (gamepad1.a){
+                lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
             }
             telemetry.addData("armUp", armUp);
             telemetry.addData("clawOpen", clawOpen);
@@ -182,5 +186,26 @@ public class maintainance extends scrap {
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
         sleep(delay*1000);
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+    }
+    public String getColor(){
+        final String[] favColors = {
+                "RAINBOW_RAINBOW_PALETTE",
+                "RAINBOW_PARTY_PALETTE",
+                "BEATS_PER_MINUTE_RAINBOW_PALETTE",
+                "BEATS_PER_MINUTE_PARTY_PALETTE",
+                //"FIRE_MEDIUM",
+                "COLOR_WAVES_RAINBOW_PALETTE",
+                "COLOR_WAVES_PARTY_PALETTE",
+                "CP2_END_TO_END_BLEND_TO_BLACK",
+                "CP2_BREATH_SLOW",
+                "CP1_2_END_TO_END_BLEND_1_TO_2",
+                "CP1_2_END_TO_END_BLEND",
+                "HOT_PINK",
+                "GOLD",
+                "VIOLET"
+        };
+        final int min=0;
+        final int max= favColors.length-1;
+        return favColors[(int) Math.floor(Math.random() * (max - min + 1) + min)];
     }
 }

@@ -49,33 +49,14 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 public class BlinkinTest extends OpMode {
 
     RevBlinkinLedDriver lights;
-    private static final String[] favColors = {
-            "RAINBOW_RAINBOW_PALETTE",
-            "RAINBOW_PARTY_PALETTE",
-            "BEATS_PER_MINUTE_RAINBOW_PALETTE",
-            "BEATS_PER_MINUTE_PARTY_PALETTE",
-            //"FIRE_MEDIUM",
-            "COLOR_WAVES_RAINBOW_PALETTE",
-            "COLOR_WAVES_PARTY_PALETTE",
-            "CP2_END_TO_END_BLEND_TO_BLACK",
-            "CP2_BREATH_SLOW",
-            "CP1_2_END_TO_END_BLEND_1_TO_2",
-            "CP1_2_END_TO_END_BLEND",
-            "HOT_PINK",
-            "GOLD",
-            "VIOLET"
-    };
     public int colorIndex = 0;
-    final int min=0;
-    final int max= favColors.length-1;
-    double random = (Math.floor(Math.random() * (max - min + 1) + min));
 
 
     @Override
     public void init()
     {
         lights = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
-        lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(favColors[colorIndex]));
+        lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
         //for random
         //lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
     }
@@ -83,29 +64,29 @@ public class BlinkinTest extends OpMode {
     @Override
     public void loop()
     {
-        //for manual control
-        if (gamepad1.right_bumper){
-            colorIndex++;
-            if (colorIndex >= favColors.length){
-                colorIndex = 0;
-            }
-            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(favColors[colorIndex]));
-        }
-        if (gamepad1.left_bumper){
-            colorIndex--;
-            if (colorIndex < 0){
-                colorIndex = favColors.length - 1;
-            }
-            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(favColors[colorIndex]));
-        }
         if (gamepad1.a){
             lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
         }
     }
     public String getColor(){
-        return favColors[random()];
-    }
-    public int random(){
-        return (int) Math.floor(Math.random() * (max - min + 1) + min);
+        final String[] favColors = {
+                "RAINBOW_RAINBOW_PALETTE",
+                "RAINBOW_PARTY_PALETTE",
+                "BEATS_PER_MINUTE_RAINBOW_PALETTE",
+                "BEATS_PER_MINUTE_PARTY_PALETTE",
+                //"FIRE_MEDIUM",
+                "COLOR_WAVES_RAINBOW_PALETTE",
+                "COLOR_WAVES_PARTY_PALETTE",
+                "CP2_END_TO_END_BLEND_TO_BLACK",
+                "CP2_BREATH_SLOW",
+                "CP1_2_END_TO_END_BLEND_1_TO_2",
+                "CP1_2_END_TO_END_BLEND",
+                "HOT_PINK",
+                "GOLD",
+                "VIOLET"
+        };
+        final int min=0;
+        final int max= favColors.length-1;
+        return favColors[(int) Math.floor(Math.random() * (max - min + 1) + min)];
     }
 }
