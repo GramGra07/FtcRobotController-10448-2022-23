@@ -4,6 +4,7 @@ import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
 import android.graphics.Color;
 
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -157,6 +158,7 @@ public class scrap extends LinearOpMode {//declaring the class
     public boolean right = true;//declaring the right variable
     public final int baseEject=0;
     public final int magicEject=baseEject+90;
+    public RevBlinkinLedDriver lights;
 
     @Override
     public void runOpMode() {//if opmode is started
@@ -174,6 +176,7 @@ public class scrap extends LinearOpMode {//declaring the class
                 .addStep(1.0, 1.0, 1000)
                 .build();
         ElapsedTime runtime = new ElapsedTime();//declaring the runtime variable
+        lights = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
         rDistance = hardwareMap.get(DistanceSensor.class, "rDistance");//getting the rDistance sensor
         lDistance = hardwareMap.get(DistanceSensor.class, "lDistance");//getting the lDistance sensor
         fDistance = hardwareMap.get(DistanceSensor.class, "fDistance");//getting the fDistance sensor
@@ -239,7 +242,9 @@ public class scrap extends LinearOpMode {//declaring the class
 
         //flipper.setPosition(setServo(magicFlip));//setting the flipper servo to the magicFlip position
         runtime.reset();//resetting the runtime variable
+        lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
         waitForStart();//waiting for the start button to be pressed
+        lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
 
         if (isStopRequested()) return;//if the stop button is pressed, stop the program
 
@@ -423,7 +428,27 @@ public class scrap extends LinearOpMode {//declaring the class
             telemetry.update();
         }
     }
-
+    public String getColor(){
+        final String[] favColors = {
+                "RAINBOW_RAINBOW_PALETTE",
+                "RAINBOW_PARTY_PALETTE",
+                "BEATS_PER_MINUTE_RAINBOW_PALETTE",
+                "BEATS_PER_MINUTE_PARTY_PALETTE",
+                //"FIRE_MEDIUM",
+                "COLOR_WAVES_RAINBOW_PALETTE",
+                "COLOR_WAVES_PARTY_PALETTE",
+                "CP2_END_TO_END_BLEND_TO_BLACK",
+                "CP2_BREATH_SLOW",
+                "CP1_2_END_TO_END_BLEND_1_TO_2",
+                "CP1_2_END_TO_END_BLEND",
+                "HOT_PINK",
+                "GOLD",
+                "VIOLET"
+        };
+        final int min=0;
+        final int max= favColors.length-1;
+        return favColors[(int) Math.floor(Math.random() * (max - min + 1) + min)];
+    }
     public void getAllColor() {
         //gives color values
         NormalizedRGBA colors = colorSensor.getNormalizedColors();

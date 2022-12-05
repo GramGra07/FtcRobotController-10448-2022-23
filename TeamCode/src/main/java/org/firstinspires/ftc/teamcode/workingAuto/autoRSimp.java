@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.workingAuto;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -95,12 +96,14 @@ public class autoRSimp extends LinearOpMode {
     private DigitalChannel red2;
     private DigitalChannel green2;
     public int turn = 77;
+    public RevBlinkinLedDriver lights;
 
     public boolean lSide = false;
     public boolean rSide = true;
 
     @Override
     public void runOpMode() {
+        lights = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
         rDistance = hardwareMap.get(DistanceSensor.class, "rDistance");
         lDistance = hardwareMap.get(DistanceSensor.class, "lDistance");
         fDistance = hardwareMap.get(DistanceSensor.class, "fDistance");
@@ -159,8 +162,10 @@ public class autoRSimp extends LinearOpMode {
         telemetry.update();
         closeClaw();
         // Wait for the game to start (driver presses PLAY)
+        lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
         waitForStart();
         if (opModeIsActive()) {
+            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
             runVu(6, true);
             if (spot == 0) {
                 spot += 4;
@@ -213,6 +218,27 @@ public class autoRSimp extends LinearOpMode {
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
+    }
+    public String getColor(){
+        final String[] favColors = {
+                "RAINBOW_RAINBOW_PALETTE",
+                "RAINBOW_PARTY_PALETTE",
+                "BEATS_PER_MINUTE_RAINBOW_PALETTE",
+                "BEATS_PER_MINUTE_PARTY_PALETTE",
+                //"FIRE_MEDIUM",
+                "COLOR_WAVES_RAINBOW_PALETTE",
+                "COLOR_WAVES_PARTY_PALETTE",
+                "CP2_END_TO_END_BLEND_TO_BLACK",
+                "CP2_BREATH_SLOW",
+                "CP1_2_END_TO_END_BLEND_1_TO_2",
+                "CP1_2_END_TO_END_BLEND",
+                "HOT_PINK",
+                "GOLD",
+                "VIOLET"
+        };
+        final int min=0;
+        final int max= favColors.length-1;
+        return favColors[(int) Math.floor(Math.random() * (max - min + 1) + min)];
     }
 
     //precise if exact 180, if not, then use the following

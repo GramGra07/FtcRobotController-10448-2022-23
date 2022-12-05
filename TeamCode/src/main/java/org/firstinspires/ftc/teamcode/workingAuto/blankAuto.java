@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode.workingAuto;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -90,10 +91,12 @@ public class blankAuto extends scrap {
     private String colorName = "N/A";//gets color name
     NormalizedColorSensor colorSensor;//declaring the colorSensor variable
     public TouchSensor touchSensor;
+    public RevBlinkinLedDriver lights;
 
 
     @Override
     public void runOpMode() {
+        lights = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
         rDistance = hardwareMap.get(DistanceSensor.class, "rDistance");
         lDistance = hardwareMap.get(DistanceSensor.class, "lDistance");
         fDistance = hardwareMap.get(DistanceSensor.class, "fDistance");
@@ -152,12 +155,13 @@ public class blankAuto extends scrap {
         }
         runVu(6, false);
         telemetry.update();
+        lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
         closeClaw();
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         if (opModeIsActive()) {
+            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
             runVu(6, true);
-
             telemetry.update();
         }
     }
@@ -181,7 +185,27 @@ public class blankAuto extends scrap {
     //    motorFrontLeft.setPower(-0.8);
     //    motorFrontRight.setPower(-0.8);
     //}
-
+    public String getColor(){
+        final String[] favColors = {
+                "RAINBOW_RAINBOW_PALETTE",
+                "RAINBOW_PARTY_PALETTE",
+                "BEATS_PER_MINUTE_RAINBOW_PALETTE",
+                "BEATS_PER_MINUTE_PARTY_PALETTE",
+                //"FIRE_MEDIUM",
+                "COLOR_WAVES_RAINBOW_PALETTE",
+                "COLOR_WAVES_PARTY_PALETTE",
+                "CP2_END_TO_END_BLEND_TO_BLACK",
+                "CP2_BREATH_SLOW",
+                "CP1_2_END_TO_END_BLEND_1_TO_2",
+                "CP1_2_END_TO_END_BLEND",
+                "HOT_PINK",
+                "GOLD",
+                "VIOLET"
+        };
+        final int min=0;
+        final int max= favColors.length-1;
+        return favColors[(int) Math.floor(Math.random() * (max - min + 1) + min)];
+    }
 
     public void runVu(int timeoutS, boolean giveSpot) {
         runtime.reset();

@@ -2,6 +2,7 @@ package org.firstinspires.ftc.teamcode;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
+import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -93,9 +94,11 @@ public class advAutoR extends scrap {
     public int ovrCurrX = 2;
     public int ovrCurrY = 1;
     private final boolean bypassCam = true;
+    public RevBlinkinLedDriver lights;
 
     @Override
     public void runOpMode() {
+        lights = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
         rDistance = hardwareMap.get(DistanceSensor.class, "rDistance");
         lDistance = hardwareMap.get(DistanceSensor.class, "lDistance");
         fDistance = hardwareMap.get(DistanceSensor.class, "fDistance");
@@ -157,8 +160,10 @@ public class advAutoR extends scrap {
         telemetry.update();
         closeClaw();
         // Wait for the game to start (driver presses PLAY)
+        lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
         waitForStart();
         if (opModeIsActive()) {
+            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
             final int rotation = 92;
             final double coneSubtraction = (fiveTallConeVal * 0.2);
             if (!bypassCam) {
@@ -331,5 +336,26 @@ public class advAutoR extends scrap {
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
 
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
+    }
+    public String getColor(){
+        final String[] favColors = {
+                "RAINBOW_RAINBOW_PALETTE",
+                "RAINBOW_PARTY_PALETTE",
+                "BEATS_PER_MINUTE_RAINBOW_PALETTE",
+                "BEATS_PER_MINUTE_PARTY_PALETTE",
+                //"FIRE_MEDIUM",
+                "COLOR_WAVES_RAINBOW_PALETTE",
+                "COLOR_WAVES_PARTY_PALETTE",
+                "CP2_END_TO_END_BLEND_TO_BLACK",
+                "CP2_BREATH_SLOW",
+                "CP1_2_END_TO_END_BLEND_1_TO_2",
+                "CP1_2_END_TO_END_BLEND",
+                "HOT_PINK",
+                "GOLD",
+                "VIOLET"
+        };
+        final int min=0;
+        final int max= favColors.length-1;
+        return favColors[(int) Math.floor(Math.random() * (max - min + 1) + min)];
     }
 }
