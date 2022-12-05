@@ -58,11 +58,13 @@ public class BlinkinTest extends OpMode {
     final int max= favColors.length;
     double random = (Math.floor(Math.random() * (max - min + 1) + min));
 
+
     @Override
     public void init()
     {
         lights = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(favColors[colorIndex]));
+        //lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.G);
         //for random
         //lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
     }
