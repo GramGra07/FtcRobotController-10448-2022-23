@@ -77,6 +77,8 @@ public class maintainance extends scrap {
     public final int timeout=1;
     public final int delay =1;
     RevBlinkinLedDriver lights;
+    public boolean isSolid=false;
+    public String color="none";
 
     @Override
     public void runOpMode() {
@@ -112,6 +114,11 @@ public class maintainance extends scrap {
         waitForStart();
         runtime.reset();
         while (opModeIsActive()){
+            if (isSolid){
+                sleep(delay*1000);
+                lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
+                isSolid=false;
+            }
             //lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
             if (runtime.seconds()>timeout) { // if runtime is greater than timeout, allow it to switch
                 //should prevent it from just cycling on and off
@@ -172,20 +179,21 @@ public class maintainance extends scrap {
                 green4.setState(true);
                 red4.setState(false);
             }
-            if (gamepad1.a){
-                lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
-            }
             telemetry.addData("armUp", armUp);
             telemetry.addData("clawOpen", clawOpen);
             telemetry.addData("ejectUp", ejectUp);
             telemetry.addData("flipperUp", flipperUp);
+            telemetry.addData("color", color);
             telemetry.update();
         }
     }
     public void greenRed(){
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
+        color = "RED";
         sleep(delay*1000);
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+        color = "GREEN";
+        isSolid=true;
     }
     public String getColor(){
         final String[] favColors = {
@@ -206,6 +214,8 @@ public class maintainance extends scrap {
         };
         final int min=0;
         final int max= favColors.length-1;
-        return favColors[(int) Math.floor(Math.random() * (max - min + 1) + min)];
+        String c = favColors[(int) Math.floor(Math.random() * (max - min + 1) + min)];
+        color=c;
+        return c;
     }
 }
