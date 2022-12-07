@@ -179,26 +179,28 @@ public class advAutoR extends scrap {
                         //by now should be at pole, facing it with arm extended to top
             //branch 2
             sideWaysEncoderDrive(1,-1,1);
-            dropArm(topPoleVal);
+            encoderDrive(1,1,3,1);
             openClaw();
             //branch 3
-            final double halfTile = 3.5;
-            turn(22-6);
+            double halfTile = 4.0;
+            turn(22-8);
             sideWaysEncoderDrive(1, halfTile, 2);
             closeClaw();
             //should now be lined up with the cone stack
-            int stackDist = 36;//primary distance to go to stack
-            encoderComboFwd(1, stackDist, stackDist, fiveTallConeVal, 3, true);
+            int stackDist = 38;//primary distance to go to stack
+            encoderComboFwd(1, stackDist, stackDist, fiveTallConeVal+100, 3, true);
             openClaw();
-            sleep(50);
+            armEncoder(fiveTallConeVal,1,1,true);
+            sleep(300);
             closeClaw();
             armEncoder(midPoleVal, 1, 2, false);//clear gap
             //branch 4
             //now has cone ready for next placement
             int repetitions = 1;
             double finished = 0;
+            halfTile-=14;
             while (repetitions > 0) {
-                encoderComboFwd(1, -stackDist, -stackDist, topPoleVal, 6, false);//back up
+                encoderComboFwd(0.8, -stackDist, -stackDist, topPoleVal, 6, false);//back up
                 sideWaysEncoderDrive(1, -halfTile, 3);
                 sideWaysEncoderDrive(1,-1,1);
                 dropArm(topPoleVal);
