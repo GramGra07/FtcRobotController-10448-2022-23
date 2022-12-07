@@ -516,7 +516,7 @@ public class scrap extends LinearOpMode {//declaring the class
     }
 
     public void dropArm(int prevHeight) {
-        armEncoder(prevHeight - 50, 0.5, 2, true);
+        armEncoder(prevHeight - 100, 0.5, 2, true);
     }
 
 

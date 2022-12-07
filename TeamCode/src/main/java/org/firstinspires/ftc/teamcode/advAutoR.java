@@ -172,57 +172,39 @@ public class advAutoR extends scrap {
             if (spot == 0) {
                 spot = (int) (Math.floor(Math.random() * (3 - 1 + 1) + 1));
             }
-            advGoSpot(ovrCurrX, ovrCurrY, 2.15, 3.3, 0.8, true, topPoleVal, false,
+            //branch 1
+            advGoSpot(ovrCurrX, ovrCurrY, 2.1, 3.3, 0.8, true, topPoleVal, false,
                     "|", 1, true, -rotation, false, false, null, 0,
                     false, null, 0, false);
                         //by now should be at pole, facing it with arm extended to top
+            //branch 2
             sideWaysEncoderDrive(1,-1,1);
             dropArm(topPoleVal);
             openClaw();
-            final int halfTile = 2;
+            //branch 3
+            final double halfTile = 3.5;
+            turn(22);
             sideWaysEncoderDrive(1, halfTile, 2);
             closeClaw();
             //should now be lined up with the cone stack
-            int stackDist = 34;//primary distance to go to stack
-            encoderComboFwd(1, stackDist, stackDist, midPoleVal, 3, true);
+            int stackDist = 36;//primary distance to go to stack
+            encoderComboFwd(1, stackDist, stackDist, fiveTallConeVal, 3, true);
             openClaw();
-            //double prevEncoder = motorFrontRight.getCurrentPosition() / COUNTS_PER_INCH;
-            ////approach cone stack
-            ////! using touch sensor
-            ////!to use uncomment next lines and line 91, 117
-            //while (!touchPressed) {
-            //    if (touchSensor.isPressed()) { //while touch sensor is not pressed //!calibrate dist also
-            //        motorFrontRight.setPower(0);
-            //        motorFrontLeft.setPower(0);
-            //        motorBackRight.setPower(0);
-            //        motorBackLeft.setPower(0);
-            //        touchPressed = true;
-            //    } else if (!touchSensor.isPressed()) {
-            //        motorFrontRight.setPower(-0.75);
-            //        motorFrontLeft.setPower(-0.75);
-            //        motorBackRight.setPower(-0.75);
-            //        motorBackLeft.setPower(-0.75);
-            //    }
-            //}
-            ////should now be at the cone stack
-            ////gets total usable stack distance from stack to cone, x val
-            //stackDist += (motorFrontRight.getCurrentPosition() / COUNTS_PER_INCH) - (prevEncoder);
-            armEncoder(fiveTallConeVal, 1, 2, true);//arm down to five tall
+            sleep(50);
             closeClaw();
             armEncoder(midPoleVal, 1, 2, false);//clear gap
+            //branch 4
             //now has cone ready for next placement
             int repetitions = 1;
             double finished = 0;
             while (repetitions > 0) {
-                double fwd = stackDist;
-                double sdw = halfTile;
-                encoderComboFwd(1, -fwd, -fwd, topPoleVal, 6, false);//back up
-                sideWaysEncoderDrive(1, -sdw, 3);
+                encoderComboFwd(1, -stackDist, -stackDist, topPoleVal, 6, false);//back up
+                sideWaysEncoderDrive(1, -halfTile, 3);
                 sideWaysEncoderDrive(1,-1,1);
                 dropArm(topPoleVal);
                 openClaw();
-                sideWaysEncoderDrive(1, sdw, 3);
-                encoderComboFwd(1.0, fwd, fwd, midPoleVal, 6, true);//should be at cone stack after this
+                sideWaysEncoderDrive(1, halfTile, 3);
+                encoderComboFwd(1.0, stackDist, stackDist, midPoleVal, 6, true);//should be at cone stack after this
                 openClaw();
                 // gets every pole val 5tall-((928/5)*finished poles)
                 armEncoder(fiveTallConeVal - (coneSubtraction * finished), 1, 2, true);

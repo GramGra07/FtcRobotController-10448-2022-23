@@ -133,12 +133,10 @@ public class maintainance extends scrap {
                     runtime.reset();
                 }
                 if (touchSensorEject.isPressed()) {
-                    ejectUp = !ejectUp;
-                    greenRed();
+                    lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
                     runtime.reset();
                 }
                 if (touchSensorFlipper.isPressed()) {
-                    flipperUp = !flipperUp;
                     greenRed();
                     runtime.reset();
                 }
@@ -160,24 +158,6 @@ public class maintainance extends scrap {
                 closeClaw();
                 green2.setState(true);
                 red2.setState(false);
-            }
-            if (ejectUp) {
-                //ejectUp();
-                green3.setState(true);
-                red3.setState(false);
-            }else {
-                //ejectDown();
-                green3.setState(false);
-                red3.setState(true);
-            }
-            if (flipperUp) {
-                //flipUp();
-                green4.setState(false);
-                red4.setState(true);
-            }else {
-                //flipDown();
-                green4.setState(true);
-                red4.setState(false);
             }
             telemetry.addData("armUp", armUp);
             telemetry.addData("clawOpen", clawOpen);
