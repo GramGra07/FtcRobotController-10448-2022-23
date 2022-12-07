@@ -183,7 +183,7 @@ public class advAutoR extends scrap {
             openClaw();
             //branch 3
             final double halfTile = 3.5;
-            turn(22);
+            turn(22-6);
             sideWaysEncoderDrive(1, halfTile, 2);
             closeClaw();
             //should now be lined up with the cone stack
