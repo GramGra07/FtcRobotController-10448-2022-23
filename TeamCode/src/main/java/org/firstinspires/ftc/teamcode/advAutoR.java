@@ -179,7 +179,7 @@ public class advAutoR extends scrap {
                         //by now should be at pole, facing it with arm extended to top
             //branch 2
             sideWaysEncoderDrive(1,-1,1);
-            encoderDrive(1,1,3,1);
+            encoderDrive(1,1,1.5,1);
             openClaw();
             //branch 3
             double halfTile = 4.0;
@@ -199,6 +199,7 @@ public class advAutoR extends scrap {
             int repetitions = 1;
             double finished = 0;
             halfTile-=14;
+            //!not finished from here on
             while (repetitions > 0) {
                 encoderComboFwd(0.8, -stackDist, -stackDist, topPoleVal, 6, false);//back up
                 sideWaysEncoderDrive(1, -halfTile, 3);
