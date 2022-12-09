@@ -230,12 +230,16 @@ public class systemsCheck extends scrap {
                 sleep(1000);
                 lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
                 encoderDrive(1,4,4,1);
+                telemetry.update();
                 sleep(500);
                 turn(90);
+                telemetry.update();
                 sleep(500);
                 turn(-90);
+                telemetry.update();
                 sleep(500);
                 encoderDrive(1,-4,-4,1);
+                telemetry.update();
                 sleep(500);
                 motorBackLeft.setPower(0);
                 motorBackRight.setPower(0);
@@ -243,16 +247,6 @@ public class systemsCheck extends scrap {
                 motorFrontRight.setPower(0);
                 ran=true;
             }
-
-            telemetry.addData("mbl",motorBackLeft.getCurrentPosition());
-            telemetry.addData("mbr",motorBackRight.getCurrentPosition());
-            telemetry.addData("mfl",motorFrontLeft.getCurrentPosition());
-            telemetry.addData("mfr",motorFrontRight.getCurrentPosition());
-            telemetry.addData("lDead",deadWheelL.getCurrentPosition());
-            telemetry.addData("rDead",deadWheelR.getCurrentPosition());
-            telemetry.addData("Dead",deadWheel.getCurrentPosition());
-            telemetry.update();
-            sleep(1000);
             lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
             sleep(1000);
             lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
