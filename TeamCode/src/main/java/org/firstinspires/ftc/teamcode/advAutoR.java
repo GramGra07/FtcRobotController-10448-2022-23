@@ -173,59 +173,55 @@ public class advAutoR extends scrap {
                 spot = (int) (Math.floor(Math.random() * (3 - 1 + 1) + 1));
             }
             //branch 1
-            advGoSpot(ovrCurrX, ovrCurrY, 2.1, 3.3, 0.8, true, topPoleVal, false,
+            advGoSpot(ovrCurrX, ovrCurrY, 2.1, 3.3 ,0.8, true, topPoleVal, false,
                     "|", 1, true, -rotation, false, false, null, 0,
                     false, null, 0, false);
                         //by now should be at pole, facing it with arm extended to top
             //branch 2
-            sideWaysEncoderDrive(1,-1,1);
-            encoderDrive(1,1,1.5,1);
+            sideWaysEncoderDrive(1,-1,0.5);
             openClaw();
             //branch 3
-            double halfTile = 4.0;
-            turn(22-8);
-            sideWaysEncoderDrive(1, halfTile, 2);
+            double halfTile = 2.0;
+            turn(10);
             closeClaw();
+            sideWaysEncoderDrive(1, halfTile, 2);
             //should now be lined up with the cone stack
-            int stackDist = 38;//primary distance to go to stack
-            encoderComboFwd(1, stackDist, stackDist, fiveTallConeVal+100, 3, true);
+            int stackDist = 36;//primary distance to go to stack
+            encoderComboFwd(1, stackDist, stackDist, midPoleVal, 3, true);
             openClaw();
             armEncoder(fiveTallConeVal,1,1,true);
             sleep(300);
             closeClaw();
-            armEncoder(midPoleVal, 1, 2, false);//clear gap
+            armEncoder(midPoleVal, 1, 1, false);//clear gap
             //branch 4
             //now has cone ready for next placement
             int repetitions = 1;
             double finished = 0;
-            halfTile-=14;
+            halfTile=-5;
+            stackDist-=10;
             //!not finished from here on
-            while (repetitions > 0) {
+            while (repetitions >= 1) {
                 encoderComboFwd(0.8, -stackDist, -stackDist, topPoleVal, 6, false);//back up
-                sideWaysEncoderDrive(1, -halfTile, 3);
-                sideWaysEncoderDrive(1,-1,1);
-                dropArm(topPoleVal);
+                sideWaysEncoderDrive(1, halfTile+1, 3);
                 openClaw();
-                sideWaysEncoderDrive(1, halfTile, 3);
-                encoderComboFwd(1.0, stackDist, stackDist, midPoleVal, 6, true);//should be at cone stack after this
-                openClaw();
+                sleep(200);
+                sideWaysEncoderDrive(1, -halfTile, 1);
+                encoderComboFwd(1.0, stackDist, stackDist, fiveTallConeVal - (coneSubtraction * finished), 4, true);//should be at cone stack after this
                 // gets every pole val 5tall-((928/5)*finished poles)
-                armEncoder(fiveTallConeVal - (coneSubtraction * finished), 1, 2, true);
                 closeClaw();
-                armEncoder(midPoleVal, 1, 2, false);
+                armEncoder(midPoleVal, 1, 1, false);
                 repetitions -= 1;
                 finished += 1;
             }
             encoderComboFwd(1, -stackDist, -stackDist, baseArmPosition, 3, true);//get to 2,3
-            turn(rotation);// needs to be reversed from original turn
             if (spot == 3) {
-                sideWaysEncoderDrive(1, stackDist, 3);//opposite of 3 lines higher
+                sideWaysEncoderDrive(1, 14, 3);//opposite of 3 lines higher
             }
             //should already be here at spot 2
             if (spot == 2) {
             }
             if (spot == 1) {
-                encoderDrive(1, stackDist, stackDist, 3);
+                sideWaysEncoderDrive(1, -14, 3);
             }
             telemetry.update();
         }

@@ -225,26 +225,17 @@ public class systemsCheck extends scrap {
             }
             boolean ran=false;
             while (!ran) {
+                lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
+                telemetry.addData("Running Wheels","Clear");
                 sleep(1000);
-                motorBackLeft.setPower(  -1);
-                motorBackRight.setPower( -1);
-                motorFrontLeft.setPower( -1);
-                motorFrontRight.setPower(-1);
+                lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+                encoderDrive(1,4,4,1);
                 sleep(500);
-                motorBackLeft.setPower(1);
-                motorBackRight.setPower(-1);
-                motorFrontLeft.setPower(1);
-                motorFrontRight.setPower(-1);
+                turn(90);
                 sleep(500);
-                motorBackLeft.setPower(-1);
-                motorBackRight.setPower(1);
-                motorFrontLeft.setPower(-1);
-                motorFrontRight.setPower(1);
+                turn(-90);
                 sleep(500);
-                motorBackLeft.setPower(1);
-                motorBackRight.setPower(1);
-                motorFrontLeft.setPower(1);
-                motorFrontRight.setPower(1);
+                encoderDrive(1,-4,-4,1);
                 sleep(500);
                 motorBackLeft.setPower(0);
                 motorBackRight.setPower(0);
