@@ -188,6 +188,15 @@ public class advAutoR extends scrap {
             //should now be lined up with the cone stack
             int stackDist = 36;//primary distance to go to stack
             encoderComboFwd(1, stackDist, stackDist, midPoleVal, 3, true);
+            boolean pressed = false;
+            while (!pressed) {
+                pressed = touchSensor.isPressed();
+                if (pressed) {
+                    pressed=true;
+                    break;
+                }
+                encoderDrive(0.5, 2, 1, 1);
+            }
             openClaw();
             armEncoder(fiveTallConeVal,1,1,true);
             sleep(300);
