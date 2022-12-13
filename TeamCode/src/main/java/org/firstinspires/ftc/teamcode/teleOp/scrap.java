@@ -310,12 +310,6 @@ public class scrap extends LinearOpMode {//declaring the class
                 slowModeIsOn = true;//toggle
             }
             //
-            //flipper
-            if (gamepad1.dpad_up) {
-                flipDown();
-            } else if (gamepad1.dpad_down) {
-                flipUp();
-            }
             //if (gamepad1.dpad_right) {
             //    unConeDown();
             //} else if (!unConed) {
@@ -464,12 +458,6 @@ public class scrap extends LinearOpMode {//declaring the class
     //    unConer.setPosition(setServo(baseUnCone));
     //    unConed = false;
     //}
-    public void flipDown() {
-        flipper.setPosition(setServo(magicFlip));
-    }
-    public void flipUp() {
-        flipper.setPosition(setServo(baseFlip));
-    }
     //public void ejectUp() {
     //    unConer.setPosition(setServo(magicEject));
     //}
