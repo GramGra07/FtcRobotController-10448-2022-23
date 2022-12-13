@@ -81,18 +81,24 @@ public class blankAuto extends scrap {
     public double IN_distanceR = 0;//in distance for distance sensor 1
     public double IN_distanceL = 0;
     public double myMagic = 7;
-    private DigitalChannel red2;
-    private DigitalChannel green2;
     //color
     final float[] hsvValues = new float[3];//gets values for color sensor
     private int redVal = 0;//the red value in rgb
     private int greenVal = 0;//the green value in rgb
     private int blueVal = 0;//the blue value in rgb
     private String colorName = "N/A";//gets color name
-    NormalizedColorSensor colorSensor;//declaring the colorSensor variable
+    NormalizedColorSensor colorSensorR;//declaring the colorSensor variable
+    NormalizedColorSensor colorSensorL;//declaring the colorSensor variable
     public TouchSensor touchSensor;
     public RevBlinkinLedDriver lights;
-
+    private DigitalChannel red1;
+    private DigitalChannel green1;
+    private DigitalChannel red2;
+    private DigitalChannel green2;
+    private DigitalChannel red3;
+    private DigitalChannel green3;
+    private DigitalChannel red4;
+    private DigitalChannel green4;
 
     @Override
     public void runOpMode() {
@@ -101,11 +107,16 @@ public class blankAuto extends scrap {
         lDistance = hardwareMap.get(DistanceSensor.class, "lDistance");
         fDistance = hardwareMap.get(DistanceSensor.class, "fDistance");
         bDistance = hardwareMap.get(DistanceSensor.class, "bDistance");
-        DigitalChannel red1 = hardwareMap.get(DigitalChannel.class, "red1");
-        DigitalChannel green1 = hardwareMap.get(DigitalChannel.class, "green1");
+        red1 = hardwareMap.get(DigitalChannel.class, "red1");
+        green1 = hardwareMap.get(DigitalChannel.class, "green1");
         red2 = hardwareMap.get(DigitalChannel.class, "red2");
         green2 = hardwareMap.get(DigitalChannel.class, "green2");
-        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
+        red3 = hardwareMap.get(DigitalChannel.class, "red3");
+        green3 = hardwareMap.get(DigitalChannel.class, "green3");
+        red4 = hardwareMap.get(DigitalChannel.class, "red4");
+        green4 = hardwareMap.get(DigitalChannel.class, "green4");
+        colorSensorR = hardwareMap.get(NormalizedColorSensor.class, "colorSensorR");
+        colorSensorL = hardwareMap.get(NormalizedColorSensor.class, "colorSensorL");
         touchSensor = hardwareMap.get(TouchSensor.class, ("touchSensor"));
 
         motorFrontLeft = hardwareMap.get(DcMotor.class, "motorFrontLeft");
@@ -140,6 +151,12 @@ public class blankAuto extends scrap {
         motorFrontLeft.setZeroPowerBehavior(BRAKE);
         red2.setMode(DigitalChannel.Mode.OUTPUT);
         green2.setMode(DigitalChannel.Mode.OUTPUT);
+        red1.setMode(DigitalChannel.Mode.OUTPUT);
+        green1.setMode(DigitalChannel.Mode.OUTPUT);
+        red3.setMode(DigitalChannel.Mode.OUTPUT);
+        green3.setMode(DigitalChannel.Mode.OUTPUT);
+        red4.setMode(DigitalChannel.Mode.OUTPUT);
+        green4.setMode(DigitalChannel.Mode.OUTPUT);
 
         telemetry.addData("Starting at", "%7d :%7d",
                 motorBackRight.getCurrentPosition(),

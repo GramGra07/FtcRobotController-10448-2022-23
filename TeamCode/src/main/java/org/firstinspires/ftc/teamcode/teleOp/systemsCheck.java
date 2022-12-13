@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.teleOp.scrap;
 
 import java.util.List;
 import java.util.Objects;
-
+import org.firstinspires.ftc.teamcode.advAutoR;
 @TeleOp(name = "systemsCheck", group = "Robot")
 //@Disabled
 public class systemsCheck extends scrap {
@@ -97,7 +97,8 @@ public class systemsCheck extends scrap {
     private int greenVal = 0;//the green value in rgb
     private int blueVal = 0;//the blue value in rgb
     private String colorName = "N/A";//gets color name
-    NormalizedColorSensor colorSensor;//declaring the colorSensor variable
+    NormalizedColorSensor colorSensorR;//declaring the colorSensor variable
+    NormalizedColorSensor colorSensorL;//declaring the colorSensor variable
     public TouchSensor touchSensor;
     public TouchSensor touchSensorFlipper;
     public TouchSensor touchSensorClaw;
@@ -120,7 +121,8 @@ public class systemsCheck extends scrap {
         green3 = hardwareMap.get(DigitalChannel.class, "green3");
         red4 = hardwareMap.get(DigitalChannel.class, "red4");
         green4 = hardwareMap.get(DigitalChannel.class, "green4");
-        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
+        colorSensorR = hardwareMap.get(NormalizedColorSensor.class, "colorSensorR");
+        colorSensorL = hardwareMap.get(NormalizedColorSensor.class, "colorSensorL");
         touchSensor = hardwareMap.get(TouchSensor.class, ("touchSensor"));
         touchSensorFlipper = hardwareMap.get(TouchSensor.class, ("touchSensorFlipper"));
         touchSensorClaw = hardwareMap.get(   TouchSensor.class, ("touchSensorClaw"));
