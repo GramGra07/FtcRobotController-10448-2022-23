@@ -183,6 +183,7 @@ public class advAutoR extends scrap {
             //branch 2
             armEncoder(topPoleVal,1,3,false);
             sideWaysEncoderDrive(1,-1,0.5);
+            encoderDrive(1,-0.5,-0.5,1);
             openClaw();
             //branch 3
             double halfTile = 3.0;
@@ -217,7 +218,7 @@ public class advAutoR extends scrap {
             int repetitions = 1;
             double finished = 0;
             halfTile=-6;
-            stackDist=24;
+            stackDist=25;
             //!not finished from here on
             while (repetitions >= 1) {
                 encoderComboFwd(0.8, -stackDist, -stackDist, topPoleVal, 6, false);//back up
@@ -228,9 +229,9 @@ public class advAutoR extends scrap {
                 closeClaw();
                 encoderComboFwd(1.0, stackDist, stackDist, midPoleVal+500, 4, true);//should be at cone stack after this
                 correct();
-                armEncoder(fiveTallConeVal - (coneSubtraction * finished),1,3,true);
+                armEncoder(fiveTallConeVal - (coneSubtraction * finished)+100,1,3,true);
                 openClaw();
-                sleep(300);
+                armEncoder(fiveTallConeVal - (coneSubtraction * finished),1,3,true);
                 closeClaw();
                 // gets every pole val 5tall-((928/5)*finished poles)
                 armEncoder(midPoleVal+500, 1, 1, false);
