@@ -81,7 +81,7 @@ public class scrap extends LinearOpMode {//declaring the class
     public final int baseArm = 100;//declaring the baseArm variable
     public static final int lowPoleVal = 1740;//should be about 1/3 of arm limit
     public static final int midPoleVal = 3100;//should be about 2/3 of arm limit
-    public static final int fiveTallConeVal = 400;
+    public static final int fiveTallConeVal = 500;
     public static final int topPoleVal = armLimit;//should be close to armLimit
     public boolean limiter = true;//declaring the limiter variable, is on or off
     public boolean limiting = false;//declaring the limiting variable
@@ -142,9 +142,9 @@ public class scrap extends LinearOpMode {//declaring the class
     private int spot = 0;
     //color
     final float[] hsvValues = new float[3];//gets values for color sensor
-    private int redVal = 0;//the red value in rgb
-    private int greenVal = 0;//the green value in rgb
-    private int blueVal = 0;//the blue value in rgb
+    private float redVal = 0;//the red value in rgb
+    private float greenVal = 0;//the green value in rgb
+    private float blueVal = 0;//the blue value in rgb
     private String colorName = "N/A";//gets color name
     NormalizedColorSensor colorSensor;//declaring the colorSensor variable
     //
@@ -454,7 +454,6 @@ public class scrap extends LinearOpMode {//declaring the class
         NormalizedRGBA colors = colorSensor.getNormalizedColors();
         Color.colorToHSV(colors.toColor(), hsvValues);
         getColorRGB(colors.red, colors.green, colors.blue);
-        get_color_name(colors.red, colors.green, colors.blue);
         telemetry.addLine()
                 .addData("Red", "%.3f", colors.red)
                 .addData("Green", "%.3f", colors.green)
@@ -1046,27 +1045,26 @@ public class scrap extends LinearOpMode {//declaring the class
         encoderDrive(0.65, -inches, inches, 6);
         resetEncoders();
     }
-
-    public void get_color_name(float red, float green, float blue) {
-        if ((red <= 1) && (red >= 0.9375) && (green <= 1) && (green >= 0.8671875) && (blue <= 1) && (blue >= 0.67578125)) {
-            colorName = "white";
+    public boolean colorInRange(float red, double targetR, float green, double targetG, float blue, double targetB, float range){
+        boolean rCheck=false;
+        boolean gCheck=false;
+        boolean bCheck=false;
+        if (targetR-range<red && red>targetR+range) {
+            rCheck=true;
         }
-        if ((red <= 0.5) && (red >= 0) && (green <= 1) && (green >= 0.59765625) && (blue <= 1) && (blue >= 0.44921875)) {
-            colorName = "blue";
+        if (targetG-range<green && green>targetG+range) {
+            gCheck=true;
         }
-        if ((red <= 0.5) && (red >= 0) && (green <= 0.5) && (green >= 0) && (blue <= 0.5) && (blue >= 0)) {
-            colorName = "black";
+        if (targetB-range<blue && blue>targetB+range) {
+            bCheck=true;
         }
-        if ((red <= 1) && (red >= 0.3984375) && (green <= 0.234375) && (green >= 0) && (blue <= 0.5) && (blue >= 0)) {
-            colorName = "red";
-        }
-        getColorRGB(red, green, blue);
+        return rCheck && gCheck && bCheck;
     }
-
     public void getColorRGB(float red, float green, float blue) {
-        redVal = (int) (red * 256);
-        greenVal = (int) (green * 256);
-        blueVal = (int) (blue * 256);
+        int mult=100;
+        redVal = (red * mult);
+        greenVal= (green * mult);
+        blueVal = (blue * mult);
     }
 
     public void runVu(int timeoutS, boolean giveSpot) {

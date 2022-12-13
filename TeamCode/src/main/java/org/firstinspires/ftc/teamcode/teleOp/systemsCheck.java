@@ -227,7 +227,7 @@ public class systemsCheck extends scrap {
             while (!ran) {
                 lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
                 telemetry.addData("Running Wheels","Clear");
-                sleep(1000);
+                sleep(2000);
                 lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
                 encoderDrive(1,4,4,1);
                 telemetry.update();

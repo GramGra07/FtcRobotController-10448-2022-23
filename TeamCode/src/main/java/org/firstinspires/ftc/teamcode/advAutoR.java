@@ -2,12 +2,15 @@ package org.firstinspires.ftc.teamcode;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
+import android.graphics.Color;
+
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -84,9 +87,9 @@ public class advAutoR extends scrap {
     private DigitalChannel green2;
     //color
     final float[] hsvValues = new float[3];//gets values for color sensor
-    private int redVal = 0;//the red value in rgb
-    private int greenVal = 0;//the green value in rgb
-    private int blueVal = 0;//the blue value in rgb
+    private float redVal = 0;//the red value in rgb
+    private float greenVal = 0;//the green value in rgb
+    private float blueVal = 0;//the blue value in rgb
     private String colorName = "N/A";//gets color name
     NormalizedColorSensor colorSensor;//declaring the colorSensor variable
     public TouchSensor touchSensor;
@@ -173,64 +176,77 @@ public class advAutoR extends scrap {
                 spot = (int) (Math.floor(Math.random() * (3 - 1 + 1) + 1));
             }
             //branch 1
-            advGoSpot(ovrCurrX, ovrCurrY, 2.1, 3.3 ,0.8, true, topPoleVal, false,
+            advGoSpot(ovrCurrX, ovrCurrY, 2.1, 3.2 ,0.8, false, topPoleVal, false,
                     "|", 1, true, -rotation, false, false, null, 0,
                     false, null, 0, false);
                         //by now should be at pole, facing it with arm extended to top
             //branch 2
+            armEncoder(topPoleVal,1,3,false);
             sideWaysEncoderDrive(1,-1,0.5);
             openClaw();
             //branch 3
-            double halfTile = 2.0;
-            turn(10);
+            double halfTile = 3.0;
+            turn(12);
             closeClaw();
             sideWaysEncoderDrive(1, halfTile, 2);
             //should now be lined up with the cone stack
             int stackDist = 36;//primary distance to go to stack
-            encoderComboFwd(1, stackDist, stackDist, midPoleVal, 3, true);
-            boolean pressed = false;
-            while (!pressed) {
-                pressed = touchSensor.isPressed();
-                if (pressed) {
-                    pressed=true;
-                    break;
-                }
-                encoderDrive(0.5, 2, 1, 1);
-            }
+            encoderComboFwd(0.8, stackDist, stackDist, midPoleVal, 5, true);
+            ////!using color
+            //getAllColor();
+            ////red colorInRange(redVal,0.36, greenVal,.25, blueVal,.16, (float) 0.05);
+            ////blue colorInRange(redVal,0.12, greenVal,.27, blueVal,.47, (float) 0.05);
+            //getAllColor();
+            //boolean correctR = colorInRange(redVal,0.36, greenVal,.25, blueVal,.16, (float) 0.05);
+            //boolean correctB = colorInRange(redVal,0.12, greenVal,.27, blueVal,.47, (float) 0.05);
+            //while (!correctR || !correctB) {
+            //
+            //    getAllColor();
+            //    correctR = colorInRange(redVal,0.36, greenVal,.25, blueVal,.16, (float) 0.05);
+            //    correctB = colorInRange(redVal,0.12, greenVal,.27, blueVal,.47, (float) 0.05);
+            //}
+            //!using touch
+            correct();
+            armEncoder(fiveTallConeVal+100,1,3,true);
             openClaw();
-            armEncoder(fiveTallConeVal,1,1,true);
-            sleep(300);
+            armEncoder(fiveTallConeVal,1,3,true);
             closeClaw();
-            armEncoder(midPoleVal, 1, 1, false);//clear gap
+            armEncoder(midPoleVal+500, 1, 3, false);//clear gap
             //branch 4
             //now has cone ready for next placement
             int repetitions = 1;
             double finished = 0;
-            halfTile=-5;
-            stackDist-=10;
+            halfTile=-6;
+            stackDist=24;
             //!not finished from here on
             while (repetitions >= 1) {
                 encoderComboFwd(0.8, -stackDist, -stackDist, topPoleVal, 6, false);//back up
-                sideWaysEncoderDrive(1, halfTile+1, 3);
+                sideWaysEncoderDrive(1, halfTile, 3);
                 openClaw();
-                sleep(200);
                 sideWaysEncoderDrive(1, -halfTile, 1);
-                encoderComboFwd(1.0, stackDist, stackDist, fiveTallConeVal - (coneSubtraction * finished), 4, true);//should be at cone stack after this
-                // gets every pole val 5tall-((928/5)*finished poles)
+                turn(-10);
                 closeClaw();
-                armEncoder(midPoleVal, 1, 1, false);
+                encoderComboFwd(1.0, stackDist, stackDist, midPoleVal+500, 4, true);//should be at cone stack after this
+                correct();
+                armEncoder(fiveTallConeVal - (coneSubtraction * finished),1,3,true);
+                openClaw();
+                sleep(300);
+                closeClaw();
+                // gets every pole val 5tall-((928/5)*finished poles)
+                armEncoder(midPoleVal+500, 1, 1, false);
                 repetitions -= 1;
                 finished += 1;
             }
             encoderComboFwd(1, -stackDist, -stackDist, baseArmPosition, 3, true);//get to 2,3
+            stackDist=14;
             if (spot == 3) {
-                sideWaysEncoderDrive(1, 14, 3);//opposite of 3 lines higher
+                encoderDrive(1, stackDist,stackDist, 3);//opposite of 3 lines higher
             }
             //should already be here at spot 2
             if (spot == 2) {
             }
             if (spot == 1) {
-                sideWaysEncoderDrive(1, -14, 3);
+                encoderDrive(1, -stackDist,-stackDist, 3);
             }
             telemetry.update();
         }
@@ -255,7 +271,33 @@ public class advAutoR extends scrap {
     //    motorFrontLeft.setPower(-0.8);
     //    motorFrontRight.setPower(-0.8);
     //}
-
+    public void correct(){
+        boolean pressed = touchSensor.isPressed();
+        while (!pressed) {
+            pressed = touchSensor.isPressed();
+            if (pressed) {
+                break;
+            }
+            encoderDrive(1, 3, 3, 1);
+        }
+    }
+    public void getAllColor() {
+        //gives color values
+        NormalizedRGBA colors = colorSensor.getNormalizedColors();
+        Color.colorToHSV(colors.toColor(), hsvValues);
+        getColorRGB(colors.red, colors.green, colors.blue);
+        telemetry.addLine()
+                .addData("Red", "%.3f", colors.red)
+                .addData("Green", "%.3f", colors.green)
+                .addData("Blue", "%.3f", colors.blue)
+                .addData("Hue", "%.3f", hsvValues[0])
+                .addData("Saturation", "%.3f", hsvValues[1])
+                .addData("Value", "%.3f", hsvValues[2])
+                .addData("Alpha", "%.3f", colors.alpha);
+        telemetry.addLine()
+                .addData("Color", colorName)
+                .addData("RGB", "(" + redVal + "," + greenVal + "," + blueVal + ")");//shows rgb value
+    }
 
     public void runVu(int timeoutS, boolean giveSpot) {
         runtime.reset();
