@@ -87,17 +87,25 @@ public class advAutoR extends scrap {
     private DigitalChannel green2;
     //color
     final float[] hsvValues = new float[3];//gets values for color sensor
-    private float redVal = 0;//the red value in rgb
-    private float greenVal = 0;//the green value in rgb
-    private float blueVal = 0;//the blue value in rgb
+    private float   redValR = 0;//the red value in rgb
+    private float greenValR = 0;//the green value in rgb
+    private float  blueValR = 0;//the blue value in rgb
+    private float   redValL = 0;//the red value in rgb
+    private float greenValL = 0;//the green value in rgb
+    private float  blueValL = 0;//the blue value in rgb
     private String colorName = "N/A";//gets color name
-    NormalizedColorSensor colorSensor;//declaring the colorSensor variable
+    NormalizedColorSensor colorSensorR;//declaring the colorSensorR variable
+    NormalizedColorSensor colorSensorL;//declaring the colorSensorR variable
     public TouchSensor touchSensor;
     public boolean touchPressed = false;
     public int ovrCurrX = 2;
     public int ovrCurrY = 1;
     private final boolean bypassCam = true;
     public RevBlinkinLedDriver lights;
+    public DigitalChannel red1;
+    public DigitalChannel green1;
+    public DigitalChannel red3;
+    public DigitalChannel green3;
 
     @Override
     public void runOpMode() {
@@ -106,11 +114,14 @@ public class advAutoR extends scrap {
         lDistance = hardwareMap.get(DistanceSensor.class, "lDistance");
         fDistance = hardwareMap.get(DistanceSensor.class, "fDistance");
         bDistance = hardwareMap.get(DistanceSensor.class, "bDistance");
-        DigitalChannel red1 = hardwareMap.get(DigitalChannel.class, "red1");
-        DigitalChannel green1 = hardwareMap.get(DigitalChannel.class, "green1");
+        red1 = hardwareMap.get(DigitalChannel.class, "red1");
+        green1 = hardwareMap.get(DigitalChannel.class, "green1");
         red2 = hardwareMap.get(DigitalChannel.class, "red2");
         green2 = hardwareMap.get(DigitalChannel.class, "green2");
-        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
+        red3 = hardwareMap.get(DigitalChannel.class, "red3");
+        green3 = hardwareMap.get(DigitalChannel.class, "green3");
+        colorSensorR = hardwareMap.get(NormalizedColorSensor.class, "colorSensorR");
+        colorSensorL = hardwareMap.get(NormalizedColorSensor.class, "colorSensorL");
 
         motorFrontLeft = hardwareMap.get(DcMotor.class, "motorFrontLeft");
         motorBackLeft = hardwareMap.get(DcMotor.class, "motorBackLeft");
@@ -143,8 +154,12 @@ public class advAutoR extends scrap {
         motorBackLeft.setZeroPowerBehavior(BRAKE);
         motorFrontRight.setZeroPowerBehavior(BRAKE);
         motorFrontLeft.setZeroPowerBehavior(BRAKE);
+        red1.setMode(DigitalChannel.Mode.OUTPUT);
+        green1.setMode(DigitalChannel.Mode.OUTPUT);
         red2.setMode(DigitalChannel.Mode.OUTPUT);
         green2.setMode(DigitalChannel.Mode.OUTPUT);
+        red3.setMode(DigitalChannel.Mode.OUTPUT);
+        green3.setMode(DigitalChannel.Mode.OUTPUT);
 
         telemetry.addData("Starting at", "%7d :%7d",
                 motorBackRight.getCurrentPosition(),
@@ -163,6 +178,7 @@ public class advAutoR extends scrap {
         telemetry.update();
         closeClaw();
         // Wait for the game to start (driver presses PLAY)
+        sleep(300);
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
         waitForStart();
         if (opModeIsActive()) {
@@ -174,6 +190,26 @@ public class advAutoR extends scrap {
             }
             if (spot == 0) {
                 spot = (int) (Math.floor(Math.random() * (3 - 1 + 1) + 1));
+            }
+            if (spot==1){
+                green1.setState(true);
+                red1.setState(false);
+            }
+            else if (spot==2){
+                green2.setState(true);
+                red2.setState(false);
+            }
+            else if (spot==3){
+                green3.setState(true);
+                red3.setState(false);
+            }
+            else{
+                green1.setState(false);
+                red1.setState(false);
+                green2.setState(false);
+                red2.setState(false);
+                green3.setState(false);
+                red3.setState(false);
             }
             //branch 1
             advGoSpot(ovrCurrX, ovrCurrY, 2.1, 3.2 ,0.8, false, topPoleVal, false,
@@ -191,24 +227,22 @@ public class advAutoR extends scrap {
             closeClaw();
             sideWaysEncoderDrive(1, halfTile, 2);
             //should now be lined up with the cone stack
-            int stackDist = 36;//primary distance to go to stack
+            double stackDist = 26;//primary distance to go to stack
             encoderComboFwd(0.8, stackDist, stackDist, midPoleVal, 5, true);
-            ////!using color
-            //getAllColor();
+            ////!using color sensor to detect stack
             ////red colorInRange(redVal,0.36, greenVal,.25, blueVal,.16, (float) 0.05);
             ////blue colorInRange(redVal,0.12, greenVal,.27, blueVal,.47, (float) 0.05);
             //getAllColor();
             //boolean correctR = colorInRange(redVal,0.36, greenVal,.25, blueVal,.16, (float) 0.05);
             //boolean correctB = colorInRange(redVal,0.12, greenVal,.27, blueVal,.47, (float) 0.05);
             //while (!correctR || !correctB) {
-            //
             //    getAllColor();
             //    correctR = colorInRange(redVal,0.36, greenVal,.25, blueVal,.16, (float) 0.05);
             //    correctB = colorInRange(redVal,0.12, greenVal,.27, blueVal,.47, (float) 0.05);
             //}
             //!using touch
             correct();
-            armEncoder(fiveTallConeVal+100,1,3,true);
+            armEncoder(fiveTallConeVal+500,1,3,true);
             openClaw();
             armEncoder(fiveTallConeVal,1,3,true);
             closeClaw();
@@ -217,8 +251,9 @@ public class advAutoR extends scrap {
             //now has cone ready for next placement
             int repetitions = 1;
             double finished = 0;
-            halfTile=-6;
-            stackDist=25;
+            boolean parking = false;
+            halfTile=-7;
+            stackDist=24;
             //!not finished from here on
             while (repetitions >= 1) {
                 encoderComboFwd(0.8, -stackDist, -stackDist, topPoleVal, 6, false);//back up
@@ -229,17 +264,22 @@ public class advAutoR extends scrap {
                 closeClaw();
                 encoderComboFwd(1.0, stackDist, stackDist, midPoleVal+500, 4, true);//should be at cone stack after this
                 correct();
-                armEncoder(fiveTallConeVal - (coneSubtraction * finished)+100,1,3,true);
+                armEncoder(fiveTallConeVal - (coneSubtraction * finished)+500,1,3,true);
                 openClaw();
                 armEncoder(fiveTallConeVal - (coneSubtraction * finished),1,3,true);
+                sleep(300);
                 closeClaw();
                 // gets every pole val 5tall-((928/5)*finished poles)
                 armEncoder(midPoleVal+500, 1, 1, false);
-                repetitions -= 1;
-                finished += 1;
+                repetitions --;
+                finished ++;
+                if (repetitions<1) {
+                    parking=true;
+                    break;
+                }
             }
             encoderComboFwd(1, -stackDist, -stackDist, baseArmPosition, 3, true);//get to 2,3
-            stackDist=14;
+            stackDist=19;
             if (spot == 3) {
                 encoderDrive(1, stackDist,stackDist, 3);//opposite of 3 lines higher
             }
@@ -251,6 +291,21 @@ public class advAutoR extends scrap {
             }
             telemetry.update();
         }
+    }
+    public boolean colorInRange(float red, double targetR, float green, double targetG, float blue, double targetB, float range){
+        boolean rCheck=false;
+        boolean gCheck=false;
+        boolean bCheck=false;
+        if (targetR-range>red && red<targetR+range) {
+            rCheck=true;
+        }
+        if (targetG-range<green && green<targetG+range) {
+            gCheck=true;
+        }
+        if (targetB-range<blue && blue<targetB+range) {
+            bCheck=true;
+        }
+        return rCheck && gCheck && bCheck;
     }
     //precise if exact 180, if not, then use the following
     //final int actualF=50;
@@ -282,11 +337,23 @@ public class advAutoR extends scrap {
             encoderDrive(1, 3, 3, 1);
         }
     }
-    public void getAllColor() {
+    public void getColorRGBr(float red, float green, float blue) {
+        int mult=100;
+        redValR = (red * mult);
+        greenValR= (green * mult);
+        blueValR = (blue * mult);
+    }
+    public void getColorRGBl(float red, float green, float blue) {
+        int mult=100;
+        redValL = (red * mult);
+        greenValL= (green * mult);
+        blueValL = (blue * mult);
+    }
+    public void getAllColorR() {
         //gives color values
-        NormalizedRGBA colors = colorSensor.getNormalizedColors();
+        NormalizedRGBA colors = colorSensorR.getNormalizedColors();
         Color.colorToHSV(colors.toColor(), hsvValues);
-        getColorRGB(colors.red, colors.green, colors.blue);
+        getColorRGBr(colors.red, colors.green, colors.blue);
         telemetry.addLine()
                 .addData("Red", "%.3f", colors.red)
                 .addData("Green", "%.3f", colors.green)
@@ -297,7 +364,24 @@ public class advAutoR extends scrap {
                 .addData("Alpha", "%.3f", colors.alpha);
         telemetry.addLine()
                 .addData("Color", colorName)
-                .addData("RGB", "(" + redVal + "," + greenVal + "," + blueVal + ")");//shows rgb value
+                .addData("RGB", "(" + redValR + "," + greenValR + "," + blueValR + ")");//shows rgb value
+    }
+    public void getAllColorL() {
+        //gives color values
+        NormalizedRGBA colors = colorSensorL.getNormalizedColors();
+        Color.colorToHSV(colors.toColor(), hsvValues);
+        getColorRGBl(colors.red, colors.green, colors.blue);
+        telemetry.addLine()
+                .addData("Red", "%.3f", colors.red)
+                .addData("Green", "%.3f", colors.green)
+                .addData("Blue", "%.3f", colors.blue)
+                .addData("Hue", "%.3f", hsvValues[0])
+                .addData("Saturation", "%.3f", hsvValues[1])
+                .addData("Value", "%.3f", hsvValues[2])
+                .addData("Alpha", "%.3f", colors.alpha);
+        telemetry.addLine()
+                .addData("Color", colorName)
+                .addData("RGB", "(" + redValL + "," + greenValL + "," + blueValL + ")");//shows rgb value
     }
 
     public void runVu(int timeoutS, boolean giveSpot) {

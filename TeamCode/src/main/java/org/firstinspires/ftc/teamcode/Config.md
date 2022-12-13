@@ -24,7 +24,8 @@ Analog Device
 I2C Device
  - None
  - 2M Distance Sensor bDistance
- - Rev Color Sensor V3 colorSensor
+ - Rev Color Sensor V3 colorSensorR
+ - Rev Color Sensor V3 colorSensorL
  - None
 
 Expansion Hub

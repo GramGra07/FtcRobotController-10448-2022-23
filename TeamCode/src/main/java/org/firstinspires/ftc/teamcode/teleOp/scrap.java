@@ -81,7 +81,7 @@ public class scrap extends LinearOpMode {//declaring the class
     public final int baseArm = 100;//declaring the baseArm variable
     public static final int lowPoleVal = 1740;//should be about 1/3 of arm limit
     public static final int midPoleVal = 3100;//should be about 2/3 of arm limit
-    public static final int fiveTallConeVal = 500;
+    public static final int fiveTallConeVal = 380;
     public static final int topPoleVal = armLimit;//should be close to armLimit
     public boolean limiter = true;//declaring the limiter variable, is on or off
     public boolean limiting = false;//declaring the limiting variable
@@ -448,23 +448,6 @@ public class scrap extends LinearOpMode {//declaring the class
         final int min=0;
         final int max= favColors.length-1;
         return favColors[(int) Math.floor(Math.random() * (max - min + 1) + min)];
-    }
-    public void getAllColor() {
-        //gives color values
-        NormalizedRGBA colors = colorSensor.getNormalizedColors();
-        Color.colorToHSV(colors.toColor(), hsvValues);
-        getColorRGB(colors.red, colors.green, colors.blue);
-        telemetry.addLine()
-                .addData("Red", "%.3f", colors.red)
-                .addData("Green", "%.3f", colors.green)
-                .addData("Blue", "%.3f", colors.blue)
-                .addData("Hue", "%.3f", hsvValues[0])
-                .addData("Saturation", "%.3f", hsvValues[1])
-                .addData("Value", "%.3f", hsvValues[2])
-                .addData("Alpha", "%.3f", colors.alpha);
-        telemetry.addLine()
-                .addData("Color", colorName)
-                .addData("RGB", "(" + redVal + "," + greenVal + "," + blueVal + ")");//shows rgb value
     }
 
     public void setUniPower(double power) {
@@ -1044,27 +1027,6 @@ public class scrap extends LinearOpMode {//declaring the class
         int inches = (turn / mult);
         encoderDrive(0.65, -inches, inches, 6);
         resetEncoders();
-    }
-    public boolean colorInRange(float red, double targetR, float green, double targetG, float blue, double targetB, float range){
-        boolean rCheck=false;
-        boolean gCheck=false;
-        boolean bCheck=false;
-        if (targetR-range<red && red>targetR+range) {
-            rCheck=true;
-        }
-        if (targetG-range<green && green>targetG+range) {
-            gCheck=true;
-        }
-        if (targetB-range<blue && blue>targetB+range) {
-            bCheck=true;
-        }
-        return rCheck && gCheck && bCheck;
-    }
-    public void getColorRGB(float red, float green, float blue) {
-        int mult=100;
-        redVal = (red * mult);
-        greenVal= (green * mult);
-        blueVal = (blue * mult);
     }
 
     public void runVu(int timeoutS, boolean giveSpot) {
