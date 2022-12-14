@@ -99,7 +99,6 @@ public class TouchTest extends advAutoR {
         rDistance = hardwareMap.get(DistanceSensor.class, "rDistance");
         lDistance = hardwareMap.get(DistanceSensor.class, "lDistance");
         fDistance = hardwareMap.get(DistanceSensor.class, "fDistance");
-        bDistance = hardwareMap.get(DistanceSensor.class, "bDistance");
         DigitalChannel red1 = hardwareMap.get(DigitalChannel.class, "red1");
         DigitalChannel green1 = hardwareMap.get(DigitalChannel.class, "green1");
         red2 = hardwareMap.get(DigitalChannel.class, "red2");
