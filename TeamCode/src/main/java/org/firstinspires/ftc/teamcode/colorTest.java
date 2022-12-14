@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Objects;
 
 @TeleOp(name = "colorTest", group = "Robot")
-//@Disabled
+@Disabled
 public class colorTest extends scrap {
     public int turn = 77;
 
@@ -204,34 +204,34 @@ public class colorTest extends scrap {
         double redTargetGL = 0.003;//the green value in rgb
         double redTargetBL = 0.002;//the blue value in rgb
         //right
-        double blueTargetRR = 0.001;//the red value in rgb
-        double blueTargetGR = 0.003;//the green value in rgb
-        double blueTargetBR = 0.0038;//the blue value in rgb
+        double blueTargetRR = 0.002;//the red value in rgb
+        double blueTargetGR = 0.004;//the green value in rgb
+        double blueTargetBR = 0.005;//the blue value in rgb
         //left
-        double blueTargetRL = 0.002;//the red value in rgb
-        double blueTargetGL = 0.004;//the green value in rgb
-        double blueTargetBL = 0.005;//the blue value in rgb
+        double blueTargetRL = 0.001;//the red value in rgb
+        double blueTargetGL = 0.003;//the green value in rgb
+        double blueTargetBL = 0.0038;//the blue value in rgb
         double range = 0.0005;
-        //right
-        while (colorInRange(redValR,redTargetRR, greenValR,redTargetGR, blueValR,redTargetBR, (float) range)
-                || colorInRange(redValR,blueTargetRR, greenValR,blueTargetGR, blueValR,blueTargetBR, (float) range)){
-            //right side has seen red or blue
-            getAllColorR();
-            sideWaysEncoderDrive(1, 0.25, 1);//go left
-            if (!colorInRange(redValR,redTargetRR, greenValR,redTargetGR, blueValR,redTargetBR, (float) range)
-                    && !colorInRange(redValR,blueTargetRR, greenValR,blueTargetGR, blueValR,blueTargetBR, (float) range)){
-                //right side has seen neither red nor blue
-                break;
-            }
-        }
         //left
         while (colorInRange(redValL,redTargetRL, greenValL,redTargetGL, blueValL,redTargetBL, (float) range)
-                || colorInRange(redValL,blueTargetRL, greenValL,blueTargetGL, blueValL,blueTargetBL, (float) range)){
-            //left side has seen red or blue
-            getAllColorL();
-            sideWaysEncoderDrive(1, -0.25, 1);//go right
+                || colorInRange(redValL,blueTargetRL, greenValL,blueTargetGL, blueValL,blueTargetBL, (float) range)
+                || colorInRange(redValR,redTargetRR, greenValR,redTargetGR, blueValR,redTargetBR, (float) range)
+                || colorInRange(redValR,blueTargetRR, greenValR,blueTargetGR, blueValR,blueTargetBR, (float) range)){
+            if ((colorInRange(redValR,redTargetRR, greenValR,redTargetGR, blueValR,redTargetBR, (float) range)
+                    || colorInRange(redValR,blueTargetRR, greenValR,blueTargetGR, blueValR,blueTargetBR, (float) range))){
+                getAllColorR();
+                sideWaysEncoderDrive(1, 0.25, 0.4);//go left
+                //right side has seen red or blue
+            }
+            if (colorInRange(redValL,redTargetRL, greenValL,redTargetGL, blueValL,redTargetBL, (float) range)
+                    || colorInRange(redValL,blueTargetRL, greenValL,blueTargetGL, blueValL,blueTargetBL, (float) range)){
+                getAllColorL();
+                sideWaysEncoderDrive(1, -0.25, 0.4);//go right
+            }
             if (!colorInRange(redValL,redTargetRL, greenValL,redTargetGL, blueValL,redTargetBL, (float) range)
-                    || !colorInRange(redValL,blueTargetRL, greenValL,blueTargetGL, blueValL,blueTargetBL, (float) range)){
+                    || !colorInRange(redValL,blueTargetRL, greenValL,blueTargetGL, blueValL,blueTargetBL, (float) range)
+                    || !colorInRange(redValR,redTargetRR, greenValR,redTargetGR, blueValR,redTargetBR, (float) range)
+                    || !colorInRange(redValR,blueTargetRR, greenValR,blueTargetGR, blueValR,blueTargetBR, (float) range)){
                 break;
             }
         }
@@ -251,12 +251,6 @@ public class colorTest extends scrap {
             bCheck=true;
         }
         return rCheck && gCheck && bCheck;
-    }
-    public void getColorRGBl(float red, float green, float blue) {
-        int mult=100;
-        redValL = (red * mult);
-        greenValL= (green * mult);
-        blueValL = (blue * mult);
     }
     public void getAllColorR() {
         //gives color values

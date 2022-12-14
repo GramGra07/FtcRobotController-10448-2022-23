@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.teleOp;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
@@ -36,7 +36,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 @TeleOp(name = "imuTest", group = "Robot")
-//@Disabled
+@Disabled
 public class imuTest extends scrap {
     public int turn = 77;
 
@@ -200,12 +200,23 @@ public class imuTest extends scrap {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         while (opModeIsActive()) {
-            //int targetAngle = 90;
-            //correctByImu(angles.secondAngle,targetAngle);
+            telemetry.addData("heading", angles.firstAngle);
             telemetry.update();
         }
     }
     //!added
+    public int refreshHeading(float usedAngle, double alterHeading){
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        int trueHeading = (int) ((int) usedAngle-alterHeading);
+        if (trueHeading < 0) {
+            trueHeading = 360 + trueHeading;
+        }
+        telemetry.addData("heading", trueHeading);
+        telemetry.addData("usedAngle", usedAngle);
+        telemetry.addData("alterHeading", alterHeading);
+        telemetry.update();
+        return -trueHeading;
+    }
     public void correctByImu(float currentAngle, int targetAngle) {
         int angle = (int) (targetAngle - currentAngle);
         turn(angle);

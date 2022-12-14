@@ -4,6 +4,8 @@ import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
 import android.graphics.Color;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -16,13 +18,22 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
+import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.teleOp.scrap;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 
 @Autonomous(name = "advAutoR", group = "Robot")
@@ -106,6 +117,9 @@ public class advAutoR extends scrap {
     public DigitalChannel green1;
     public DigitalChannel red3;
     public DigitalChannel green3;
+    public BNO055IMU imu;    //imu module inside expansion hub
+    public Orientation angles;     //imu uses these to find angles and classify them
+    public Acceleration gravity;    //Imu uses to get acceleration
 
     @Override
     public void runOpMode() {
@@ -160,6 +174,19 @@ public class advAutoR extends scrap {
         red3.setMode(DigitalChannel.Mode.OUTPUT);
         green3.setMode(DigitalChannel.Mode.OUTPUT);
 
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        gravity = imu.getGravity();
+        imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
+
         telemetry.addData("Starting at", "%7d :%7d",
                 motorBackRight.getCurrentPosition(),
                 motorBackLeft.getCurrentPosition(),
@@ -181,8 +208,12 @@ public class advAutoR extends scrap {
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
         waitForStart();
         if (opModeIsActive()) {
+            final double alterHeading =0;
+            int trueHeading = refreshHeading(-angles.firstAngle,alterHeading);
+            //correctByImu(refreshHeading(-angles.firstAngle,alterHeading),180);
+            //
             lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
-            final int rotation = 92;
+            final int rotation = -120;
             final double coneSubtraction = (fiveTallConeVal * 0.2);
             if (!bypassCam) {
                 runVu(6, true);
@@ -211,36 +242,27 @@ public class advAutoR extends scrap {
                 red3.setState(false);
             }
             //branch 1
-            advGoSpot(ovrCurrX, ovrCurrY, 2.1, 3.2 ,0.8, false, topPoleVal, false,
-                    "|", 1, true, -rotation, false, false, null, 0,
+            advGoSpot(ovrCurrX, ovrCurrY, 2.2, 3.2 ,0.8, false, topPoleVal, false,
+                    "|", 1, false, -rotation, false, false, null, 0,
                     false, null, 0, false);
                         //by now should be at pole, facing it with arm extended to top
+            correctByImu(refreshHeading(-angles.firstAngle,alterHeading),rotation);
             //branch 2
             armEncoder(topPoleVal,1,3,false);
             sideWaysEncoderDrive(1,-1,0.5);
-            encoderDrive(1,-0.5,-0.5,1);
+            encoderDrive(1,-1,-1,1);
             openClaw();
             //branch 3
-            double halfTile = 3.0;
-            turn(12);
+            double halfTile = 4.0;
+            int turn = 12;
+            turn(turn);
+            correctByImu(refreshHeading(-angles.firstAngle,alterHeading),turn);
             closeClaw();
             sideWaysEncoderDrive(1, halfTile, 2);
             //should now be lined up with the cone stack
-            double stackDist = 26;//primary distance to go to stack
+            double stackDist = 20;//primary distance to go to stack
             encoderComboFwd(0.8, stackDist, stackDist, midPoleVal, 5, true);
-            ////!using color sensor to detect stack
-            ////red colorInRange(redVal,0.36, greenVal,.25, blueVal,.16, (float) 0.05);
-            ////blue colorInRange(redVal,0.12, greenVal,.27, blueVal,.47, (float) 0.05);
-            //getAllColor();
-            //boolean correctR = colorInRange(redVal,0.36, greenVal,.25, blueVal,.16, (float) 0.05);
-            //boolean correctB = colorInRange(redVal,0.12, greenVal,.27, blueVal,.47, (float) 0.05);
-            //while (!correctR || !correctB) {
-            //    getAllColor();
-            //    correctR = colorInRange(redVal,0.36, greenVal,.25, blueVal,.16, (float) 0.05);
-            //    correctB = colorInRange(redVal,0.12, greenVal,.27, blueVal,.47, (float) 0.05);
-            //}
-            //!using touch
-            correct();
+            correctToCones();
             armEncoder(fiveTallConeVal+500,1,3,true);
             openClaw();
             armEncoder(fiveTallConeVal,1,3,true);
@@ -252,9 +274,9 @@ public class advAutoR extends scrap {
             double finished = 0;
             boolean parking = false;
             halfTile=-7;
-            stackDist=24;
+            stackDist=16;
             //!not finished from here on
-            while (repetitions >= 1) {
+            for (int i = 1; i<=repetitions; repetitions++) {
                 encoderComboFwd(0.8, -stackDist, -stackDist, topPoleVal, 6, false);//back up
                 sideWaysEncoderDrive(1, halfTile, 3);
                 openClaw();
@@ -262,7 +284,7 @@ public class advAutoR extends scrap {
                 turn(-10);
                 closeClaw();
                 encoderComboFwd(1.0, stackDist, stackDist, midPoleVal+500, 4, true);//should be at cone stack after this
-                correct();
+                correctToCones();
                 armEncoder(fiveTallConeVal - (coneSubtraction * finished)+500,1,3,true);
                 openClaw();
                 armEncoder(fiveTallConeVal - (coneSubtraction * finished),1,3,true);
@@ -270,12 +292,8 @@ public class advAutoR extends scrap {
                 closeClaw();
                 // gets every pole val 5tall-((928/5)*finished poles)
                 armEncoder(midPoleVal+500, 1, 1, false);
-                repetitions --;
+                //repetitions --;
                 finished ++;
-                if (repetitions<1) {
-                    parking=true;
-                    break;
-                }
             }
             encoderComboFwd(1, -stackDist, -stackDist, baseArmPosition, 3, true);//get to 2,3
             stackDist=19;
@@ -291,15 +309,122 @@ public class advAutoR extends scrap {
             telemetry.update();
         }
     }
-
-    public void correct(){
+    public void correctToCones(){
+        correctByImu(refreshHeading(-angles.firstAngle,0),-90-12);
+        correctByColor();
+        correctByTouch();
+    }
+    public void correctByColor(){
+        lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
+        getAllColorR();
+        getAllColorL();
+        NormalizedRGBA colorsR = colorSensorR.getNormalizedColors();
+        Color.colorToHSV(colorsR.toColor(), hsvValues);
+        NormalizedRGBA colors = colorSensorL.getNormalizedColors();
+        Color.colorToHSV(colors.toColor(), hsvValues);
+        float redValR = colorsR.red;//the red value in rgb
+        float greenValR = colorsR.green;//the green value in rgb
+        float blueValR = colorsR.blue;//the blue value in rgb
+        float redValL = colors.red;//the red value in rgb
+        float greenValL = colors.green;//the green value in rgb
+        float blueValL = colors.blue;//the blue value in rgb
+        //right
+        double redTargetRR = 0.003;//the red value in rgb
+        double redTargetGR = 0.004;//the green value in rgb
+        double redTargetBR = 0.003;//the blue value in rgb
+        //left
+        double redTargetRL = 0.003;//the red value in rgb
+        double redTargetGL = 0.003;//the green value in rgb
+        double redTargetBL = 0.002;//the blue value in rgb
+        //right
+        double blueTargetRR = 0.002;//the red value in rgb
+        double blueTargetGR = 0.004;//the green value in rgb
+        double blueTargetBR = 0.005;//the blue value in rgb
+        //left
+        double blueTargetRL = 0.001;//the red value in rgb
+        double blueTargetGL = 0.003;//the green value in rgb
+        double blueTargetBL = 0.0038;//the blue value in rgb
+        double range = 0.0005;
+        //left
+        while (colorInRange(redValL,redTargetRL, greenValL,redTargetGL, blueValL,redTargetBL, (float) range)
+                || colorInRange(redValL,blueTargetRL, greenValL,blueTargetGL, blueValL,blueTargetBL, (float) range)
+                || colorInRange(redValR,redTargetRR, greenValR,redTargetGR, blueValR,redTargetBR, (float) range)
+                || colorInRange(redValR,blueTargetRR, greenValR,blueTargetGR, blueValR,blueTargetBR, (float) range)){
+            if ((colorInRange(redValR,redTargetRR, greenValR,redTargetGR, blueValR,redTargetBR, (float) range)
+                    || colorInRange(redValR,blueTargetRR, greenValR,blueTargetGR, blueValR,blueTargetBR, (float) range))){
+                getAllColorR();
+                sideWaysEncoderDrive(1, 0.25, 0.4);//go left
+                //right side has seen red or blue
+            }
+            if (colorInRange(redValL,redTargetRL, greenValL,redTargetGL, blueValL,redTargetBL, (float) range)
+                    || colorInRange(redValL,blueTargetRL, greenValL,blueTargetGL, blueValL,blueTargetBL, (float) range)){
+                getAllColorL();
+                sideWaysEncoderDrive(1, -0.25, 0.4);//go right
+            }
+            if (!colorInRange(redValL,redTargetRL, greenValL,redTargetGL, blueValL,redTargetBL, (float) range)
+                    || !colorInRange(redValL,blueTargetRL, greenValL,blueTargetGL, blueValL,blueTargetBL, (float) range)
+                    || !colorInRange(redValR,redTargetRR, greenValR,redTargetGR, blueValR,redTargetBR, (float) range)
+                    || !colorInRange(redValR,blueTargetRR, greenValR,blueTargetGR, blueValR,blueTargetBR, (float) range)){
+                break;
+            }
+        }
+        lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
+    }
+    public boolean colorInRange(float red, double targetR, float green, double targetG, float blue, double targetB, float range){
+        boolean rCheck=false;
+        boolean gCheck=false;
+        boolean bCheck=false;
+        if (targetR-range<red && red<targetR+range) {
+            rCheck=true;
+        }
+        if (targetG-range<green && green<targetG+range) {
+            gCheck=true;
+        }
+        if (targetB-range<blue && blue<targetB+range) {
+            bCheck=true;
+        }
+        return rCheck && gCheck && bCheck;
+    }
+    public void getAllColorR() {
+        //gives color values
+        NormalizedRGBA colorsR = colorSensorR.getNormalizedColors();
+        Color.colorToHSV(colorsR.toColor(), hsvValues);
+        telemetry.addLine()
+                .addData("Red", "%.3f", colorsR.red)
+                .addData("Green", "%.3f", colorsR.green)
+                .addData("Blue", "%.3f", colorsR.blue)
+                .addData("Hue", "%.3f", hsvValues[0])
+                .addData("Saturation", "%.3f", hsvValues[1])
+                .addData("Value", "%.3f", hsvValues[2])
+                .addData("Alpha", "%.3f", colorsR.alpha);
+        telemetry.addLine()
+                .addData("Color", colorName)
+                .addData("RGB", "(" + redValR + "," + greenValR + "," + blueValR + ")");//shows rgb value
+    }
+    public void getAllColorL() {
+        //gives color values
+        NormalizedRGBA colors = colorSensorL.getNormalizedColors();
+        Color.colorToHSV(colors.toColor(), hsvValues);
+        telemetry.addLine()
+                .addData("Red", "%.3f", colors.red)
+                .addData("Green", "%.3f", colors.green)
+                .addData("Blue", "%.3f", colors.blue)
+                .addData("Hue", "%.3f", hsvValues[0])
+                .addData("Saturation", "%.3f", hsvValues[1])
+                .addData("Value", "%.3f", hsvValues[2])
+                .addData("Alpha", "%.3f", colors.alpha);
+        telemetry.addLine()
+                .addData("Color", colorName)
+                .addData("RGB", "(" + redValL + "," + greenValL + "," + blueValL + ")");//shows rgb value
+    }
+    public void correctByTouch(){
         boolean pressed = touchSensor.isPressed();
         while (!pressed) {
             pressed = touchSensor.isPressed();
             if (pressed) {
                 break;
             }
-            encoderDrive(1, 3, 3, 1);
+            encoderDrive(1, 6, 6, 1);
         }
     }
     public void runVu(int timeoutS, boolean giveSpot) {
@@ -392,5 +517,75 @@ public class advAutoR extends scrap {
         final int min=0;
         final int max= favColors.length-1;
         return favColors[(int) Math.floor(Math.random() * (max - min + 1) + min)];
+    }
+    public int refreshHeading(float usedAngle, double alterHeading){
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        int trueHeading = (int) ((int) usedAngle-alterHeading);
+        if (trueHeading < 0) {
+            trueHeading = 360 + trueHeading;
+        }
+        telemetry.addData("heading", trueHeading);
+        telemetry.addData("usedAngle", usedAngle);
+        telemetry.addData("alterHeading", alterHeading);
+        telemetry.update();
+        return -trueHeading;
+    }
+    public void correctByImu(float currentAngle, int targetAngle) {
+        int angle = (int) (targetAngle - currentAngle);
+        turn(angle);
+    }
+    void composeTelemetry() {
+        // At the beginning of each telemetry update, grab a bunch of data
+        // from the IMU that we will then display in separate lines.
+        telemetry.addAction(new Runnable() {
+            @Override
+            public void run() {
+                // Acquiring the angles is relatively expensive; we don't want
+                // to do that in each of the three items that need that info, as that's
+                // three times the necessary expense.
+                angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+                gravity = imu.getGravity();
+            }
+        });
+
+        telemetry.addLine()
+                .addData("status", new Func<String>() {
+                    @Override
+                    public String value() {
+                        return imu.getSystemStatus().toShortString();
+                    }
+                })
+                .addData("calib", new Func<String>() {
+                    @Override
+                    public String value() {
+                        return imu.getCalibrationStatus().toString();
+                    }
+                });
+        telemetry.addLine()
+                .addData("heading", new Func<String>() {
+                    @Override
+                    public String value() {
+                        return formatAngle(angles.angleUnit, angles.firstAngle);
+                    }
+                })
+                .addData("roll", new Func<String>() {
+                    @Override
+                    public String value() {
+                        return formatAngle(angles.angleUnit, angles.secondAngle);
+                    }
+                })
+                .addData("pitch", new Func<String>() {
+                    @Override
+                    public String value() {
+                        return formatAngle(angles.angleUnit, angles.thirdAngle);
+                    }
+                });
+    }
+    String formatAngle(AngleUnit angleUnit, double angle) {
+        return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
+    }
+
+    String formatDegrees(double degrees) {
+        return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
     }
 }
