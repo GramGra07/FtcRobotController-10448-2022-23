@@ -94,8 +94,8 @@ public class advAutoR extends scrap {
     private float greenValL = 0;//the green value in rgb
     private float  blueValL = 0;//the blue value in rgb
     private String colorName = "N/A";//gets color name
-    NormalizedColorSensor colorSensorR;//declaring the colorSensorR variable
-    NormalizedColorSensor colorSensorL;//declaring the colorSensorR variable
+    public NormalizedColorSensor colorSensorR;//declaring the colorSensorR variable
+    public NormalizedColorSensor colorSensorL;//declaring the colorSensorR variable
     public TouchSensor touchSensor;
     public boolean touchPressed = false;
     public int ovrCurrX = 2;
@@ -113,7 +113,6 @@ public class advAutoR extends scrap {
         rDistance = hardwareMap.get(DistanceSensor.class, "rDistance");
         lDistance = hardwareMap.get(DistanceSensor.class, "lDistance");
         fDistance = hardwareMap.get(DistanceSensor.class, "fDistance");
-        bDistance = hardwareMap.get(DistanceSensor.class, "bDistance");
         red1 = hardwareMap.get(DigitalChannel.class, "red1");
         green1 = hardwareMap.get(DigitalChannel.class, "green1");
         red2 = hardwareMap.get(DigitalChannel.class, "red2");
@@ -292,68 +291,7 @@ public class advAutoR extends scrap {
             telemetry.update();
         }
     }
-    public void correctByColor(){
-        getAllColorR();
-        getAllColorL();
-        //right
-        while (colorInRange(redValR,0.36, greenValR,.25, blueValR,.16, (float) 0.05)
-        || colorInRange(redValR,0.12, greenValR,.27, blueValR,.47, (float) 0.05)){
-            //right side has seen red or blue
-            getAllColorR();
-            sideWaysEncoderDrive(1, -0.5, 1);//go left
-            if (!colorInRange(redValR,0.36, greenValR,.25, blueValR,.16, (float) 0.05)
-                    && !colorInRange(redValR,0.12, greenValR,.27, blueValR,.47, (float) 0.05)){
-                //right side has seen neither red nor blue
-                break;
-            }
-        }
-        //left
-        while (colorInRange(redValL,0.36, greenValL,.25, blueValL,.16, (float) 0.05)
-        || colorInRange(redValL,0.12, greenValL,.27, blueValL,.47, (float) 0.05)){
-            //left side has seen red or blue
-            getAllColorL();
-            sideWaysEncoderDrive(1, 0.5, 1);//go right
-            if (!colorInRange(redValL,0.36, greenValL,.25, blueValL,.16, (float) 0.05)
-                || !colorInRange(redValL,0.12, greenValL,.27, blueValL,.47, (float) 0.05)){
-                break;
-            }
-        }
-    }
-    public boolean colorInRange(float red, double targetR, float green, double targetG, float blue, double targetB, float range){
-        boolean rCheck=false;
-        boolean gCheck=false;
-        boolean bCheck=false;
-        if (targetR-range>red && red<targetR+range) {
-            rCheck=true;
-        }
-        if (targetG-range<green && green<targetG+range) {
-            gCheck=true;
-        }
-        if (targetB-range<blue && blue<targetB+range) {
-            bCheck=true;
-        }
-        return rCheck && gCheck && bCheck;
-    }
-    //precise if exact 180, if not, then use the following
-    //final int actualF=50;
-    //final int actualR=100;
-    //final int actualL=44;
-    //double myMagic2;
-    //if ( fDistance.getDistance(DistanceUnit.INCH)<actualF){
-    //    myMagic2=actualF-fDistance.getDistance(DistanceUnit.INCH);
-    //    encoderDrive(0.75,-myMagic2,-myMagic2,3);
-    //}
-    //the following
-    //while(fDistance.getDistance(DistanceUnit.INCH)<actualF){
-    //    telemetry.addData("is working",fDistance.getDistance(DistanceUnit.INCH)<actualF);
-    //    telemetry.addData("inches",fDistance.getDistance(DistanceUnit.INCH));
-    //    telemetry.addData("actualF",actualF);
-    //    telemetry.update();
-    //    motorBackLeft.setPower(-0.8);
-    //    motorBackRight.setPower(-0.8);
-    //    motorFrontLeft.setPower(-0.8);
-    //    motorFrontRight.setPower(-0.8);
-    //}
+
     public void correct(){
         boolean pressed = touchSensor.isPressed();
         while (!pressed) {
@@ -364,53 +302,6 @@ public class advAutoR extends scrap {
             encoderDrive(1, 3, 3, 1);
         }
     }
-    public void getColorRGBr(float red, float green, float blue) {
-        int mult=100;
-        redValR = (red * mult);
-        greenValR= (green * mult);
-        blueValR = (blue * mult);
-    }
-    public void getColorRGBl(float red, float green, float blue) {
-        int mult=100;
-        redValL = (red * mult);
-        greenValL= (green * mult);
-        blueValL = (blue * mult);
-    }
-    public void getAllColorR() {
-        //gives color values
-        NormalizedRGBA colors = colorSensorR.getNormalizedColors();
-        Color.colorToHSV(colors.toColor(), hsvValues);
-        getColorRGBr(colors.red, colors.green, colors.blue);
-        telemetry.addLine()
-                .addData("Red", "%.3f", colors.red)
-                .addData("Green", "%.3f", colors.green)
-                .addData("Blue", "%.3f", colors.blue)
-                .addData("Hue", "%.3f", hsvValues[0])
-                .addData("Saturation", "%.3f", hsvValues[1])
-                .addData("Value", "%.3f", hsvValues[2])
-                .addData("Alpha", "%.3f", colors.alpha);
-        telemetry.addLine()
-                .addData("Color", colorName)
-                .addData("RGB", "(" + redValR + "," + greenValR + "," + blueValR + ")");//shows rgb value
-    }
-    public void getAllColorL() {
-        //gives color values
-        NormalizedRGBA colors = colorSensorL.getNormalizedColors();
-        Color.colorToHSV(colors.toColor(), hsvValues);
-        getColorRGBl(colors.red, colors.green, colors.blue);
-        telemetry.addLine()
-                .addData("Red", "%.3f", colors.red)
-                .addData("Green", "%.3f", colors.green)
-                .addData("Blue", "%.3f", colors.blue)
-                .addData("Hue", "%.3f", hsvValues[0])
-                .addData("Saturation", "%.3f", hsvValues[1])
-                .addData("Value", "%.3f", hsvValues[2])
-                .addData("Alpha", "%.3f", colors.alpha);
-        telemetry.addLine()
-                .addData("Color", colorName)
-                .addData("RGB", "(" + redValL + "," + greenValL + "," + blueValL + ")");//shows rgb value
-    }
-
     public void runVu(int timeoutS, boolean giveSpot) {
         runtime.reset();
         while (opModeIsActive() && (spot == 0)) {
