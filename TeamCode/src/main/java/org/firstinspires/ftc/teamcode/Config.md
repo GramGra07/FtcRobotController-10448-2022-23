@@ -22,8 +22,8 @@ Digital Device
 Analog Device
  - None
 I2C Device
- - None
  - Rev Color Sensor V3 colorSensorR
+ - None
  - None
  - Rev Color Sensor V3 colorSensorL
  - None
