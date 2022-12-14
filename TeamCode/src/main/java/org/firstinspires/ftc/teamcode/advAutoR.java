@@ -310,7 +310,7 @@ public class advAutoR extends scrap {
         }
     }
     public void correctToCones(){
-        correctByImu(refreshHeading(-angles.firstAngle,0),-90-12);
+        correctByImu(refreshHeading(-angles.firstAngle,0),-90+12);
         correctByColor();
         correctByTouch();
     }
