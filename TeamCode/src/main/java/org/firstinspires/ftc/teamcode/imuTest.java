@@ -200,11 +200,16 @@ public class imuTest extends scrap {
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
         while (opModeIsActive()) {
-            composeTelemetry();
+            //int targetAngle = 90;
+            //correctByImu(angles.secondAngle,targetAngle);
             telemetry.update();
         }
     }
     //!added
+    public void correctByImu(float currentAngle, int targetAngle) {
+        int angle = (int) (targetAngle - currentAngle);
+        turn(angle);
+    }
     void composeTelemetry() {
         // At the beginning of each telemetry update, grab a bunch of data
         // from the IMU that we will then display in separate lines.
