@@ -213,7 +213,7 @@ public class advAutoR extends scrap {
             //correctByImu(refreshHeading(-angles.firstAngle,alterHeading),180);
             //
             lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
-            final int rotation = -120;
+            final int rotation = -90;
             final double coneSubtraction = (fiveTallConeVal * 0.2);
             if (!bypassCam) {
                 runVu(6, true);
@@ -239,52 +239,49 @@ public class advAutoR extends scrap {
                 red3.setState(false);
             }
             //branch 1
-            advGoSpot(ovrCurrX, ovrCurrY, 2.2, 3.2, 0.8, false, topPoleVal, false,
+            advGoSpot(ovrCurrX, ovrCurrY, 2.1, 3.46, 0.6, false, topPoleVal, false,
                     "|", 1, false, -rotation, false, false, null, 0,
                     false, null, 0, false);
             //by now should be at pole, facing it with arm extended to top
             correctByImu(refreshHeading(-angles.firstAngle, alterHeading), rotation);
             //branch 2
             armEncoder(topPoleVal, 1, 3, false);
-            sideWaysEncoderDrive(1, -1, 0.5);
-            encoderDrive(1, -1, -1, 1);
             openClaw();
+            sleep(200);
             //branch 3
-            double halfTile = 4.0;
-            int turn = 12;
-            turn(turn);
-            correctByImu(refreshHeading(-angles.firstAngle, alterHeading), turn);
+            double halfTile = 6.5;
             closeClaw();
-            sideWaysEncoderDrive(1, halfTile, 2);
+            sideWaysEncoderDrive(1, halfTile+1, 2);
             //should now be lined up with the cone stack
             double stackDist = 20;//primary distance to go to stack
-            encoderComboFwd(0.8, stackDist, stackDist, midPoleVal, 5, true);
+            encoderComboFwd(0.8, stackDist, stackDist, midPoleVal, 4, true);
+            correctByImu(angles.firstAngle,-12);
             correctToCones();
             armEncoder(fiveTallConeVal + 500, 1, 3, true);
             openClaw();
-            armEncoder(fiveTallConeVal, 1, 3, true);
+            armEncoder(fiveTallConeVal, 1, 1, true);
+            sleep(500);
             closeClaw();
             armEncoder(midPoleVal + 500, 1, 3, false);//clear gap
             //branch 4
-            //now has cone ready for next placement
-            int repetitions = 1;
+            //now has cone ready for next placement;
             double finished = 0;
-            boolean parking = false;
-            halfTile = -7;
-            stackDist = 16;
+            int repetitions=1;
+            halfTile = -halfTile;
+            stackDist=23.5;
             //!not finished from here on
-            for (int i = 1; i <= repetitions; repetitions++) {
-                encoderComboFwd(0.8, -stackDist, -stackDist, topPoleVal, 6, false);//back up
-                sideWaysEncoderDrive(1, halfTile, 3);
+            for (int i = repetitions; i > 0; i--) {
+                encoderComboFwd(1, -stackDist, -stackDist, topPoleVal, 6, false);//back up
+                sideWaysEncoderDrive(1, halfTile, 1);
                 openClaw();
                 sideWaysEncoderDrive(1, -halfTile, 1);
-                turn(-10);
+                correctByImu(angles.firstAngle,-12);
                 closeClaw();
-                encoderComboFwd(1.0, stackDist, stackDist, midPoleVal + 500, 4, true);//should be at cone stack after this
+                encoderComboFwd(1.0, stackDist, stackDist, midPoleVal + 500, 6, true);//should be at cone stack after this
                 correctToCones();
-                armEncoder(fiveTallConeVal - (coneSubtraction * finished) + 500, 1, 3, true);
+                armEncoder(fiveTallConeVal - (coneSubtraction * finished) + 500, 1, 2, true);
                 openClaw();
-                armEncoder(fiveTallConeVal - (coneSubtraction * finished), 1, 3, true);
+                armEncoder(fiveTallConeVal - (coneSubtraction * finished), 1, 2, true);
                 sleep(300);
                 closeClaw();
                 // gets every pole val 5tall-((928/5)*finished poles)
@@ -308,11 +305,9 @@ public class advAutoR extends scrap {
     }
 
     public void correctToCones() {
-        correctByImu(refreshHeading(-angles.firstAngle, 0), -90 + 12);
         correctByColor();
         correctByTouch();
     }
-
     public void correctByColor() {
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
         getAllColorR();

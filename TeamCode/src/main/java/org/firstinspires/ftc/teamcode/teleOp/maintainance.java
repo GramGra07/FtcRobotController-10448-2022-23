@@ -90,7 +90,6 @@ public class maintainance extends scrap {
         green3 = hardwareMap.get(DigitalChannel.class, "green3");//getting the green3 light
         red4 = hardwareMap.get(DigitalChannel.class, "red4");//getting the red4 light
         green4 = hardwareMap.get(DigitalChannel.class, "green4");//getting the green4 light
-        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensor");
         touchSensor = hardwareMap.get(TouchSensor.class, ("touchSensor"));
         touchSensorFlipper = hardwareMap.get(TouchSensor.class, ("touchSensorFlipper"));
         touchSensorClaw = hardwareMap.get(   TouchSensor.class, ("touchSensorClaw"));
