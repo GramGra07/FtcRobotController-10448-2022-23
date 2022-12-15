@@ -2,8 +2,6 @@ package org.firstinspires.ftc.teamcode.teleOp;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
-import android.graphics.Color;
-
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -12,7 +10,6 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -23,6 +20,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.teamcode.testOpModes.distanceSensorCalibrator;
 
 import java.util.List;
 import java.util.Objects;
@@ -154,8 +152,8 @@ public class scrap extends LinearOpMode {//declaring the class
     public TouchSensor touchSensor;
     //isRight side
     public boolean right = true;//declaring the right variable
-    public final int baseEject=0;
-    public final int magicEject=baseEject+90;
+    public final int baseEject = 0;
+    public final int magicEject = baseEject + 90;
     public RevBlinkinLedDriver lights;
 
     @Override
@@ -246,7 +244,7 @@ public class scrap extends LinearOpMode {//declaring the class
         if (isStopRequested()) return;//if the stop button is pressed, stop the program
 
         while (opModeIsActive()) {//while the op mode is active
-            if (gamepad2.dpad_down){
+            if (gamepad2.dpad_down) {
                 sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             }
@@ -419,7 +417,8 @@ public class scrap extends LinearOpMode {//declaring the class
             telemetry.update();
         }
     }
-    public String getColor(){
+
+    public String getColor() {
         final String[] favColors = {
                 "RAINBOW_RAINBOW_PALETTE",
                 "RAINBOW_PARTY_PALETTE",
@@ -436,8 +435,8 @@ public class scrap extends LinearOpMode {//declaring the class
                 "GOLD",
                 "VIOLET"
         };
-        final int min=0;
-        final int max= favColors.length-1;
+        final int min = 0;
+        final int max = favColors.length - 1;
         return favColors[(int) Math.floor(Math.random() * (max - min + 1) + min)];
     }
 
@@ -967,7 +966,9 @@ public class scrap extends LinearOpMode {//declaring the class
         if (degrees > 180) {
             degrees = (360 - degrees) * -1;
         }
-        if (degrees<=0){degrees+=1;}
+        if (degrees <= 0) {
+            degrees += 1;
+        }
         int mult = 360 / (degrees + 1);
         int inches = (turn / mult);
         encoderDrive(0.65, -inches, inches, 6);

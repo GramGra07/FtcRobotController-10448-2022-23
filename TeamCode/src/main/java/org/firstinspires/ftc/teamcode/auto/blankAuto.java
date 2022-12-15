@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.workingAuto;
+package org.firstinspires.ftc.teamcode.auto;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 

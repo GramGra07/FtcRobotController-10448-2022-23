@@ -1,11 +1,10 @@
-package org.firstinspires.ftc.teamcode.teleOp;
+package org.firstinspires.ftc.teamcode.testOpModes;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
 import android.graphics.Color;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -103,12 +102,12 @@ public class colorTest extends scrap {
     private DigitalChannel green3;
     private DigitalChannel red4;
     private DigitalChannel green4;
-    private float   redValR = 0;//the red value in rgb
+    private float redValR = 0;//the red value in rgb
     private float greenValR = 0;//the green value in rgb
-    private float  blueValR = 0;//the blue value in rgb
-    private float   redValL = 0;//the red value in rgb
+    private float blueValR = 0;//the blue value in rgb
+    private float redValL = 0;//the red value in rgb
     private float greenValL = 0;//the green value in rgb
-    private float  blueValL = 0;//the blue value in rgb
+    private float blueValL = 0;//the blue value in rgb
 
     @Override
     public void runOpMode() {
@@ -181,7 +180,9 @@ public class colorTest extends scrap {
             correctByColor();
             telemetry.update();
         }
-    }public void correctByColor(){
+    }
+
+    public void correctByColor() {
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
         getAllColorR();
         getAllColorL();
@@ -213,45 +214,47 @@ public class colorTest extends scrap {
         double blueTargetBL = 0.0038;//the blue value in rgb
         double range = 0.0005;
         //left
-        while (colorInRange(redValL,redTargetRL, greenValL,redTargetGL, blueValL,redTargetBL, (float) range)
-                || colorInRange(redValL,blueTargetRL, greenValL,blueTargetGL, blueValL,blueTargetBL, (float) range)
-                || colorInRange(redValR,redTargetRR, greenValR,redTargetGR, blueValR,redTargetBR, (float) range)
-                || colorInRange(redValR,blueTargetRR, greenValR,blueTargetGR, blueValR,blueTargetBR, (float) range)){
-            if ((colorInRange(redValR,redTargetRR, greenValR,redTargetGR, blueValR,redTargetBR, (float) range)
-                    || colorInRange(redValR,blueTargetRR, greenValR,blueTargetGR, blueValR,blueTargetBR, (float) range))){
+        while (colorInRange(redValL, redTargetRL, greenValL, redTargetGL, blueValL, redTargetBL, (float) range)
+                || colorInRange(redValL, blueTargetRL, greenValL, blueTargetGL, blueValL, blueTargetBL, (float) range)
+                || colorInRange(redValR, redTargetRR, greenValR, redTargetGR, blueValR, redTargetBR, (float) range)
+                || colorInRange(redValR, blueTargetRR, greenValR, blueTargetGR, blueValR, blueTargetBR, (float) range)) {
+            if ((colorInRange(redValR, redTargetRR, greenValR, redTargetGR, blueValR, redTargetBR, (float) range)
+                    || colorInRange(redValR, blueTargetRR, greenValR, blueTargetGR, blueValR, blueTargetBR, (float) range))) {
                 getAllColorR();
                 sideWaysEncoderDrive(1, 0.25, 0.4);//go left
                 //right side has seen red or blue
             }
-            if (colorInRange(redValL,redTargetRL, greenValL,redTargetGL, blueValL,redTargetBL, (float) range)
-                    || colorInRange(redValL,blueTargetRL, greenValL,blueTargetGL, blueValL,blueTargetBL, (float) range)){
+            if (colorInRange(redValL, redTargetRL, greenValL, redTargetGL, blueValL, redTargetBL, (float) range)
+                    || colorInRange(redValL, blueTargetRL, greenValL, blueTargetGL, blueValL, blueTargetBL, (float) range)) {
                 getAllColorL();
                 sideWaysEncoderDrive(1, -0.25, 0.4);//go right
             }
-            if (!colorInRange(redValL,redTargetRL, greenValL,redTargetGL, blueValL,redTargetBL, (float) range)
-                    || !colorInRange(redValL,blueTargetRL, greenValL,blueTargetGL, blueValL,blueTargetBL, (float) range)
-                    || !colorInRange(redValR,redTargetRR, greenValR,redTargetGR, blueValR,redTargetBR, (float) range)
-                    || !colorInRange(redValR,blueTargetRR, greenValR,blueTargetGR, blueValR,blueTargetBR, (float) range)){
+            if (!colorInRange(redValL, redTargetRL, greenValL, redTargetGL, blueValL, redTargetBL, (float) range)
+                    || !colorInRange(redValL, blueTargetRL, greenValL, blueTargetGL, blueValL, blueTargetBL, (float) range)
+                    || !colorInRange(redValR, redTargetRR, greenValR, redTargetGR, blueValR, redTargetBR, (float) range)
+                    || !colorInRange(redValR, blueTargetRR, greenValR, blueTargetGR, blueValR, blueTargetBR, (float) range)) {
                 break;
             }
         }
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
     }
-    public boolean colorInRange(float red, double targetR, float green, double targetG, float blue, double targetB, float range){
-        boolean rCheck=false;
-        boolean gCheck=false;
-        boolean bCheck=false;
-        if (targetR-range<red && red<targetR+range) {
-            rCheck=true;
+
+    public boolean colorInRange(float red, double targetR, float green, double targetG, float blue, double targetB, float range) {
+        boolean rCheck = false;
+        boolean gCheck = false;
+        boolean bCheck = false;
+        if (targetR - range < red && red < targetR + range) {
+            rCheck = true;
         }
-        if (targetG-range<green && green<targetG+range) {
-            gCheck=true;
+        if (targetG - range < green && green < targetG + range) {
+            gCheck = true;
         }
-        if (targetB-range<blue && blue<targetB+range) {
-            bCheck=true;
+        if (targetB - range < blue && blue < targetB + range) {
+            bCheck = true;
         }
         return rCheck && gCheck && bCheck;
     }
+
     public void getAllColorR() {
         //gives color values
         NormalizedRGBA colorsR = colorSensorR.getNormalizedColors();
@@ -268,6 +271,7 @@ public class colorTest extends scrap {
                 .addData("Color", colorName)
                 .addData("RGB", "(" + redValR + "," + greenValR + "," + blueValR + ")");//shows rgb value
     }
+
     public void getAllColorL() {
         //gives color values
         NormalizedRGBA colors = colorSensorL.getNormalizedColors();
@@ -284,6 +288,7 @@ public class colorTest extends scrap {
                 .addData("Color", colorName)
                 .addData("RGB", "(" + redValL + "," + greenValL + "," + blueValL + ")");//shows rgb value
     }
+
     //precise if exact 180, if not, then use the following
     //final int actualF=50;
     //final int actualR=100;
@@ -304,7 +309,7 @@ public class colorTest extends scrap {
     //    motorFrontLeft.setPower(-0.8);
     //    motorFrontRight.setPower(-0.8);
     //}
-    public String getColor(){
+    public String getColor() {
         final String[] favColors = {
                 "RAINBOW_RAINBOW_PALETTE",
                 "RAINBOW_PARTY_PALETTE",
@@ -321,8 +326,8 @@ public class colorTest extends scrap {
                 "GOLD",
                 "VIOLET"
         };
-        final int min=0;
-        final int max= favColors.length-1;
+        final int min = 0;
+        final int max = favColors.length - 1;
         return favColors[(int) Math.floor(Math.random() * (max - min + 1) + min)];
     }
 

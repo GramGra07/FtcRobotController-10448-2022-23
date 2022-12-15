@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.auto;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
@@ -98,12 +98,12 @@ public class advAutoR extends scrap {
     private DigitalChannel green2;
     //color
     final float[] hsvValues = new float[3];//gets values for color sensor
-    private float   redValR = 0;//the red value in rgb
+    private float redValR = 0;//the red value in rgb
     private float greenValR = 0;//the green value in rgb
-    private float  blueValR = 0;//the blue value in rgb
-    private float   redValL = 0;//the red value in rgb
+    private float blueValR = 0;//the blue value in rgb
+    private float redValL = 0;//the red value in rgb
     private float greenValL = 0;//the green value in rgb
-    private float  blueValL = 0;//the blue value in rgb
+    private float blueValL = 0;//the blue value in rgb
     private String colorName = "N/A";//gets color name
     public NormalizedColorSensor colorSensorR;//declaring the colorSensorR variable
     public NormalizedColorSensor colorSensorL;//declaring the colorSensorR variable
@@ -208,8 +208,8 @@ public class advAutoR extends scrap {
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
         waitForStart();
         if (opModeIsActive()) {
-            final double alterHeading =0;
-            int trueHeading = refreshHeading(-angles.firstAngle,alterHeading);
+            final double alterHeading = 0;
+            //int trueHeading = refreshHeading(-angles.firstAngle,alterHeading);
             //correctByImu(refreshHeading(-angles.firstAngle,alterHeading),180);
             //
             lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
@@ -221,19 +221,16 @@ public class advAutoR extends scrap {
             if (spot == 0) {
                 spot = (int) (Math.floor(Math.random() * (3 - 1 + 1) + 1));
             }
-            if (spot==1){
+            if (spot == 1) {
                 green1.setState(true);
                 red1.setState(false);
-            }
-            else if (spot==2){
+            } else if (spot == 2) {
                 green2.setState(true);
                 red2.setState(false);
-            }
-            else if (spot==3){
+            } else if (spot == 3) {
                 green3.setState(true);
                 red3.setState(false);
-            }
-            else{
+            } else {
                 green1.setState(false);
                 red1.setState(false);
                 green2.setState(false);
@@ -242,79 +239,81 @@ public class advAutoR extends scrap {
                 red3.setState(false);
             }
             //branch 1
-            advGoSpot(ovrCurrX, ovrCurrY, 2.2, 3.2 ,0.8, false, topPoleVal, false,
+            advGoSpot(ovrCurrX, ovrCurrY, 2.2, 3.2, 0.8, false, topPoleVal, false,
                     "|", 1, false, -rotation, false, false, null, 0,
                     false, null, 0, false);
-                        //by now should be at pole, facing it with arm extended to top
-            correctByImu(refreshHeading(-angles.firstAngle,alterHeading),rotation);
+            //by now should be at pole, facing it with arm extended to top
+            correctByImu(refreshHeading(-angles.firstAngle, alterHeading), rotation);
             //branch 2
-            armEncoder(topPoleVal,1,3,false);
-            sideWaysEncoderDrive(1,-1,0.5);
-            encoderDrive(1,-1,-1,1);
+            armEncoder(topPoleVal, 1, 3, false);
+            sideWaysEncoderDrive(1, -1, 0.5);
+            encoderDrive(1, -1, -1, 1);
             openClaw();
             //branch 3
             double halfTile = 4.0;
             int turn = 12;
             turn(turn);
-            correctByImu(refreshHeading(-angles.firstAngle,alterHeading),turn);
+            correctByImu(refreshHeading(-angles.firstAngle, alterHeading), turn);
             closeClaw();
             sideWaysEncoderDrive(1, halfTile, 2);
             //should now be lined up with the cone stack
             double stackDist = 20;//primary distance to go to stack
             encoderComboFwd(0.8, stackDist, stackDist, midPoleVal, 5, true);
             correctToCones();
-            armEncoder(fiveTallConeVal+500,1,3,true);
+            armEncoder(fiveTallConeVal + 500, 1, 3, true);
             openClaw();
-            armEncoder(fiveTallConeVal,1,3,true);
+            armEncoder(fiveTallConeVal, 1, 3, true);
             closeClaw();
-            armEncoder(midPoleVal+500, 1, 3, false);//clear gap
+            armEncoder(midPoleVal + 500, 1, 3, false);//clear gap
             //branch 4
             //now has cone ready for next placement
             int repetitions = 1;
             double finished = 0;
             boolean parking = false;
-            halfTile=-7;
-            stackDist=16;
+            halfTile = -7;
+            stackDist = 16;
             //!not finished from here on
-            for (int i = 1; i<=repetitions; repetitions++) {
+            for (int i = 1; i <= repetitions; repetitions++) {
                 encoderComboFwd(0.8, -stackDist, -stackDist, topPoleVal, 6, false);//back up
                 sideWaysEncoderDrive(1, halfTile, 3);
                 openClaw();
                 sideWaysEncoderDrive(1, -halfTile, 1);
                 turn(-10);
                 closeClaw();
-                encoderComboFwd(1.0, stackDist, stackDist, midPoleVal+500, 4, true);//should be at cone stack after this
+                encoderComboFwd(1.0, stackDist, stackDist, midPoleVal + 500, 4, true);//should be at cone stack after this
                 correctToCones();
-                armEncoder(fiveTallConeVal - (coneSubtraction * finished)+500,1,3,true);
+                armEncoder(fiveTallConeVal - (coneSubtraction * finished) + 500, 1, 3, true);
                 openClaw();
-                armEncoder(fiveTallConeVal - (coneSubtraction * finished),1,3,true);
+                armEncoder(fiveTallConeVal - (coneSubtraction * finished), 1, 3, true);
                 sleep(300);
                 closeClaw();
                 // gets every pole val 5tall-((928/5)*finished poles)
-                armEncoder(midPoleVal+500, 1, 1, false);
+                armEncoder(midPoleVal + 500, 1, 1, false);
                 //repetitions --;
-                finished ++;
+                finished++;
             }
             encoderComboFwd(1, -stackDist, -stackDist, baseArmPosition, 3, true);//get to 2,3
-            stackDist=19;
+            stackDist = 19;
             if (spot == 3) {
-                encoderDrive(1, stackDist,stackDist, 3);//opposite of 3 lines higher
+                encoderDrive(1, stackDist, stackDist, 3);//opposite of 3 lines higher
             }
             //should already be here at spot 2
             if (spot == 2) {
             }
             if (spot == 1) {
-                encoderDrive(1, -stackDist,-stackDist, 3);
+                encoderDrive(1, -stackDist, -stackDist, 3);
             }
             telemetry.update();
         }
     }
-    public void correctToCones(){
-        correctByImu(refreshHeading(-angles.firstAngle,0),-90+12);
+
+    public void correctToCones() {
+        correctByImu(refreshHeading(-angles.firstAngle, 0), -90 + 12);
         correctByColor();
         correctByTouch();
     }
-    public void correctByColor(){
+
+    public void correctByColor() {
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
         getAllColorR();
         getAllColorL();
@@ -346,45 +345,47 @@ public class advAutoR extends scrap {
         double blueTargetBL = 0.0038;//the blue value in rgb
         double range = 0.0005;
         //left
-        while (colorInRange(redValL,redTargetRL, greenValL,redTargetGL, blueValL,redTargetBL, (float) range)
-                || colorInRange(redValL,blueTargetRL, greenValL,blueTargetGL, blueValL,blueTargetBL, (float) range)
-                || colorInRange(redValR,redTargetRR, greenValR,redTargetGR, blueValR,redTargetBR, (float) range)
-                || colorInRange(redValR,blueTargetRR, greenValR,blueTargetGR, blueValR,blueTargetBR, (float) range)){
-            if ((colorInRange(redValR,redTargetRR, greenValR,redTargetGR, blueValR,redTargetBR, (float) range)
-                    || colorInRange(redValR,blueTargetRR, greenValR,blueTargetGR, blueValR,blueTargetBR, (float) range))){
+        while (colorInRange(redValL, redTargetRL, greenValL, redTargetGL, blueValL, redTargetBL, (float) range)
+                || colorInRange(redValL, blueTargetRL, greenValL, blueTargetGL, blueValL, blueTargetBL, (float) range)
+                || colorInRange(redValR, redTargetRR, greenValR, redTargetGR, blueValR, redTargetBR, (float) range)
+                || colorInRange(redValR, blueTargetRR, greenValR, blueTargetGR, blueValR, blueTargetBR, (float) range)) {
+            if ((colorInRange(redValR, redTargetRR, greenValR, redTargetGR, blueValR, redTargetBR, (float) range)
+                    || colorInRange(redValR, blueTargetRR, greenValR, blueTargetGR, blueValR, blueTargetBR, (float) range))) {
                 getAllColorR();
                 sideWaysEncoderDrive(1, 0.25, 0.4);//go left
                 //right side has seen red or blue
             }
-            if (colorInRange(redValL,redTargetRL, greenValL,redTargetGL, blueValL,redTargetBL, (float) range)
-                    || colorInRange(redValL,blueTargetRL, greenValL,blueTargetGL, blueValL,blueTargetBL, (float) range)){
+            if (colorInRange(redValL, redTargetRL, greenValL, redTargetGL, blueValL, redTargetBL, (float) range)
+                    || colorInRange(redValL, blueTargetRL, greenValL, blueTargetGL, blueValL, blueTargetBL, (float) range)) {
                 getAllColorL();
                 sideWaysEncoderDrive(1, -0.25, 0.4);//go right
             }
-            if (!colorInRange(redValL,redTargetRL, greenValL,redTargetGL, blueValL,redTargetBL, (float) range)
-                    || !colorInRange(redValL,blueTargetRL, greenValL,blueTargetGL, blueValL,blueTargetBL, (float) range)
-                    || !colorInRange(redValR,redTargetRR, greenValR,redTargetGR, blueValR,redTargetBR, (float) range)
-                    || !colorInRange(redValR,blueTargetRR, greenValR,blueTargetGR, blueValR,blueTargetBR, (float) range)){
+            if (!colorInRange(redValL, redTargetRL, greenValL, redTargetGL, blueValL, redTargetBL, (float) range)
+                    || !colorInRange(redValL, blueTargetRL, greenValL, blueTargetGL, blueValL, blueTargetBL, (float) range)
+                    || !colorInRange(redValR, redTargetRR, greenValR, redTargetGR, blueValR, redTargetBR, (float) range)
+                    || !colorInRange(redValR, blueTargetRR, greenValR, blueTargetGR, blueValR, blueTargetBR, (float) range)) {
                 break;
             }
         }
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
     }
-    public boolean colorInRange(float red, double targetR, float green, double targetG, float blue, double targetB, float range){
-        boolean rCheck=false;
-        boolean gCheck=false;
-        boolean bCheck=false;
-        if (targetR-range<red && red<targetR+range) {
-            rCheck=true;
+
+    public boolean colorInRange(float red, double targetR, float green, double targetG, float blue, double targetB, float range) {
+        boolean rCheck = false;
+        boolean gCheck = false;
+        boolean bCheck = false;
+        if (targetR - range < red && red < targetR + range) {
+            rCheck = true;
         }
-        if (targetG-range<green && green<targetG+range) {
-            gCheck=true;
+        if (targetG - range < green && green < targetG + range) {
+            gCheck = true;
         }
-        if (targetB-range<blue && blue<targetB+range) {
-            bCheck=true;
+        if (targetB - range < blue && blue < targetB + range) {
+            bCheck = true;
         }
         return rCheck && gCheck && bCheck;
     }
+
     public void getAllColorR() {
         //gives color values
         NormalizedRGBA colorsR = colorSensorR.getNormalizedColors();
@@ -401,6 +402,7 @@ public class advAutoR extends scrap {
                 .addData("Color", colorName)
                 .addData("RGB", "(" + redValR + "," + greenValR + "," + blueValR + ")");//shows rgb value
     }
+
     public void getAllColorL() {
         //gives color values
         NormalizedRGBA colors = colorSensorL.getNormalizedColors();
@@ -417,7 +419,8 @@ public class advAutoR extends scrap {
                 .addData("Color", colorName)
                 .addData("RGB", "(" + redValL + "," + greenValL + "," + blueValL + ")");//shows rgb value
     }
-    public void correctByTouch(){
+
+    public void correctByTouch() {
         boolean pressed = touchSensor.isPressed();
         while (!pressed) {
             pressed = touchSensor.isPressed();
@@ -427,6 +430,7 @@ public class advAutoR extends scrap {
             encoderDrive(1, 6, 6, 1);
         }
     }
+
     public void runVu(int timeoutS, boolean giveSpot) {
         runtime.reset();
         while (opModeIsActive() && (spot == 0)) {
@@ -497,7 +501,8 @@ public class advAutoR extends scrap {
 
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
     }
-    public String getColor(){
+
+    public String getColor() {
         final String[] favColors = {
                 "RAINBOW_RAINBOW_PALETTE",
                 "RAINBOW_PARTY_PALETTE",
@@ -514,13 +519,14 @@ public class advAutoR extends scrap {
                 "GOLD",
                 "VIOLET"
         };
-        final int min=0;
-        final int max= favColors.length-1;
+        final int min = 0;
+        final int max = favColors.length - 1;
         return favColors[(int) Math.floor(Math.random() * (max - min + 1) + min)];
     }
-    public int refreshHeading(float usedAngle, double alterHeading){
+
+    public int refreshHeading(float usedAngle, double alterHeading) {
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        int trueHeading = (int) ((int) usedAngle-alterHeading);
+        int trueHeading = (int) ((int) usedAngle - alterHeading);
         if (trueHeading < 0) {
             trueHeading = 360 + trueHeading;
         }
@@ -530,10 +536,12 @@ public class advAutoR extends scrap {
         telemetry.update();
         return -trueHeading;
     }
+
     public void correctByImu(float currentAngle, int targetAngle) {
         int angle = (int) (targetAngle - currentAngle);
         turn(angle);
     }
+
     void composeTelemetry() {
         // At the beginning of each telemetry update, grab a bunch of data
         // from the IMU that we will then display in separate lines.
@@ -581,6 +589,7 @@ public class advAutoR extends scrap {
                     }
                 });
     }
+
     String formatAngle(AngleUnit angleUnit, double angle) {
         return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
     }

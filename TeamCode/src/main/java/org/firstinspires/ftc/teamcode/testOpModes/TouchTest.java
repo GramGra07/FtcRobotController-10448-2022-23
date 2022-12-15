@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.workingAuto;
+package org.firstinspires.ftc.teamcode.testOpModes;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
@@ -12,16 +12,10 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.teamcode.advAutoR;
+import org.firstinspires.ftc.teamcode.auto.advAutoR;
 import org.firstinspires.ftc.teamcode.teleOp.scrap;
-
-import java.util.List;
-import java.util.Objects;
 
 @Autonomous(name = "touchTest", group = "Robot")
 @Disabled

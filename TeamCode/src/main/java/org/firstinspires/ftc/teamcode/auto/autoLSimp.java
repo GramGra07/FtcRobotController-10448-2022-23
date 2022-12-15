@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.workingAuto;
+package org.firstinspires.ftc.teamcode.auto;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
@@ -21,36 +21,35 @@ import org.firstinspires.ftc.teamcode.teleOp.scrap;
 import java.util.List;
 import java.util.Objects;
 
-@Autonomous(name = "autoRSimp", group = "Robot")
+@Autonomous(name = "autoLSimp", group = "Robot")
 //@Disabled
-public class autoRSimp extends LinearOpMode {
+public class autoLSimp extends LinearOpMode {
 
-    /* Declare OpMode members. */
-    private DcMotor motorFrontLeft = null;
-    private DcMotor motorBackLeft = null;
-    private DcMotor motorFrontRight = null;
-    private DcMotor motorBackRight = null;
-    private DcMotor deadWheel = null;
-    private DcMotor deadWheelL = null;
-    private DcMotor deadWheelR = null;
-    private DcMotor sparkLong = null;
-    private Servo clawServo = null;
+    private DcMotor motorFrontLeft = null;//fl
+    private DcMotor motorBackLeft = null;//bl
+    private DcMotor motorFrontRight = null;//fr
+    private DcMotor motorBackRight = null;//br
+    private DcMotor deadWheel = null;//dead strafe wheel
+    private DcMotor deadWheelL = null;//left side dead wheel
+    private DcMotor deadWheelR = null;//right side dead wheel
+    private DcMotor sparkLong = null;//arm motor
+    private Servo clawServo = null;//claw close servo
 
-    private ElapsedTime runtime = new ElapsedTime();
+    private ElapsedTime runtime = new ElapsedTime();//to figure out time
 
-    static final double COUNTS_PER_MOTOR_REV = 28;
-    static final double WHEEL_DIAMETER_MM = 96;
+    static final double COUNTS_PER_MOTOR_REV = 28;//given by rev
+    static final double WHEEL_DIAMETER_MM = 96;//found online/measured
     static final double WHEEL_DIAMETER_INCHES = WHEEL_DIAMETER_MM * 0.0393701;     // For figuring circumference
     static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * 15) /
-            (WHEEL_DIAMETER_INCHES * Math.PI);
+            (WHEEL_DIAMETER_INCHES * Math.PI);//gets the overall counts per inch to help with encoders
 
-    static final double COUNTS_PER_MOTOR_REV_dead = 8192;
+    static final double COUNTS_PER_MOTOR_REV_dead = 8192;//given by rev
     static final double WHEEL_DIAMETER_MM_dead = 96;
     static final double WHEEL_DIAMETER_INCHES_dead = WHEEL_DIAMETER_MM_dead * 0.0393701;     // For figuring circumference
     static final double COUNTS_PER_INCH_dead = (COUNTS_PER_MOTOR_REV_dead) /
-            (WHEEL_DIAMETER_INCHES_dead * Math.PI);
+            (WHEEL_DIAMETER_INCHES_dead * Math.PI);//gets the overall counts per inch to help with encoders
 
-    static final double ROBOT_DIAMETER = 13.05;
+
     //arm
     final int baseArmPosition = 0;
     public final int armLimit = scrap.armLimit;
@@ -93,13 +92,11 @@ public class autoRSimp extends LinearOpMode {
     public double IN_distanceR = 0;//in distance for distance sensor 1
     public double IN_distanceL = 0;
     public double myMagic = 7;
-    private DigitalChannel red2;
-    private DigitalChannel green2;
-    public int turn = 77;
-    public RevBlinkinLedDriver lights;
 
-    public boolean lSide = false;
-    public boolean rSide = true;
+    DigitalChannel red2;
+    DigitalChannel green2;
+    public int turn = 76;
+    public RevBlinkinLedDriver lights;
 
     @Override
     public void runOpMode() {
@@ -143,13 +140,7 @@ public class autoRSimp extends LinearOpMode {
         motorBackLeft.setZeroPowerBehavior(BRAKE);
         motorFrontRight.setZeroPowerBehavior(BRAKE);
         motorFrontLeft.setZeroPowerBehavior(BRAKE);
-        red2.setMode(DigitalChannel.Mode.OUTPUT);
-        green2.setMode(DigitalChannel.Mode.OUTPUT);
 
-        telemetry.addData("Starting at", "%7d :%7d",
-                motorBackRight.getCurrentPosition(),
-                motorBackLeft.getCurrentPosition(),
-                motorFrontLeft.getCurrentPosition());
         closeClaw();
         initVuforia();
         initTfod();
@@ -159,8 +150,8 @@ public class autoRSimp extends LinearOpMode {
             tfod.setZoom(1.0, 16.0 / 9.0);
         }
         runVu(6, false);
+        telemetry.addData("spot", spot);
         telemetry.update();
-        closeClaw();
         // Wait for the game to start (driver presses PLAY)
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
         waitForStart();
@@ -178,43 +169,41 @@ public class autoRSimp extends LinearOpMode {
             encoderDrive(1, 6, 6, 1);
             turn(180);
             encoderDrive(1, 6, 6, 1);
-            encoderDrive(0.5, -45, -45, 6);
+            encoderDrive(0.5, -47, -47, 6);
 //
-            sideWaysEncoderDrive(0.5, 4.8, 1);
-
+            sideWaysEncoderDrive(0.5, -4.15, 1);
 //
             armEncoder(topPoleVal, 1, 6, false);//go up
-            encoderDrive(1, -2, -2, 1);
+            encoderDrive(1, -4, -4, 1);
             sleep(500);
             armEncoder(topPoleVal - 100, 1, 2, true);
             openClaw();
             sleep(500);
             closeClaw();
             sideWaysEncoderDrive(1, 4, 1);
-            encoderDrive(1, 2, 2, 1);
             armEncoder(baseArmPosition, 1, 6, true);//go back to base
 //
             if (spot == 1) {
                 //in-progress
-                sideWaysEncoderDrive(0.8, 2, 1);
+                sideWaysEncoderDrive(0.8, 12, 4);
                 situate();
             }
             if (spot == 2) {
                 //in-progress
-                sideWaysEncoderDrive(0.8, -8, 1);
+                sideWaysEncoderDrive(0.8, 2, 1);
                 situate();
             }
             if (spot == 3) {
-                sideWaysEncoderDrive(0.8, -18, 4);
+                sideWaysEncoderDrive(0.8, -8, 1);
                 situate();
             }
-        }
-        if (spot == 4) {
-            sideWaysEncoderDrive(1, 4, 1);
-            encoderDrive(1, 50, 50, 4);
-            situate();
-        }
+            if (spot == 4) {
+                sideWaysEncoderDrive(1, 4, 1);
+                encoderDrive(1, 50, 50, 4);
+                situate();
+            }
 //
+        }
 
         telemetry.addData("Path", "Complete");
         telemetry.update();
@@ -240,7 +229,6 @@ public class autoRSimp extends LinearOpMode {
         final int max= favColors.length-1;
         return favColors[(int) Math.floor(Math.random() * (max - min + 1) + min)];
     }
-
     //precise if exact 180, if not, then use the following
     //final int actualF=50;
     //final int actualR=100;
@@ -316,7 +304,7 @@ public class autoRSimp extends LinearOpMode {
         }
         int mult = 360 / degrees;
         int inches = (int) (turn / mult);
-        encoderDrive(0.75, -inches, inches, 6);
+        encoderDrive(0.65, -inches, inches, 6);
         resetEncoders();
     }
 

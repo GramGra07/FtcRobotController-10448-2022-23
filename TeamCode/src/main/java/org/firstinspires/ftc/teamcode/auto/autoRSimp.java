@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.workingAuto;
+package org.firstinspires.ftc.teamcode.auto;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
@@ -16,13 +16,14 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.teamcode.teleOp.scrap;
 
 import java.util.List;
 import java.util.Objects;
 
-@Autonomous(name = "demoAuto", group = "Robot")
+@Autonomous(name = "autoRSimp", group = "Robot")
 //@Disabled
-public class demoAuto extends LinearOpMode {
+public class autoRSimp extends LinearOpMode {
 
     /* Declare OpMode members. */
     private DcMotor motorFrontLeft = null;
@@ -52,9 +53,9 @@ public class demoAuto extends LinearOpMode {
     static final double ROBOT_DIAMETER = 13.05;
     //arm
     final int baseArmPosition = 0;
-    public final int armLimit = 13000;
-    public final int lowPoleVal = 5581;//should be about 1/3 of arm limit
-    public final int midPoleVal = 10127;//should be about 2/3 of arm limit
+    public final int armLimit = scrap.armLimit;
+    public final int lowPoleVal = scrap.lowPoleVal;//should be about 1/3 of arm limit
+    public final int midPoleVal = scrap.midPoleVal;//should be about 2/3 of arm limit
     public final int topPoleVal = armLimit;//should be close to armLimit
     static final double COUNTS_PER_MOTOR_REV_arm = 28;
     static final double DRIVE_GEAR_REDUCTION_arm = 40;
@@ -94,10 +95,11 @@ public class demoAuto extends LinearOpMode {
     public double myMagic = 7;
     private DigitalChannel red2;
     private DigitalChannel green2;
+    public int turn = 77;
+    public RevBlinkinLedDriver lights;
 
     public boolean lSide = false;
     public boolean rSide = true;
-    public RevBlinkinLedDriver lights;
 
     @Override
     public void runOpMode() {
@@ -148,6 +150,15 @@ public class demoAuto extends LinearOpMode {
                 motorBackRight.getCurrentPosition(),
                 motorBackLeft.getCurrentPosition(),
                 motorFrontLeft.getCurrentPosition());
+        closeClaw();
+        initVuforia();
+        initTfod();
+
+        if (tfod != null) {
+            tfod.activate();
+            tfod.setZoom(1.0, 16.0 / 9.0);
+        }
+        runVu(6, false);
         telemetry.update();
         closeClaw();
         // Wait for the game to start (driver presses PLAY)
@@ -155,9 +166,58 @@ public class demoAuto extends LinearOpMode {
         waitForStart();
         if (opModeIsActive()) {
             lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
-            encoderDrive(1, 6, 6, 6);
-            telemetry.update();
+            runVu(6, true);
+            if (spot == 0) {
+                spot += 4;
+            }
+            flash(spot);
+            closeClaw();
+            sleep(500);
+            armEncoder(1200, 1, 2, false);//get up a little higher
+// constant steps
+            encoderDrive(1, 6, 6, 1);
+            turn(180);
+            encoderDrive(1, 6, 6, 1);
+            encoderDrive(0.5, -45, -45, 6);
+//
+            sideWaysEncoderDrive(0.5, 4.8, 1);
+
+//
+            armEncoder(topPoleVal, 1, 6, false);//go up
+            encoderDrive(1, -2, -2, 1);
+            sleep(500);
+            armEncoder(topPoleVal - 100, 1, 2, true);
+            openClaw();
+            sleep(500);
+            closeClaw();
+            sideWaysEncoderDrive(1, 4, 1);
+            encoderDrive(1, 2, 2, 1);
+            armEncoder(baseArmPosition, 1, 6, true);//go back to base
+//
+            if (spot == 1) {
+                //in-progress
+                sideWaysEncoderDrive(0.8, 2, 1);
+                situate();
+            }
+            if (spot == 2) {
+                //in-progress
+                sideWaysEncoderDrive(0.8, -8, 1);
+                situate();
+            }
+            if (spot == 3) {
+                sideWaysEncoderDrive(0.8, -18, 4);
+                situate();
+            }
         }
+        if (spot == 4) {
+            sideWaysEncoderDrive(1, 4, 1);
+            encoderDrive(1, 50, 50, 4);
+            situate();
+        }
+//
+
+        telemetry.addData("Path", "Complete");
+        telemetry.update();
     }
     public String getColor(){
         final String[] favColors = {
@@ -180,6 +240,7 @@ public class demoAuto extends LinearOpMode {
         final int max= favColors.length-1;
         return favColors[(int) Math.floor(Math.random() * (max - min + 1) + min)];
     }
+
     //precise if exact 180, if not, then use the following
     //final int actualF=50;
     //final int actualR=100;
@@ -201,19 +262,62 @@ public class demoAuto extends LinearOpMode {
     //    motorFrontRight.setPower(-0.8);
     //}
     public void flash(int repetitions) {
-        while (repetitions > 0) {
+        if (repetitions == 1) {
             red2.setState(false);
             green2.setState(true);
             sleep(50);
             red2.setState(true);
             green2.setState(false);
             sleep(50);
-            repetitions -= 1;
         }
+        if (repetitions == 2) {
+            red2.setState(false);
+            green2.setState(true);
+            sleep(50);
+            red2.setState(true);
+            green2.setState(false);
+            sleep(50);
+            red2.setState(false);
+            green2.setState(true);
+            sleep(50);
+            red2.setState(true);
+            green2.setState(false);
+            sleep(50);
+        }
+        if (repetitions == 3) {
+            red2.setState(false);
+            green2.setState(true);
+            sleep(50);
+            red2.setState(true);
+            green2.setState(false);
+            sleep(50);
+            red2.setState(false);
+            green2.setState(true);
+            sleep(50);
+            red2.setState(true);
+            green2.setState(false);
+            sleep(50);
+            red2.setState(false);
+            green2.setState(true);
+            sleep(50);
+            red2.setState(true);
+            green2.setState(false);
+            sleep(50);
+        }
+        if (repetitions == 4) {
+            red2.setState(true);
+        }
+
     }
 
-    public void turn180() {
-        encoderDrive(0.75, -38.50, 38.50, 6);
+    public void turn(int degrees) {
+        if (degrees > 180) {
+            degrees = (360 - degrees) * -1;
+        }
+        int mult = 360 / degrees;
+        int inches = (int) (turn / mult);
+        encoderDrive(0.75, -inches, inches, 6);
+        resetEncoders();
     }
 
     public void situate() {
@@ -391,10 +495,10 @@ public class demoAuto extends LinearOpMode {
         sparkLong.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         runtime.reset();
         if (isUp) {
-            sparkLong.setPower(-speed);//go down
+            sparkLong.setPower(speed);//go down
         }
         if (!isUp) {
-            sparkLong.setPower(speed);
+            sparkLong.setPower(-speed);
         }
         while (opModeIsActive() &&
                 (runtime.seconds() < timeOut) && sparkLong.isBusy()) {
@@ -410,7 +514,7 @@ public class demoAuto extends LinearOpMode {
         telemetry.update();
     }
 
-    public void runVu(int timeoutS) {
+    public void runVu(int timeoutS, boolean giveSpot) {
         runtime.reset();
         while (opModeIsActive() && (spot == 0)) {
             if (runtime.seconds() > timeoutS) {
@@ -435,17 +539,19 @@ public class demoAuto extends LinearOpMode {
                         telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
                         telemetry.addData("- Position (Row/Col)", "%.0f / %.0f", row, col);
                         telemetry.addData("- Size (Width/Height)", "%.0f / %.0f", width, height);
-                        if (Objects.equals(recognition.getLabel(), "led")) {
-                            spot += 1;
-                            break;
-                        }
-                        if (Objects.equals(recognition.getLabel(), "resistor")) {
-                            spot += 2;
-                            break;
-                        }
-                        if (Objects.equals(recognition.getLabel(), "capacitor")) {
-                            spot += 3;
-                            break;
+                        if (giveSpot && spot == 0) {
+                            if (Objects.equals(recognition.getLabel(), "led")) {
+                                spot += 1;
+                                break;
+                            }
+                            if (Objects.equals(recognition.getLabel(), "resistor")) {
+                                spot += 2;
+                                break;
+                            }
+                            if (Objects.equals(recognition.getLabel(), "capacitor")) {
+                                spot += 3;
+                                break;
+                            }
                         }
                     }
                     telemetry.update();
