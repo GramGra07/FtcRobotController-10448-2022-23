@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode.teleOp;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -22,7 +23,7 @@ import java.util.List;
 import java.util.Objects;
 
 @TeleOp(name = "systemsCheck", group = "Robot")
-//@Disabled
+@Disabled
 public class systemsCheck extends scrap {
     public int turn = 77;
 

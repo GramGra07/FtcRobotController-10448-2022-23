@@ -4,6 +4,7 @@ import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -22,7 +23,7 @@ import java.util.List;
 import java.util.Objects;
 
 @Autonomous(name = "autoRSimp", group = "Robot")
-//@Disabled
+@Disabled
 public class autoRSimp extends LinearOpMode {
 
     /* Declare OpMode members. */
