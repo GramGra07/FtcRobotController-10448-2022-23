@@ -254,7 +254,7 @@ public class autoRSimpV2 extends scrap {
             int repetitions=1;
             halfTile = -halfTile;
             stackDist=23.5;
-            encoderComboFwd(1, -stackDist, -stackDist, baseArmPosition, 3, true);//get to 2,3
+            armEncoder(0,1,3,true);
             stackDist = 19;
             if (spot == 3) {
                 encoderDrive(1, stackDist, stackDist, 3);//opposite of 3 lines higher
