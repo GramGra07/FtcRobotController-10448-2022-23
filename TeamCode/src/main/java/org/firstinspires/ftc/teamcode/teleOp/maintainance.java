@@ -72,8 +72,6 @@ public class maintainance extends scrap {
     public TouchSensor touchSensorEject;
     public boolean armUp=false;
     public boolean clawOpen=false;
-    public boolean ejectUp=false;
-    public boolean flipperUp=true;
     public final int timeout=1;
     public final int delay =1;
     RevBlinkinLedDriver lights;
@@ -160,8 +158,6 @@ public class maintainance extends scrap {
             }
             telemetry.addData("armUp", armUp);
             telemetry.addData("clawOpen", clawOpen);
-            telemetry.addData("ejectUp", ejectUp);
-            telemetry.addData("flipperUp", flipperUp);
             telemetry.addData("color", color);
             telemetry.update();
         }

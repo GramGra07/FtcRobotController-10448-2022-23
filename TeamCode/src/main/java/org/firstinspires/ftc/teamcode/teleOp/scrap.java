@@ -195,8 +195,6 @@ public class scrap extends LinearOpMode {//declaring the class
         deadWheelL = hardwareMap.get(DcMotor.class, "deadWheelL");//getting the deadWheelL motor
         deadWheelR = hardwareMap.get(DcMotor.class, "deadWheelR");//getting the deadWheelR motor
         Servo clawServo = hardwareMap.get(Servo.class, "clawServo");//getting the clawServo servo
-        Servo flipper = hardwareMap.get(Servo.class, "flipper");//getting the flipper servo
-        //Servo unConer = hardwareMap.get(Servo.class, "unConer");
         sparkLong = hardwareMap.get(DcMotor.class, "sparkLong");//getting the sparkLong motor
         touchSensor = hardwareMap.get(TouchSensor.class, ("touchSensor"));
 
