@@ -239,9 +239,11 @@ public class advAutoR extends scrap {
                 red3.setState(false);
             }
             //branch 1
-            advGoSpot(ovrCurrX, ovrCurrY, 2.1, 3.46, 0.6, false, topPoleVal, false,
+            advGoSpot(ovrCurrX, ovrCurrY, 1, 3, 0.6, false, topPoleVal, false,
                     "|", 1, false, -rotation, false, false, null, 0,
                     false, null, 0, false);
+            sideWaysEncoderDrive(0.6,18,5);
+            encoderDrive(0.6,7,7,3);
             //by now should be at pole, facing it with arm extended to top
             correctByImu(refreshHeading(-angles.firstAngle, alterHeading), rotation);
             //branch 2
