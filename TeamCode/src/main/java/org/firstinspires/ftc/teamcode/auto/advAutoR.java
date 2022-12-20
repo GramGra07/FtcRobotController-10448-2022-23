@@ -239,25 +239,20 @@ public class advAutoR extends scrap {
                 red3.setState(false);
             }
             //branch 1
-            advGoSpot(ovrCurrX, ovrCurrY, 1, 3, 0.6, false, topPoleVal, false,
-                    "|", 1, false, -rotation, false, false, null, 0,
-                    false, null, 0, false);
-            sideWaysEncoderDrive(0.6,-18,5);
-            encoderDrive(0.6,7,7,3);
-            //by now should be at pole, facing it with arm extended to top
+            simplerGoSpot(ovrCurrX, ovrCurrY, 1, 3, 0.6, false, 0, false
+                    , false, 0, 2, 4);
+            setOvr(1, 3);
+            double targetX = 2.1;
+            simplerGoSpot(ovrCurrX, ovrCurrY, targetX, 3.5, 0.6, true, topPoleVal,
+                    false, false, -90, 2, 2);
             correctByImu(refreshHeading(-angles.firstAngle, alterHeading), rotation);
-            //branch 2
-            armEncoder(topPoleVal, 1, 3, false);
+            setOvr(targetX, 3.5);
             openClaw();
             sleep(200);
-            //branch 3
-            double halfTile = 6.5;
             closeClaw();
-            sideWaysEncoderDrive(1, halfTile+1, 2);
-            //should now be lined up with the cone stack
-            double stackDist = 20;//primary distance to go to stack
-            encoderComboFwd(0.8, stackDist, stackDist, midPoleVal, 4, true);
-            correctByImu(angles.firstAngle,-12);
+            simpleGoSpotRight(ovrCurrX, ovrCurrY, 3.5, 3, 0.6, true, midPoleVal,
+                    true, false, 0, 4, 2);
+            setOvr(3.5, 3);
             correctToCones();
             armEncoder(fiveTallConeVal + 500, 1, 3, true);
             openClaw();
@@ -268,16 +263,16 @@ public class advAutoR extends scrap {
             //branch 4
             //now has cone ready for next placement;
             double finished = 0;
-            int repetitions=1;
-            halfTile = -halfTile;
-            stackDist=23.5;
+            int repetitions = 1;
+            double halfTile = -6.5;
+            double stackDist = 23.5;
             //!not finished from here on
             for (int i = repetitions; i > 0; i--) {
                 encoderComboFwd(1, -stackDist, -stackDist, topPoleVal, 6, false);//back up
                 sideWaysEncoderDrive(1, halfTile, 1);
                 openClaw();
                 sideWaysEncoderDrive(1, -halfTile, 1);
-                correctByImu(angles.firstAngle,-12);
+                correctByImu(angles.firstAngle, -12);
                 closeClaw();
                 encoderComboFwd(1.0, stackDist, stackDist, midPoleVal + 500, 6, true);//should be at cone stack after this
                 correctToCones();
@@ -310,6 +305,7 @@ public class advAutoR extends scrap {
         correctByColor();
         correctByTouch();
     }
+
     public void correctByColor() {
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
         getAllColorR();
@@ -593,5 +589,46 @@ public class advAutoR extends scrap {
 
     String formatDegrees(double degrees) {
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
+    }
+
+    public void simplerGoSpot(double currX, double currY, double targetX, double targetY, double power, boolean combo, int pose
+            , boolean isUp, boolean endTurn, int turn, int timeOutX, int timeOutY) {
+        double sidewaysInches = (targetX - currX) * xMult;
+        double fwdInches = (targetY - currY) * yMult;
+        telemetry.addData("fwdInches", fwdInches);
+        telemetry.addData("sidewaysInches", sidewaysInches);
+        sideWaysEncoderDrive(power, sidewaysInches, timeOutX);
+        if (!combo) {
+            encoderDrive(power, fwdInches, fwdInches, timeOutY);
+        } else {
+            encoderComboFwd(power, fwdInches, fwdInches, pose, timeOutY, isUp);
+        }
+        if (endTurn) {
+            correctByImu(angles.firstAngle, turn);
+        }
+        setOvr(targetX, targetY);
+        telemetry.update();
+    }
+
+    public void simpleGoSpotRight(double currX, double currY, double targetX, double targetY, double power,
+                                  boolean combo, int pose, boolean isUp, boolean endTurn, int turn, int timeOutX,
+                                  int timeOutY) {
+        double sidewaysInches = (targetY - currY) * yMult;
+        double fwdInches = (targetX - currX) * xMult;
+        telemetry.addData("fwdInches", fwdInches);
+        telemetry.addData("sidewaysInches", sidewaysInches);
+        sideWaysEncoderDrive(power, sidewaysInches, timeOutY);
+        if (!combo) {
+            encoderDrive(power, fwdInches, fwdInches, timeOutX);
+        } else {
+            encoderComboFwd(power, fwdInches, fwdInches, pose, timeOutX, isUp);
+        }
+        setOvr(targetX, targetY);
+        telemetry.update();
+    }
+
+    public void setOvr(int x, int y) {
+        ovrCurrX = x;
+        ovrCurrY = y;
     }
 }
