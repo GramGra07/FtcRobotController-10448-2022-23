@@ -31,7 +31,7 @@ import java.util.Objects;
 
 @TeleOp(name = "driverAssistedTest", group = "Robot")//declaring the name and group of the opmode
 //@Disabled//disabling the opmode
-public class driverAssistedTest extends LinearOpMode {//declaring the class
+public class driverAssistedTest extends scrap {//declaring the class
     private ElapsedTime runtime = new ElapsedTime();
     //encoder var
     public int turn = 77;
@@ -200,10 +200,10 @@ public class driverAssistedTest extends LinearOpMode {//declaring the class
         colorSensorL = hardwareMap.get(NormalizedColorSensor.class, "colorSensorL");
         // Declare our motors
         // Make sure your ID's match your configuration
-        DcMotor motorFrontLeft = hardwareMap.get(DcMotor.class, "motorFrontLeft");//getting the motorFrontLeft motor
-        DcMotor motorBackLeft = hardwareMap.get(DcMotor.class, "motorBackLeft");//getting the motorBackLeft motor
-        DcMotor motorFrontRight = hardwareMap.get(DcMotor.class, "motorFrontRight");//getting the motorFrontRight motor
-        DcMotor motorBackRight = hardwareMap.get(DcMotor.class, "motorBackRight");//getting the motorBackRight motor
+        motorFrontLeft = hardwareMap.get(DcMotor.class, "motorFrontLeft");//getting the motorFrontLeft motor
+        motorBackLeft = hardwareMap.get(DcMotor.class, "motorBackLeft");//getting the motorBackLeft motor
+        motorFrontRight = hardwareMap.get(DcMotor.class, "motorFrontRight");//getting the motorFrontRight motor
+        motorBackRight = hardwareMap.get(DcMotor.class, "motorBackRight");//getting the motorBackRight motor
         deadWheel = hardwareMap.get(DcMotor.class, "deadWheel");//getting the deadWheel motor
         //deadWheelL = hardwareMap.get(DcMotor.class, "deadWheelL");//getting the deadWheelL motor
         //deadWheelR = hardwareMap.get(DcMotor.class, "deadWheelR");//getting the deadWheelR motor
@@ -255,78 +255,11 @@ public class driverAssistedTest extends LinearOpMode {//declaring the class
         if (isStopRequested()) return;//if the stop button is pressed, stop the program
 
         while (opModeIsActive()) {//while the op mode is active
-            if (gamepad1.dpad_up){
-                assisting=!assisting;
+            if (gamepad1.dpad_up) {
+                assisting = !assisting;
             }
-            while (assisting){
-                double armPower = -gamepad2.left_stick_y;
-                sparkLong.setPower(armPower);
-                lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
-                getAllColorR();
-                getAllColorL();
-                NormalizedRGBA colorsR = colorSensorR.getNormalizedColors();
-                Color.colorToHSV(colorsR.toColor(), hsvValues);
-                NormalizedRGBA colors = colorSensorL.getNormalizedColors();
-                Color.colorToHSV(colors.toColor(), hsvValues);
-                float redValR = colorsR.red;//the red value in rgb
-                float greenValR = colorsR.green;//the green value in rgb
-                float blueValR = colorsR.blue;//the blue value in rgb
-                float redValL = colors.red;//the red value in rgb
-                float greenValL = colors.green;//the green value in rgb
-                float blueValL = colors.blue;//the blue value in rgb
-                //right
-                double redTargetRR = 0.003;//the red value in rgb
-                double redTargetGR = 0.004;//the green value in rgb
-                double redTargetBR = 0.003;//the blue value in rgb
-                //left
-                double redTargetRL = 0.003;//the red value in rgb
-                double redTargetGL = 0.003;//the green value in rgb
-                double redTargetBL = 0.002;//the blue value in rgb
-                //right
-                double blueTargetRR = 0.002;//the red value in rgb
-                double blueTargetGR = 0.004;//the green value in rgb
-                double blueTargetBR = 0.005;//the blue value in rgb
-                //left
-                double blueTargetRL = 0.001;//the red value in rgb
-                double blueTargetGL = 0.003;//the green value in rgb
-                double blueTargetBL = 0.0038;//the blue value in rgb
-                double range = 0.0005;
-                //left
-                while (colorInRange(redValL, redTargetRL, greenValL, redTargetGL, blueValL, redTargetBL, (float) range)
-                        || colorInRange(redValL, blueTargetRL, greenValL, blueTargetGL, blueValL, blueTargetBL, (float) range)
-                        || colorInRange(redValR, redTargetRR, greenValR, redTargetGR, blueValR, redTargetBR, (float) range)
-                        || colorInRange(redValR, blueTargetRR, greenValR, blueTargetGR, blueValR, blueTargetBR, (float) range)) {
-                    if ((colorInRange(redValR, redTargetRR, greenValR, redTargetGR, blueValR, redTargetBR, (float) range)
-                            || colorInRange(redValR, blueTargetRR, greenValR, blueTargetGR, blueValR, blueTargetBR, (float) range))) {
-                        getAllColorR();
-                        sideWaysEncoderDrive(1, 0.25, 0.4);//go left
-                        //right side has seen red or blue
-                    }
-                    if (colorInRange(redValL, redTargetRL, greenValL, redTargetGL, blueValL, redTargetBL, (float) range)
-                            || colorInRange(redValL, blueTargetRL, greenValL, blueTargetGL, blueValL, blueTargetBL, (float) range)) {
-                        getAllColorL();
-                        sideWaysEncoderDrive(1, -0.25, 0.4);//go right
-                    }
-                    if (!colorInRange(redValL, redTargetRL, greenValL, redTargetGL, blueValL, redTargetBL, (float) range)
-                            || !colorInRange(redValL, blueTargetRL, greenValL, blueTargetGL, blueValL, blueTargetBL, (float) range)
-                            || !colorInRange(redValR, redTargetRR, greenValR, redTargetGR, blueValR, redTargetBR, (float) range)
-                            || !colorInRange(redValR, blueTargetRR, greenValR, blueTargetGR, blueValR, blueTargetBR, (float) range)) {
-                        break;
-                    }
-                }
-                lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
-                boolean pressed = touchSensor.isPressed();
-                while (!pressed) {
-                    pressed = touchSensor.isPressed();
-                    if (pressed) {
-                        break;
-                    }
-                    motorBackLeft.setPower(0.5);
-                    motorBackRight.setPower(0.5);
-                    motorFrontLeft.setPower(0.5);
-                    motorFrontRight.setPower(0.5);
-                }
-                assisting= false;
+            while (assisting) {
+                assist();
             }
             if (gamepad2.dpad_down) {
                 sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -716,85 +649,6 @@ public class driverAssistedTest extends LinearOpMode {//declaring the class
         }
     }
 
-    public void sideWaysEncoderDrive(double speed,
-                                     double inches,
-                                     double timeoutS) {//+=right //-=left
-        int newFRTarget;
-        int newFLTarget;
-        int newBRTarget;
-        int newBLTarget;
-        int newDeadTarget;
-        inches *= -1;
-        if (opModeIsActive()) {
-            if (inches < 0) {
-                newFLTarget = motorFrontLeft.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
-                newBLTarget = motorBackLeft.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
-                newFRTarget = motorFrontRight.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
-                newBRTarget = motorBackRight.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
-                newDeadTarget = deadWheel.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side_dead);
-                motorFrontLeft.setTargetPosition(-newFLTarget);
-                motorBackLeft.setTargetPosition(newBLTarget);
-                motorBackRight.setTargetPosition(-newBRTarget - 10);
-                motorFrontRight.setTargetPosition(newFRTarget);
-                deadWheel.setTargetPosition(-newDeadTarget);
-            }
-            if (inches > 0) {
-                newFLTarget = motorFrontLeft.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
-                newBLTarget = motorBackLeft.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
-                newFRTarget = motorFrontRight.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
-                newBRTarget = motorBackRight.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
-                newDeadTarget = deadWheel.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side_dead);
-                motorFrontLeft.setTargetPosition(-newFLTarget);
-                motorBackLeft.setTargetPosition(newBLTarget);
-                motorBackRight.setTargetPosition(-newBRTarget);
-                motorFrontRight.setTargetPosition(newFRTarget);
-                deadWheel.setTargetPosition(newDeadTarget);
-            }
-
-            motorFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motorBackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motorBackRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motorFrontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            deadWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            runtime.reset();
-            motorBackLeft.setPower(Math.abs(speed));
-            motorFrontRight.setPower(Math.abs(speed));
-            motorFrontLeft.setPower(Math.abs(speed));
-            motorBackRight.setPower(Math.abs(speed));
-            while (opModeIsActive() &&
-                    (runtime.seconds() < timeoutS) && deadWheel.isBusy()) {
-
-                // Display it for the driver.
-                telemetry.addData("Running to", "%7d:%7d", motorFrontLeft.getCurrentPosition()
-                        , motorBackRight.getCurrentPosition());
-                telemetry.addData("Running to", "%7d:%7d", motorBackLeft.getCurrentPosition()
-                        , motorFrontRight.getCurrentPosition());
-                telemetry.addData("Currently at", "%7d:%7d",
-                        motorFrontLeft.getCurrentPosition()
-                        , motorBackRight.getCurrentPosition());
-                telemetry.addData("Currently at", "%7d:%7d",
-                        motorFrontRight.getCurrentPosition()
-                        , motorBackLeft.getCurrentPosition());
-                telemetry.update();
-            }
-
-            // Stop all motion;
-            motorBackLeft.setPower(0);
-            motorFrontRight.setPower(0);
-            motorFrontLeft.setPower(0);
-            motorBackRight.setPower(0);
-
-            // Turn off RUN_TO_POSITION
-            motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            deadWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            resetEncoders();
-        }
-    }
-
     public void armEncoder(double pose, double speed, int timeOut, boolean isUp) {
         int target;
         target = (int) pose;
@@ -1129,6 +983,7 @@ public class driverAssistedTest extends LinearOpMode {//declaring the class
 
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
     }
+
     public boolean colorInRange(float red, double targetR, float green, double targetG, float blue, double targetB, float range) {
         boolean rCheck = false;
         boolean gCheck = false;
@@ -1177,5 +1032,76 @@ public class driverAssistedTest extends LinearOpMode {//declaring the class
         telemetry.addLine()
                 .addData("Color", colorName)
                 .addData("RGB", "(" + redValL + "," + greenValL + "," + blueValL + ")");//shows rgb value
+    }
+
+    public void assist() {
+        double armPower = -gamepad2.left_stick_y;
+        sparkLong.setPower(armPower);
+        lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
+        getAllColorR();
+        getAllColorL();
+        NormalizedRGBA colorsR = colorSensorR.getNormalizedColors();
+        Color.colorToHSV(colorsR.toColor(), hsvValues);
+        NormalizedRGBA colors = colorSensorL.getNormalizedColors();
+        Color.colorToHSV(colors.toColor(), hsvValues);
+        float redValR = colorsR.red;//the red value in rgb
+        float greenValR = colorsR.green;//the green value in rgb
+        float blueValR = colorsR.blue;//the blue value in rgb
+        float redValL = colors.red;//the red value in rgb
+        float greenValL = colors.green;//the green value in rgb
+        float blueValL = colors.blue;//the blue value in rgb
+        //right
+        double redTargetRR = 0.003;//the red value in rgb
+        double redTargetGR = 0.004;//the green value in rgb
+        double redTargetBR = 0.003;//the blue value in rgb
+        //left
+        double redTargetRL = 0.003;//the red value in rgb
+        double redTargetGL = 0.003;//the green value in rgb
+        double redTargetBL = 0.002;//the blue value in rgb
+        //right
+        double blueTargetRR = 0.002;//the red value in rgb
+        double blueTargetGR = 0.004;//the green value in rgb
+        double blueTargetBR = 0.005;//the blue value in rgb
+        //left
+        double blueTargetRL = 0.001;//the red value in rgb
+        double blueTargetGL = 0.003;//the green value in rgb
+        double blueTargetBL = 0.0038;//the blue value in rgb
+        double range = 0.0005;
+        //left
+        while (colorInRange(redValL, redTargetRL, greenValL, redTargetGL, blueValL, redTargetBL, (float) range)
+                || colorInRange(redValL, blueTargetRL, greenValL, blueTargetGL, blueValL, blueTargetBL, (float) range)
+                || colorInRange(redValR, redTargetRR, greenValR, redTargetGR, blueValR, redTargetBR, (float) range)
+                || colorInRange(redValR, blueTargetRR, greenValR, blueTargetGR, blueValR, blueTargetBR, (float) range)) {
+            if ((colorInRange(redValR, redTargetRR, greenValR, redTargetGR, blueValR, redTargetBR, (float) range)
+                    || colorInRange(redValR, blueTargetRR, greenValR, blueTargetGR, blueValR, blueTargetBR, (float) range))) {
+                getAllColorR();
+                sideWaysEncoderDrive(1, 0.25, 0.4);//go left
+                //right side has seen red or blue
+            }
+            if (colorInRange(redValL, redTargetRL, greenValL, redTargetGL, blueValL, redTargetBL, (float) range)
+                    || colorInRange(redValL, blueTargetRL, greenValL, blueTargetGL, blueValL, blueTargetBL, (float) range)) {
+                getAllColorL();
+                sideWaysEncoderDrive(1, -0.25, 0.4);//go right
+            }
+            if (!colorInRange(redValL, redTargetRL, greenValL, redTargetGL, blueValL, redTargetBL, (float) range)
+                    || !colorInRange(redValL, blueTargetRL, greenValL, blueTargetGL, blueValL, blueTargetBL, (float) range)
+                    || !colorInRange(redValR, redTargetRR, greenValR, redTargetGR, blueValR, redTargetBR, (float) range)
+                    || !colorInRange(redValR, blueTargetRR, greenValR, blueTargetGR, blueValR, blueTargetBR, (float) range)) {
+                break;
+            }
+        }
+        lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
+        boolean pressed = touchSensor.isPressed();
+        while (!pressed) {
+            pressed = touchSensor.isPressed();
+            if (pressed) {
+                break;
+            }
+            motorBackLeft.setPower(0.5);
+            motorBackRight.setPower(0.5);
+            motorFrontLeft.setPower(0.5);
+            motorFrontRight.setPower(0.5);
+        }
+        assisting = false;
     }
 }

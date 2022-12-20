@@ -30,8 +30,8 @@ public class demoAuto extends LinearOpMode {
     private DcMotor motorFrontRight = null;
     private DcMotor motorBackRight = null;
     private DcMotor deadWheel = null;
-    private DcMotor deadWheelL = null;
-    private DcMotor deadWheelR = null;
+    //private DcMotor deadWheelL = null;
+    //private DcMotor deadWheelR = null;
     private DcMotor sparkLong = null;
     private Servo clawServo = null;
 
@@ -108,8 +108,8 @@ public class demoAuto extends LinearOpMode {
         motorFrontRight = hardwareMap.get(DcMotor.class, "motorFrontRight");
         motorBackRight = hardwareMap.get(DcMotor.class, "motorBackRight");
         deadWheel = hardwareMap.get(DcMotor.class, "deadWheel");
-        deadWheelL = hardwareMap.get(DcMotor.class, "deadWheelL");
-        deadWheelR = hardwareMap.get(DcMotor.class, "deadWheelR");
+        //deadWheelL = hardwareMap.get(DcMotor.class, "deadWheelL");
+        //deadWheelR = hardwareMap.get(DcMotor.class, "deadWheelR");
         clawServo = hardwareMap.get(Servo.class, "clawServo");
         sparkLong = hardwareMap.get(DcMotor.class, "sparkLong");
 
@@ -149,7 +149,8 @@ public class demoAuto extends LinearOpMode {
             telemetry.update();
         }
     }
-    public String getColor(){
+
+    public String getColor() {
         final String[] favColors = {
                 "RAINBOW_RAINBOW_PALETTE",
                 "RAINBOW_PARTY_PALETTE",
@@ -166,10 +167,11 @@ public class demoAuto extends LinearOpMode {
                 "GOLD",
                 "VIOLET"
         };
-        final int min=0;
-        final int max= favColors.length-1;
+        final int min = 0;
+        final int max = favColors.length - 1;
         return favColors[(int) Math.floor(Math.random() * (max - min + 1) + min)];
     }
+
     //precise if exact 180, if not, then use the following
     //final int actualF=50;
     //final int actualR=100;
@@ -289,8 +291,8 @@ public class demoAuto extends LinearOpMode {
             motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            //deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            //deadWheelL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             resetEncoders();
         }
     }
