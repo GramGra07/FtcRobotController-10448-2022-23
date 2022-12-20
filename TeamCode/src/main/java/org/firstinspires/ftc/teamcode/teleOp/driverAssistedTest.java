@@ -1035,8 +1035,6 @@ public class driverAssistedTest extends scrap {//declaring the class
     }
 
     public void assist() {
-        double armPower = -gamepad2.left_stick_y;
-        sparkLong.setPower(armPower);
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
         getAllColorR();
         getAllColorL();
@@ -1067,6 +1065,7 @@ public class driverAssistedTest extends scrap {//declaring the class
         double blueTargetGL = 0.003;//the green value in rgb
         double blueTargetBL = 0.0038;//the blue value in rgb
         double range = 0.0005;
+        double speed = 0.2;
         //left
         while (colorInRange(redValL, redTargetRL, greenValL, redTargetGL, blueValL, redTargetBL, (float) range)
                 || colorInRange(redValL, blueTargetRL, greenValL, blueTargetGL, blueValL, blueTargetBL, (float) range)
@@ -1075,13 +1074,19 @@ public class driverAssistedTest extends scrap {//declaring the class
             if ((colorInRange(redValR, redTargetRR, greenValR, redTargetGR, blueValR, redTargetBR, (float) range)
                     || colorInRange(redValR, blueTargetRR, greenValR, blueTargetGR, blueValR, blueTargetBR, (float) range))) {
                 getAllColorR();
-                sideWaysEncoderDrive(1, 0.25, 0.4);//go left
+                motorFrontLeft.setPower(-speed);
+                motorFrontRight.setPower(speed);
+                motorBackLeft.setPower(speed);
+                motorBackRight.setPower(-speed);
                 //right side has seen red or blue
             }
             if (colorInRange(redValL, redTargetRL, greenValL, redTargetGL, blueValL, redTargetBL, (float) range)
                     || colorInRange(redValL, blueTargetRL, greenValL, blueTargetGL, blueValL, blueTargetBL, (float) range)) {
                 getAllColorL();
-                sideWaysEncoderDrive(1, -0.25, 0.4);//go right
+                motorFrontLeft.setPower(speed);
+                motorFrontRight.setPower(-speed);
+                motorBackLeft.setPower(-speed);
+                motorBackRight.setPower(speed);
             }
             if (!colorInRange(redValL, redTargetRL, greenValL, redTargetGL, blueValL, redTargetBL, (float) range)
                     || !colorInRange(redValL, blueTargetRL, greenValL, blueTargetGL, blueValL, blueTargetBL, (float) range)
@@ -1097,11 +1102,101 @@ public class driverAssistedTest extends scrap {//declaring the class
             if (pressed) {
                 break;
             }
-            motorBackLeft.setPower(0.5);
-            motorBackRight.setPower(0.5);
-            motorFrontLeft.setPower(0.5);
-            motorFrontRight.setPower(0.5);
+            double speed1 = -0.5;
+            motorBackLeft.setPower(speed1);
+            motorBackRight.setPower(speed1);
+            motorFrontLeft.setPower(speed1);
+            motorFrontRight.setPower(speed1);
         }
         assisting = false;
+    }
+
+    public void isCanceled() {
+        if (gamepad1.dpad_up) {
+            assisting = false;
+        }
+    }
+
+    public void sideWaysEncoderDrive(double speed,
+                                     double inches,
+                                     double timeoutS) {//+=right //-=left
+        int newFRTarget;
+        int newFLTarget;
+        int newBRTarget;
+        int newBLTarget;
+        int newDeadTarget;
+        inches *= -1;
+        if (opModeIsActive()) {
+            if (inches < 0) {
+                newFLTarget = motorFrontLeft.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
+                newBLTarget = motorBackLeft.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
+                newFRTarget = motorFrontRight.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
+                newBRTarget = motorBackRight.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
+                newDeadTarget = deadWheel.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side_dead);
+                motorFrontLeft.setTargetPosition(-newFLTarget);
+                motorBackLeft.setTargetPosition(newBLTarget);
+                motorBackRight.setTargetPosition(-newBRTarget - 10);
+                motorFrontRight.setTargetPosition(newFRTarget);
+                deadWheel.setTargetPosition(-newDeadTarget);
+            }
+            if (inches > 0) {
+                newFLTarget = motorFrontLeft.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
+                newBLTarget = motorBackLeft.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
+                newFRTarget = motorFrontRight.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
+                newBRTarget = motorBackRight.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
+                newDeadTarget = deadWheel.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side_dead);
+                motorFrontLeft.setTargetPosition(-newFLTarget);
+                motorBackLeft.setTargetPosition(newBLTarget);
+                motorBackRight.setTargetPosition(-newBRTarget);
+                motorFrontRight.setTargetPosition(newFRTarget);
+                deadWheel.setTargetPosition(newDeadTarget);
+            }
+
+            motorFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorBackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorBackRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorFrontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            deadWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            runtime.reset();
+            motorBackLeft.setPower(Math.abs(speed));
+            motorFrontRight.setPower(Math.abs(speed));
+            motorFrontLeft.setPower(Math.abs(speed));
+            motorBackRight.setPower(Math.abs(speed));
+            while (opModeIsActive() &&
+                    (runtime.seconds() < timeoutS)) {
+
+                // Display it for the driver.
+                telemetry.addData("Running to", "%7d:%7d", motorFrontLeft.getCurrentPosition()
+                        , motorBackRight.getCurrentPosition());
+                telemetry.addData("Running to", "%7d:%7d", motorBackLeft.getCurrentPosition()
+                        , motorFrontRight.getCurrentPosition());
+                telemetry.addData("Currently at", "%7d:%7d",
+                        motorFrontLeft.getCurrentPosition()
+                        , motorBackRight.getCurrentPosition());
+                telemetry.addData("Currently at", "%7d:%7d",
+                        motorFrontRight.getCurrentPosition()
+                        , motorBackLeft.getCurrentPosition());
+                isCanceled();
+                if (!assisting) {
+                    break;
+                }
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            motorBackLeft.setPower(0);
+            motorFrontRight.setPower(0);
+            motorFrontLeft.setPower(0);
+            motorBackRight.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            deadWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            resetEncoders();
+        }
     }
 }
