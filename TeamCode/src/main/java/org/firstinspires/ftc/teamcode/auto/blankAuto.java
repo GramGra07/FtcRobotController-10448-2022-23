@@ -123,8 +123,8 @@ public class blankAuto extends scrap {
         motorFrontRight = hardwareMap.get(DcMotor.class, "motorFrontRight");
         motorBackRight = hardwareMap.get(DcMotor.class, "motorBackRight");
         deadWheel = hardwareMap.get(DcMotor.class, "deadWheel");
-        deadWheelL = hardwareMap.get(DcMotor.class, "deadWheelL");
-        deadWheelR = hardwareMap.get(DcMotor.class, "deadWheelR");
+        //deadWheelL = hardwareMap.get(DcMotor.class, "deadWheelL");
+        //deadWheelR = hardwareMap.get(DcMotor.class, "deadWheelR");
         clawServo = hardwareMap.get(Servo.class, "clawServo");
         sparkLong = hardwareMap.get(DcMotor.class, "sparkLong");
 
@@ -141,8 +141,8 @@ public class blankAuto extends scrap {
         motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         deadWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        deadWheelL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //deadWheelL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         motorBackRight.setZeroPowerBehavior(BRAKE);
         motorBackLeft.setZeroPowerBehavior(BRAKE);

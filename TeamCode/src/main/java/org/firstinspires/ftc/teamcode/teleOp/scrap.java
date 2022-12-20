@@ -102,8 +102,8 @@ public class scrap extends LinearOpMode {//declaring the class
 
     //motors/servos
     public DcMotor deadWheel = null;//declaring the deadWheel motor
-    public DcMotor deadWheelL = null;//declaring the deadWheelL motor
-    public DcMotor deadWheelR = null;//declaring the deadWheelR motor
+    //public DcMotor deadWheelL = null;//declaring the deadWheelL motor
+    //public DcMotor deadWheelR = null;//declaring the deadWheelR motor
     public DistanceSensor rDistance;//declaring the rDistance sensor
     public DistanceSensor lDistance;//declaring the lDistance sensor
     public DistanceSensor fDistance;//declaring the fDistance sensor
@@ -192,8 +192,8 @@ public class scrap extends LinearOpMode {//declaring the class
         DcMotor motorFrontRight = hardwareMap.get(DcMotor.class, "motorFrontRight");//getting the motorFrontRight motor
         DcMotor motorBackRight = hardwareMap.get(DcMotor.class, "motorBackRight");//getting the motorBackRight motor
         deadWheel = hardwareMap.get(DcMotor.class, "deadWheel");//getting the deadWheel motor
-        deadWheelL = hardwareMap.get(DcMotor.class, "deadWheelL");//getting the deadWheelL motor
-        deadWheelR = hardwareMap.get(DcMotor.class, "deadWheelR");//getting the deadWheelR motor
+        //deadWheelL = hardwareMap.get(DcMotor.class, "deadWheelL");//getting the deadWheelL motor
+        //deadWheelR = hardwareMap.get(DcMotor.class, "deadWheelR");//getting the deadWheelR motor
         Servo clawServo = hardwareMap.get(Servo.class, "clawServo");//getting the clawServo servo
         sparkLong = hardwareMap.get(DcMotor.class, "sparkLong");//getting the sparkLong motor
         touchSensor = hardwareMap.get(TouchSensor.class, ("touchSensor"));
@@ -204,8 +204,8 @@ public class scrap extends LinearOpMode {//declaring the class
         motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorBackLeft encoder
         motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorFrontRight encoder
         deadWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the deadWheel encoder
-        deadWheelL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the deadWheelL encoder
-        deadWheelR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the deadWheelR encoder
+        //deadWheelL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the deadWheelL encoder
+        //deadWheelR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the deadWheelR encoder
 
         motorFrontRight.setDirection(DcMotor.Direction.REVERSE);//setting the motorFrontRight direction
         motorBackRight.setDirection(DcMotor.Direction.REVERSE);//setting the motorBackRight direction
@@ -216,8 +216,8 @@ public class scrap extends LinearOpMode {//declaring the class
         motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorBackRight encoder to run using encoder
         motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorFrontRight encoder to run using encoder
         deadWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the deadWheel encoder to run using encoder
-        deadWheelL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the deadWheelL encoder to run using encoder
-        deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the deadWheelR encoder to run using encoder
+        //deadWheelL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the deadWheelL encoder to run using encoder
+        //deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the deadWheelR encoder to run using encoder
 
         motorBackRight.setZeroPowerBehavior(BRAKE);
         motorBackLeft.setZeroPowerBehavior(BRAKE);
@@ -405,8 +405,8 @@ public class scrap extends LinearOpMode {//declaring the class
             telemetry.addData("reversed", reversed);
             telemetry.addData("slowMode", slowModeIsOn);
             telemetry.addData("dead", deadWheel.getCurrentPosition());
-            telemetry.addData("deadR", deadWheelR.getCurrentPosition());
-            telemetry.addData("deadL", deadWheelL.getCurrentPosition());
+            //telemetry.addData("deadR", deadWheelR.getCurrentPosition());
+            //telemetry.addData("deadL", deadWheelL.getCurrentPosition());
             teleSpace();
             //getAllColor();
             //teleSpace();
@@ -511,11 +511,11 @@ public class scrap extends LinearOpMode {//declaring the class
 
         newLeftTarget = motorBackLeft.getCurrentPosition() + (int) (lInches * COUNTS_PER_INCH);
         newRightTarget = motorBackRight.getCurrentPosition() + (int) (rInches * COUNTS_PER_INCH);
-        newDLeftTarget = deadWheelL.getCurrentPosition() + (int) (lInches * COUNTS_PER_INCH_dead);
-        newDRightTarget = deadWheelR.getCurrentPosition() + (int) (rInches * COUNTS_PER_INCH_dead);
+        //newDLeftTarget = deadWheelL.getCurrentPosition() + (int) (lInches * COUNTS_PER_INCH_dead);
+        //newDRightTarget = deadWheelR.getCurrentPosition() + (int) (rInches * COUNTS_PER_INCH_dead);
 
-        deadWheelL.setTargetPosition(-newDLeftTarget);
-        deadWheelR.setTargetPosition(-newDRightTarget);
+        //deadWheelL.setTargetPosition(-newDLeftTarget);
+        //deadWheelR.setTargetPosition(-newDRightTarget);
         motorFrontRight.setTargetPosition(-newRightTarget);
         motorBackRight.setTargetPosition(-newRightTarget);
         motorFrontLeft.setTargetPosition(-newLeftTarget);
@@ -525,8 +525,8 @@ public class scrap extends LinearOpMode {//declaring the class
         motorBackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motorFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         motorFrontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        deadWheelL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        deadWheelR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //deadWheelL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        //deadWheelR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         runtime.reset();
         if (isUp) {
@@ -563,8 +563,8 @@ public class scrap extends LinearOpMode {//declaring the class
         motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //deadWheelL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         resetEncoders();
         telemetry.update();
     }
@@ -625,7 +625,7 @@ public class scrap extends LinearOpMode {//declaring the class
             motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             //deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            //deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            //deadWheelL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             resetEncoders();
         }
     }

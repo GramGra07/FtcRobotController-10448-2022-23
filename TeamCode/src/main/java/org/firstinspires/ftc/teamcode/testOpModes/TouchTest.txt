@@ -104,8 +104,8 @@ public class TouchTest extends advAutoR {
         motorFrontRight = hardwareMap.get(DcMotor.class, "motorFrontRight");
         motorBackRight = hardwareMap.get(DcMotor.class, "motorBackRight");
         deadWheel = hardwareMap.get(DcMotor.class, "deadWheel");
-        deadWheelL = hardwareMap.get(DcMotor.class, "deadWheelL");
-        deadWheelR = hardwareMap.get(DcMotor.class, "deadWheelR");
+        //deadWheelL = hardwareMap.get(DcMotor.class, "deadWheelL");
+        //deadWheelR = hardwareMap.get(DcMotor.class, "deadWheelR");
         clawServo = hardwareMap.get(Servo.class, "clawServo");
         sparkLong = hardwareMap.get(DcMotor.class, "sparkLong");
         touchSensor = hardwareMap.get(TouchSensor.class, "touchSensor");
@@ -123,8 +123,8 @@ public class TouchTest extends advAutoR {
         motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         deadWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        deadWheelL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //deadWheelL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         motorBackRight.setZeroPowerBehavior(BRAKE);
         motorBackLeft.setZeroPowerBehavior(BRAKE);
@@ -141,7 +141,7 @@ public class TouchTest extends advAutoR {
         closeClaw();
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        double prevEncoder = deadWheelL.getCurrentPosition()/COUNTS_PER_INCH_dead;
+        //double prevEncoder = deadWheelL.getCurrentPosition()/COUNTS_PER_INCH_dead;
         while (opModeIsActive()&& !touchPressed) {
             if (touchSensor.isPressed()) { //while touch sensor is not pressed //!calibrate dist also
                 motorFrontRight.setPower(0);

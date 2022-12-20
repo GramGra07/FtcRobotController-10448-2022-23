@@ -116,8 +116,8 @@ public class autoLSimp extends LinearOpMode {
         motorFrontRight = hardwareMap.get(DcMotor.class, "motorFrontRight");
         motorBackRight = hardwareMap.get(DcMotor.class, "motorBackRight");
         deadWheel = hardwareMap.get(DcMotor.class, "deadWheel");
-        deadWheelL = hardwareMap.get(DcMotor.class, "deadWheelL");
-        deadWheelR = hardwareMap.get(DcMotor.class, "deadWheelR");
+        //deadWheelL = hardwareMap.get(DcMotor.class, "deadWheelL");
+        //deadWheelR = hardwareMap.get(DcMotor.class, "deadWheelR");
         clawServo = hardwareMap.get(Servo.class, "clawServo");
         sparkLong = hardwareMap.get(DcMotor.class, "sparkLong");
 
@@ -134,8 +134,8 @@ public class autoLSimp extends LinearOpMode {
         motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         deadWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        deadWheelL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //deadWheelL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         motorBackRight.setZeroPowerBehavior(BRAKE);
         motorBackLeft.setZeroPowerBehavior(BRAKE);
@@ -319,8 +319,8 @@ public class autoLSimp extends LinearOpMode {
         motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         deadWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        deadWheelL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        deadWheelR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //deadWheelL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //deadWheelR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
@@ -348,11 +348,11 @@ public class autoLSimp extends LinearOpMode {
 
             newLeftTarget = motorBackLeft.getCurrentPosition() + (int) (leftInches * COUNTS_PER_INCH);
             newRightTarget = motorBackRight.getCurrentPosition() + (int) (rightInches * COUNTS_PER_INCH);
-            newDLeftTarget = deadWheelL.getCurrentPosition() + (int) (leftInches * COUNTS_PER_INCH_dead);
-            newDRightTarget = deadWheelR.getCurrentPosition() + (int) (rightInches * COUNTS_PER_INCH_dead);
-
-            deadWheelL.setTargetPosition(-newDLeftTarget);
-            deadWheelR.setTargetPosition(-newDRightTarget);
+            //newDLeftTarget = deadWheelL.getCurrentPosition() + (int) (leftInches * COUNTS_PER_INCH_dead);
+            //newDRightTarget = deadWheelR.getCurrentPosition() + (int) (rightInches * COUNTS_PER_INCH_dead);
+            //
+            //deadWheelL.setTargetPosition(-newDLeftTarget);
+            //deadWheelR.setTargetPosition(-newDRightTarget);
             motorFrontRight.setTargetPosition(-newRightTarget);
             motorBackRight.setTargetPosition(-newRightTarget);
             motorFrontLeft.setTargetPosition(-newLeftTarget);
@@ -362,8 +362,8 @@ public class autoLSimp extends LinearOpMode {
             motorBackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motorFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motorFrontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            deadWheelL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            deadWheelR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            //deadWheelL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            //deadWheelR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             runtime.reset();
             motorBackLeft.setPower((speed));
@@ -375,9 +375,9 @@ public class autoLSimp extends LinearOpMode {
                     (motorBackLeft.isBusy())) {
 
                 // Display it for the driver.
-                telemetry.addData("Running to", "%7d :%7d", -newDLeftTarget, -newDRightTarget);//"%7d :%7d"
-                telemetry.addData("Currently at", "%7d :%7d",
-                        deadWheelL.getCurrentPosition(), deadWheelR.getCurrentPosition());
+                //telemetry.addData("Running to", "%7d :%7d", -newDLeftTarget, -newDRightTarget);//"%7d :%7d"
+                //telemetry.addData("Currently at", "%7d :%7d",
+                //        deadWheelL.getCurrentPosition(), deadWheelR.getCurrentPosition());
                 telemetry.update();
             }
 

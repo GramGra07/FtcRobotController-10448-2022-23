@@ -141,8 +141,8 @@ public class advAutoR extends scrap {
         motorFrontRight = hardwareMap.get(DcMotor.class, "motorFrontRight");
         motorBackRight = hardwareMap.get(DcMotor.class, "motorBackRight");
         deadWheel = hardwareMap.get(DcMotor.class, "deadWheel");
-        deadWheelL = hardwareMap.get(DcMotor.class, "deadWheelL");
-        deadWheelR = hardwareMap.get(DcMotor.class, "deadWheelR");
+        //eadWheelL = hardwareMap.get(DcMotor.class, "deadWheelL");
+        //eadWheelR = hardwareMap.get(DcMotor.class, "deadWheelR");
         clawServo = hardwareMap.get(Servo.class, "clawServo");
         sparkLong = hardwareMap.get(DcMotor.class, "sparkLong");
         touchSensor = hardwareMap.get(TouchSensor.class, ("touchSensor"));
@@ -160,8 +160,8 @@ public class advAutoR extends scrap {
         motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         deadWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        deadWheelL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //deadWheelL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         motorBackRight.setZeroPowerBehavior(BRAKE);
         motorBackLeft.setZeroPowerBehavior(BRAKE);
@@ -242,7 +242,7 @@ public class advAutoR extends scrap {
             advGoSpot(ovrCurrX, ovrCurrY, 1, 3, 0.6, false, topPoleVal, false,
                     "|", 1, false, -rotation, false, false, null, 0,
                     false, null, 0, false);
-            sideWaysEncoderDrive(0.6,18,5);
+            sideWaysEncoderDrive(0.6,-18,5);
             encoderDrive(0.6,7,7,3);
             //by now should be at pole, facing it with arm extended to top
             correctByImu(refreshHeading(-angles.firstAngle, alterHeading), rotation);

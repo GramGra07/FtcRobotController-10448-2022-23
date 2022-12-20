@@ -102,14 +102,6 @@ public class demoAuto extends LinearOpMode {
     @Override
     public void runOpMode() {
         lights = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
-        rDistance = hardwareMap.get(DistanceSensor.class, "rDistance");
-        lDistance = hardwareMap.get(DistanceSensor.class, "lDistance");
-        fDistance = hardwareMap.get(DistanceSensor.class, "fDistance");
-        bDistance = hardwareMap.get(DistanceSensor.class, "bDistance");
-        DigitalChannel red1 = hardwareMap.get(DigitalChannel.class, "red1");
-        DigitalChannel green1 = hardwareMap.get(DigitalChannel.class, "green1");
-        red2 = hardwareMap.get(DigitalChannel.class, "red2");
-        green2 = hardwareMap.get(DigitalChannel.class, "green2");
 
         motorFrontLeft = hardwareMap.get(DcMotor.class, "motorFrontLeft");
         motorBackLeft = hardwareMap.get(DcMotor.class, "motorBackLeft");
@@ -134,15 +126,13 @@ public class demoAuto extends LinearOpMode {
         motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         deadWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        deadWheelL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //deadWheelL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        //deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
         motorBackRight.setZeroPowerBehavior(BRAKE);
         motorBackLeft.setZeroPowerBehavior(BRAKE);
         motorFrontRight.setZeroPowerBehavior(BRAKE);
         motorFrontLeft.setZeroPowerBehavior(BRAKE);
-        red2.setMode(DigitalChannel.Mode.OUTPUT);
-        green2.setMode(DigitalChannel.Mode.OUTPUT);
 
         telemetry.addData("Starting at", "%7d :%7d",
                 motorBackRight.getCurrentPosition(),
@@ -226,8 +216,8 @@ public class demoAuto extends LinearOpMode {
         motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         deadWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        deadWheelL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        deadWheelR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //deadWheelL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //deadWheelR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
@@ -255,11 +245,11 @@ public class demoAuto extends LinearOpMode {
 
             newLeftTarget = motorBackLeft.getCurrentPosition() + (int) (leftInches * COUNTS_PER_INCH);
             newRightTarget = motorBackRight.getCurrentPosition() + (int) (rightInches * COUNTS_PER_INCH);
-            newDLeftTarget = deadWheelL.getCurrentPosition() + (int) (leftInches * COUNTS_PER_INCH_dead);
-            newDRightTarget = deadWheelR.getCurrentPosition() + (int) (rightInches * COUNTS_PER_INCH_dead);
+            //newDLeftTarget = deadWheelL.getCurrentPosition() + (int) (leftInches * COUNTS_PER_INCH_dead);
+            //newDRightTarget = deadWheelR.getCurrentPosition() + (int) (rightInches * COUNTS_PER_INCH_dead);
 
-            deadWheelL.setTargetPosition(-newDLeftTarget);
-            deadWheelR.setTargetPosition(-newDRightTarget);
+            //deadWheelL.setTargetPosition(-newDLeftTarget);
+            //deadWheelR.setTargetPosition(-newDRightTarget);
             motorFrontRight.setTargetPosition(-newRightTarget);
             motorBackRight.setTargetPosition(-newRightTarget);
             motorFrontLeft.setTargetPosition(-newLeftTarget);
@@ -269,8 +259,8 @@ public class demoAuto extends LinearOpMode {
             motorBackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motorFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motorFrontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            deadWheelL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            deadWheelR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            //deadWheelL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            //deadWheelR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             runtime.reset();
             motorBackLeft.setPower((speed));
@@ -282,9 +272,9 @@ public class demoAuto extends LinearOpMode {
                     (motorBackLeft.isBusy())) {
 
                 // Display it for the driver.
-                telemetry.addData("Running to", "%7d :%7d", -newDLeftTarget, -newDRightTarget);//"%7d :%7d"
-                telemetry.addData("Currently at", "%7d :%7d",
-                        deadWheelL.getCurrentPosition(), deadWheelR.getCurrentPosition());
+                //telemetry.addData("Running to", "%7d :%7d", -newDLeftTarget, -newDRightTarget);//"%7d :%7d"
+                //telemetry.addData("Currently at", "%7d :%7d",
+                //        deadWheelL.getCurrentPosition(), deadWheelR.getCurrentPosition());
                 telemetry.update();
             }
 
