@@ -1,10 +1,11 @@
-package org.firstinspires.ftc.teamcode.teleOp;
+package org.firstinspires.ftc.teamcode.testOpModes;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
 import android.graphics.Color;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -23,6 +24,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.teamcode.teleOp.scrap;
 import org.firstinspires.ftc.teamcode.testOpModes.distanceSensorCalibrator;
 
 import java.util.List;
@@ -30,7 +32,7 @@ import java.util.Objects;
 
 
 @TeleOp(name = "driverAssistedTest", group = "Robot")//declaring the name and group of the opmode
-//@Disabled//disabling the opmode
+@Disabled//disabling the opmode
 public class driverAssistedTest extends scrap {//declaring the class
     private ElapsedTime runtime = new ElapsedTime();
     //encoder var
