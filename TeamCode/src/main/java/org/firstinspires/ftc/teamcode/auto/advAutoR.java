@@ -212,47 +212,24 @@ public class advAutoR extends scrap {
             //int trueHeading = refreshHeading(-angles.firstAngle,alterHeading);
             //correctByImu(refreshHeading(-angles.firstAngle,alterHeading),180);
             //
-            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
             final int rotation = -90;
             final double coneSubtraction = (fiveTallConeVal * 0.2);
-            if (!bypassCam) {
-                runVu(6, true);
-            }
-            if (spot == 0) {
-                spot = (int) (Math.floor(Math.random() * (3 - 1 + 1) + 1));
-            }
-            if (spot == 1) {
-                green1.setState(true);
-                red1.setState(false);
-            } else if (spot == 2) {
-                green2.setState(true);
-                red2.setState(false);
-            } else if (spot == 3) {
-                green3.setState(true);
-                red3.setState(false);
-            } else {
-                green1.setState(false);
-                red1.setState(false);
-                green2.setState(false);
-                red2.setState(false);
-                green3.setState(false);
-                red3.setState(false);
-            }
-            //branch 1
+            doSetup();
+            //branch 1 get to spot
             simplerGoSpot(ovrCurrX, ovrCurrY, 1, 3, 0.6, false, 0, false
                     , false, 0, 2, 4);
             setOvr(1, 3);
             double targetX = 2.1;
             simplerGoSpot(ovrCurrX, ovrCurrY, targetX, 3.5, 0.6, true, topPoleVal,
-                    false, false, -90, 2, 2);
-            correctByImu(refreshHeading(-angles.firstAngle, alterHeading), rotation);
+                    false, false, -90, 3, 2);
             setOvr(targetX, 3.5);
             openClaw();
             sleep(200);
             closeClaw();
-            simpleGoSpotRight(ovrCurrX, ovrCurrY, 3.5, 3, 0.6, true, midPoleVal,
+            simpleGoSpotRight(ovrCurrX, ovrCurrY, 3.5, 3, 0.6, true, midPoleVal + 500,
                     true, false, 0, 4, 2);
             setOvr(3.5, 3);
+            // Branch 2 place first cone
             correctToCones();
             armEncoder(fiveTallConeVal + 500, 1, 3, true);
             openClaw();
@@ -260,50 +237,86 @@ public class advAutoR extends scrap {
             sleep(500);
             closeClaw();
             armEncoder(midPoleVal + 500, 1, 3, false);//clear gap
-            //branch 4
-            //now has cone ready for next placement;
+            //vars
             double finished = 0;
-            int repetitions = 1;
-            double halfTile = -6.5;
-            double stackDist = 23.5;
-            //!not finished from here on
-            for (int i = repetitions; i > 0; i--) {
-                encoderComboFwd(1, -stackDist, -stackDist, topPoleVal, 6, false);//back up
-                sideWaysEncoderDrive(1, halfTile, 1);
+            for (int repetitions = 1; repetitions > 0; repetitions--) {
+                //branch 3 get to stack
+                simpleGoSpotRight(ovrCurrX, ovrCurrY, 2, 3, 0.6, true, topPoleVal,
+                        false, false, 0, 3, 1);
+                setOvr(2, 3);
+                sleep(2000);
+                simpleGoSpotRight(ovrCurrX, ovrCurrY, 2, 3.5, 0.6, false, topPoleVal,
+                        false, false, 0, 1, 3);
+                setOvr(2, 3.5);
+                sleep(2000);
                 openClaw();
-                sideWaysEncoderDrive(1, -halfTile, 1);
-                correctByImu(angles.firstAngle, -12);
+                simpleGoSpotRight(ovrCurrX, ovrCurrY, 3.5, 3, 0.6, true, midPoleVal + 500,
+                        true, false, 0, 3, 3);
+                setOvr(3.5, 3);
                 closeClaw();
-                encoderComboFwd(1.0, stackDist, stackDist, midPoleVal + 500, 6, true);//should be at cone stack after this
                 correctToCones();
+                //branch 4 grab second cone
                 armEncoder(fiveTallConeVal - (coneSubtraction * finished) + 500, 1, 2, true);
                 openClaw();
                 armEncoder(fiveTallConeVal - (coneSubtraction * finished), 1, 2, true);
                 sleep(300);
                 closeClaw();
-                // gets every pole val 5tall-((928/5)*finished poles)
                 armEncoder(midPoleVal + 500, 1, 1, false);
-                //repetitions --;
                 finished++;
             }
-            encoderComboFwd(1, -stackDist, -stackDist, baseArmPosition, 3, true);//get to 2,3
+            //branch 5 go to spot
+            double stackDist = 23.5;
+            encoderComboFwd(1, -stackDist, -stackDist, baseArmPosition, 3, true);
+            setOvr(2, 3);
+            //2,3
             stackDist = 19;
             if (spot == 3) {
                 encoderDrive(1, stackDist, stackDist, 3);//opposite of 3 lines higher
+                //3,3
             }
             //should already be here at spot 2
             if (spot == 2) {
+                //2,3
             }
             if (spot == 1) {
                 encoderDrive(1, -stackDist, -stackDist, 3);
+                //1,3
             }
             telemetry.update();
         }
     }
 
+
     public void correctToCones() {
         correctByColor();
         correctByTouch();
+    }
+
+    public void doSetup() {
+        if (!bypassCam) {
+            runVu(6, true);
+        }
+        if (spot == 0) {
+            spot = (int) (Math.floor(Math.random() * (3 - 1 + 1) + 1));
+        }
+        if (spot == 1) {
+            green1.setState(true);
+            red1.setState(false);
+        } else if (spot == 2) {
+            green2.setState(true);
+            red2.setState(false);
+        } else if (spot == 3) {
+            green3.setState(true);
+            red3.setState(false);
+        } else {
+            green1.setState(false);
+            red1.setState(false);
+            green2.setState(false);
+            red2.setState(false);
+            green3.setState(false);
+            red3.setState(false);
+        }
+        lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
     }
 
     public void correctByColor() {
@@ -603,9 +616,6 @@ public class advAutoR extends scrap {
         } else {
             encoderComboFwd(power, fwdInches, fwdInches, pose, timeOutY, isUp);
         }
-        if (endTurn) {
-            correctByImu(angles.firstAngle, turn);
-        }
         setOvr(targetX, targetY);
         telemetry.update();
     }
@@ -613,8 +623,8 @@ public class advAutoR extends scrap {
     public void simpleGoSpotRight(double currX, double currY, double targetX, double targetY, double power,
                                   boolean combo, int pose, boolean isUp, boolean endTurn, int turn, int timeOutX,
                                   int timeOutY) {
-        double sidewaysInches = (targetY - currY) * yMult;
-        double fwdInches = (targetX - currX) * xMult;
+        double sidewaysInches = (targetY - currY) * xMult;
+        double fwdInches = (targetX - currX) * yMult;
         telemetry.addData("fwdInches", fwdInches);
         telemetry.addData("sidewaysInches", sidewaysInches);
         sideWaysEncoderDrive(power, sidewaysInches, timeOutY);
