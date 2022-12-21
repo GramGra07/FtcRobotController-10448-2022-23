@@ -980,6 +980,7 @@ public class scrap extends LinearOpMode {//declaring the class
     }
 
     public void turn(int degrees) {
+        resetEncoders();
         if (degrees > 180) {
             degrees = (360 - degrees) * -1;
         }
@@ -988,7 +989,7 @@ public class scrap extends LinearOpMode {//declaring the class
         }
         int mult = 360 / (degrees + 1);
         int inches = (turn / mult);
-        encoderDrive(0.65, -inches, inches, 6);
+        encoderDrive(0.65, -inches, inches, 3);
         resetEncoders();
     }
 
