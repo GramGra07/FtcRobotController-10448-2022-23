@@ -209,9 +209,6 @@ public class advAutoR extends scrap {
         waitForStart();
         if (opModeIsActive()) {
             final double alterHeading = 0;
-            //int trueHeading = refreshHeading(-angles.firstAngle,alterHeading);
-            //correctByImu(refreshHeading(-angles.firstAngle,alterHeading),180);
-            //
             final int rotation = -90;
             final double coneSubtraction = (fiveTallConeVal * 0.2);
             doSetup();
@@ -221,13 +218,14 @@ public class advAutoR extends scrap {
             setOvr(1, 3);
             double targetX = 2.1;
             simplerGoSpot(ovrCurrX, ovrCurrY, targetX, 3.5, 0.6, true, topPoleVal,
-                    false, false, -90, 3, 2);
+                    false, true, -90, 3, 2);
             setOvr(targetX, 3.5);
             openClaw();
             sleep(200);
             closeClaw();
+            //!goofy robot go turn 2x
             simpleGoSpotRight(ovrCurrX, ovrCurrY, 3.5, 3, 0.6, true, midPoleVal + 500,
-                    true, false, 0, 4, 2);
+                    true, true, 90, 4, 2);
             setOvr(3.5, 3);
             // Branch 2 place first cone
             correctToCones();
@@ -244,11 +242,9 @@ public class advAutoR extends scrap {
                 simpleGoSpotRight(ovrCurrX, ovrCurrY, 2, 3, 0.6, true, topPoleVal,
                         false, false, 0, 3, 1);
                 setOvr(2, 3);
-                sleep(2000);
                 simpleGoSpotRight(ovrCurrX, ovrCurrY, 2, 3.5, 0.6, false, topPoleVal,
                         false, false, 0, 1, 3);
                 setOvr(2, 3.5);
-                sleep(2000);
                 openClaw();
                 simpleGoSpotRight(ovrCurrX, ovrCurrY, 3.5, 3, 0.6, true, midPoleVal + 500,
                         true, false, 0, 3, 3);
@@ -543,11 +539,6 @@ public class advAutoR extends scrap {
         return -trueHeading;
     }
 
-    public void correctByImu(float currentAngle, int targetAngle) {
-        int angle = (int) (targetAngle - currentAngle);
-        turn(angle);
-    }
-
     void composeTelemetry() {
         // At the beginning of each telemetry update, grab a bunch of data
         // from the IMU that we will then display in separate lines.
@@ -616,6 +607,9 @@ public class advAutoR extends scrap {
         } else {
             encoderComboFwd(power, fwdInches, fwdInches, pose, timeOutY, isUp);
         }
+        if (endTurn) {
+            turn(turn);
+        }
         setOvr(targetX, targetY);
         telemetry.update();
     }
@@ -632,6 +626,9 @@ public class advAutoR extends scrap {
             encoderDrive(power, fwdInches, fwdInches, timeOutX);
         } else {
             encoderComboFwd(power, fwdInches, fwdInches, pose, timeOutX, isUp);
+        }
+        if (endTurn) {
+            turn(turn);
         }
         setOvr(targetX, targetY);
         telemetry.update();
