@@ -2,6 +2,8 @@ package org.firstinspires.ftc.teamcode.teleOp;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
+import android.graphics.Color;
+
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -10,6 +12,7 @@ import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
+import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -143,7 +146,8 @@ public class scrap extends LinearOpMode {//declaring the class
     private float greenVal = 0;//the green value in rgb
     private float blueVal = 0;//the blue value in rgb
     private String colorName = "N/A";//gets color name
-    NormalizedColorSensor colorSensor;//declaring the colorSensor variable
+    NormalizedColorSensor colorSensorR;//declaring the colorSensor variable
+    NormalizedColorSensor colorSensorL;//declaring the colorSensor variable
     //
     public String statusVal = "OFFLINE";
     public double fDistanceVal = 0;
@@ -155,6 +159,14 @@ public class scrap extends LinearOpMode {//declaring the class
     public final int baseEject = 0;
     public final int magicEject = baseEject + 90;
     public RevBlinkinLedDriver lights;
+
+    public boolean assisting = false;
+    private float redValR = 0;//the red value in rgb
+    private float greenValR = 0;//the green value in rgb
+    private float blueValR = 0;//the blue value in rgb
+    private float redValL = 0;//the red value in rgb
+    private float greenValL = 0;//the green value in rgb
+    private float blueValL = 0;//the blue value in rgb
 
     @Override
     public void runOpMode() {//if opmode is started
@@ -184,7 +196,8 @@ public class scrap extends LinearOpMode {//declaring the class
         green3 = hardwareMap.get(DigitalChannel.class, "green3");//getting the green3 light
         red4 = hardwareMap.get(DigitalChannel.class, "red4");//getting the red4 light
         green4 = hardwareMap.get(DigitalChannel.class, "green4");//getting the green4 light
-        colorSensor = hardwareMap.get(NormalizedColorSensor.class, "colorSensorR");
+        colorSensorR = hardwareMap.get(NormalizedColorSensor.class, "colorSensorR");
+        colorSensorL = hardwareMap.get(NormalizedColorSensor.class, "colorSensorL");
         // Declare our motors
         // Make sure your ID's match your configuration
         DcMotor motorFrontLeft = hardwareMap.get(DcMotor.class, "motorFrontLeft");//getting the motorFrontLeft motor
@@ -242,6 +255,12 @@ public class scrap extends LinearOpMode {//declaring the class
         if (isStopRequested()) return;//if the stop button is pressed, stop the program
 
         while (opModeIsActive()) {//while the op mode is active
+            if (gamepad1.dpad_up) {
+                assisting = !assisting;
+            }
+            while (assisting) {
+                assist();
+            }
             if (gamepad2.dpad_down) {
                 sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
                 sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
@@ -1042,5 +1061,132 @@ public class scrap extends LinearOpMode {//declaring the class
         tfod = ClassFactory.getInstance().createTFObjectDetector(tfodParameters, vuforia);
 
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
+    }
+
+    public boolean colorInRange(float red, double targetR, float green, double targetG, float blue, double targetB, float range) {
+        boolean rCheck = false;
+        boolean gCheck = false;
+        boolean bCheck = false;
+        if (targetR - range < red && red < targetR + range) {
+            rCheck = true;
+        }
+        if (targetG - range < green && green < targetG + range) {
+            gCheck = true;
+        }
+        if (targetB - range < blue && blue < targetB + range) {
+            bCheck = true;
+        }
+        return rCheck && gCheck && bCheck;
+    }
+
+    public void getAllColorR() {
+        //gives color values
+        NormalizedRGBA colorsR = colorSensorR.getNormalizedColors();
+        Color.colorToHSV(colorsR.toColor(), hsvValues);
+        telemetry.addLine()
+                .addData("Red", "%.3f", colorsR.red)
+                .addData("Green", "%.3f", colorsR.green)
+                .addData("Blue", "%.3f", colorsR.blue)
+                .addData("Hue", "%.3f", hsvValues[0])
+                .addData("Saturation", "%.3f", hsvValues[1])
+                .addData("Value", "%.3f", hsvValues[2])
+                .addData("Alpha", "%.3f", colorsR.alpha);
+        telemetry.addLine()
+                .addData("Color", colorName)
+                .addData("RGB", "(" + redValR + "," + greenValR + "," + blueValR + ")");//shows rgb value
+    }
+
+    public void getAllColorL() {
+        //gives color values
+        NormalizedRGBA colors = colorSensorL.getNormalizedColors();
+        Color.colorToHSV(colors.toColor(), hsvValues);
+        telemetry.addLine()
+                .addData("Red", "%.3f", colors.red)
+                .addData("Green", "%.3f", colors.green)
+                .addData("Blue", "%.3f", colors.blue)
+                .addData("Hue", "%.3f", hsvValues[0])
+                .addData("Saturation", "%.3f", hsvValues[1])
+                .addData("Value", "%.3f", hsvValues[2])
+                .addData("Alpha", "%.3f", colors.alpha);
+        telemetry.addLine()
+                .addData("Color", colorName)
+                .addData("RGB", "(" + redValL + "," + greenValL + "," + blueValL + ")");//shows rgb value
+    }
+
+    public void assist() {
+        lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
+        getAllColorR();
+        getAllColorL();
+        NormalizedRGBA colorsR = colorSensorR.getNormalizedColors();
+        Color.colorToHSV(colorsR.toColor(), hsvValues);
+        NormalizedRGBA colors = colorSensorL.getNormalizedColors();
+        Color.colorToHSV(colors.toColor(), hsvValues);
+        float redValR = colorsR.red;//the red value in rgb
+        float greenValR = colorsR.green;//the green value in rgb
+        float blueValR = colorsR.blue;//the blue value in rgb
+        float redValL = colors.red;//the red value in rgb
+        float greenValL = colors.green;//the green value in rgb
+        float blueValL = colors.blue;//the blue value in rgb
+        //right
+        double redTargetRR = 0.003;//the red value in rgb
+        double redTargetGR = 0.004;//the green value in rgb
+        double redTargetBR = 0.003;//the blue value in rgb
+        //left
+        double redTargetRL = 0.003;//the red value in rgb
+        double redTargetGL = 0.003;//the green value in rgb
+        double redTargetBL = 0.002;//the blue value in rgb
+        //right
+        double blueTargetRR = 0.002;//the red value in rgb
+        double blueTargetGR = 0.004;//the green value in rgb
+        double blueTargetBR = 0.005;//the blue value in rgb
+        //left
+        double blueTargetRL = 0.001;//the red value in rgb
+        double blueTargetGL = 0.003;//the green value in rgb
+        double blueTargetBL = 0.0038;//the blue value in rgb
+        double range = 0.0005;
+        double speed = 0.2;
+        //left
+        while (colorInRange(redValL, redTargetRL, greenValL, redTargetGL, blueValL, redTargetBL, (float) range)
+                || colorInRange(redValL, blueTargetRL, greenValL, blueTargetGL, blueValL, blueTargetBL, (float) range)
+                || colorInRange(redValR, redTargetRR, greenValR, redTargetGR, blueValR, redTargetBR, (float) range)
+                || colorInRange(redValR, blueTargetRR, greenValR, blueTargetGR, blueValR, blueTargetBR, (float) range)) {
+            if ((colorInRange(redValR, redTargetRR, greenValR, redTargetGR, blueValR, redTargetBR, (float) range)
+                    || colorInRange(redValR, blueTargetRR, greenValR, blueTargetGR, blueValR, blueTargetBR, (float) range))) {
+                getAllColorR();
+                motorFrontLeft.setPower(-speed);
+                motorFrontRight.setPower(speed);
+                motorBackLeft.setPower(speed);
+                motorBackRight.setPower(-speed);
+                //right side has seen red or blue
+            }
+            if (colorInRange(redValL, redTargetRL, greenValL, redTargetGL, blueValL, redTargetBL, (float) range)
+                    || colorInRange(redValL, blueTargetRL, greenValL, blueTargetGL, blueValL, blueTargetBL, (float) range)) {
+                getAllColorL();
+                motorFrontLeft.setPower(speed);
+                motorFrontRight.setPower(-speed);
+                motorBackLeft.setPower(-speed);
+                motorBackRight.setPower(speed);
+            }
+            if (!colorInRange(redValL, redTargetRL, greenValL, redTargetGL, blueValL, redTargetBL, (float) range)
+                    || !colorInRange(redValL, blueTargetRL, greenValL, blueTargetGL, blueValL, blueTargetBL, (float) range)
+                    || !colorInRange(redValR, redTargetRR, greenValR, redTargetGR, blueValR, redTargetBR, (float) range)
+                    || !colorInRange(redValR, blueTargetRR, greenValR, blueTargetGR, blueValR, blueTargetBR, (float) range)) {
+                break;
+            }
+        }
+        lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
+        boolean pressed = touchSensor.isPressed();
+        while (!pressed) {
+            pressed = touchSensor.isPressed();
+            if (pressed) {
+                break;
+            }
+            double speed1 = -0.5;
+            motorBackLeft.setPower(speed1);
+            motorBackRight.setPower(speed1);
+            motorFrontLeft.setPower(speed1);
+            motorFrontRight.setPower(speed1);
+        }
+        assisting = false;
     }
 }
