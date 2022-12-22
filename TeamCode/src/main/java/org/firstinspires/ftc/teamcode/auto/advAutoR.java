@@ -621,6 +621,7 @@ public class advAutoR extends scrap {
         double fwdInches = (targetX - currX) * yMult;
         telemetry.addData("fwdInches", fwdInches);
         telemetry.addData("sidewaysInches", sidewaysInches);
+        sleep(2000);
         sideWaysEncoderDrive(power, sidewaysInches, timeOutY);
         if (!combo) {
             encoderDrive(power, fwdInches, fwdInches, timeOutX);
