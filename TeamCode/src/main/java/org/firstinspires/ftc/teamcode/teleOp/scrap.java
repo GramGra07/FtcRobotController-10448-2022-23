@@ -518,7 +518,7 @@ public class scrap extends LinearOpMode {//declaring the class
 
 
     public void encoderComboFwd(double speed, double lInches, double rInches,
-                                double pose, int timeoutS, boolean isUp) {
+                                double pose, double timeoutS, boolean isUp) {
         int newLeftTarget;
         int newRightTarget;
         int newDLeftTarget;
@@ -728,7 +728,7 @@ public class scrap extends LinearOpMode {//declaring the class
         }
     }
 
-    public void armEncoder(double pose, double speed, int timeOut, boolean isUp) {
+    public void armEncoder(double pose, double speed, double timeOut, boolean isUp) {
         int target;
         target = (int) pose;
         sparkLong.setTargetPosition(target);

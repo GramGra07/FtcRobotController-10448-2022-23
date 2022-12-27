@@ -211,61 +211,56 @@ public class advAutoR extends scrap {
         waitForStart();
         if (opModeIsActive()) {
             double ovrPower = 0.65;
-            final double alterHeading = 0;
-            final int rotation = -90;
-            final double coneSubtraction = (fiveTallConeVal * 0.2);
             doSetup();
             //branch 1 get to spot
             simplerGoSpot(ovrCurrX, ovrCurrY, 1, 3, ovrPower, false, 0, false
-                    , false, 0, 2, 4);
+                    , false, 0, 1, 4);
             setOvr(1, 3);
             double targetX = 2.1;
-            simplerGoSpot(ovrCurrX, ovrCurrY, targetX, 3.525, ovrPower, true, topPoleVal,
-                    false, true, -90, 2, 3);
-            encoderDrive(1, -1, -1, 0.5);
-            setOvr(2.1, 3.55);
+            simplerGoSpot(ovrCurrX, ovrCurrY, targetX, 3.6, ovrPower, true, topPoleVal,
+                    false, true, -90, 1, 3);
+            encoderDrive(1, 2, 2, 0.5);
+            setOvr(targetX, 3.6);
             openClaw();
             sleep(200);
             closeClaw();
-            simpleGoSpotRight(ovrCurrX, ovrCurrY, 3.5, 2.8, ovrPower, true, midPoleVal + 500,
-                    true, false, 0, 2, 3, true);
-            setOvr(3.5, 3);
+            double targetY1 = 2.9;//lined up with cones
+            double targetY2 = 3.6;// at pole
+            simpleGoSpotRight(ovrCurrX, ovrCurrY, 3.5, targetY1, ovrPower, true, midPoleVal + 500,
+                    true, false, 0, 1, 1, true);
+            setOvr(3.5, targetY1);
             // Branch 2 place first cone
             correctToCones();
-            armEncoder(fiveTallConeVal + 500, 1, 3, true);
+            double speed = 0.4;
+            motorBackLeft.setPower(speed);
+            motorBackRight.setPower(speed);
+            motorFrontLeft.setPower(speed);
+            motorFrontRight.setPower(speed);
+            armEncoder(fiveTallConeVal + 500, 1, 2, true);
             openClaw();
-            armEncoder(fiveTallConeVal, 1, 1, true);
+            armEncoder(fiveTallConeVal, 1.0, 0.5, true);
             sleep(500);
             closeClaw();
-            armEncoder(midPoleVal + 500, 1, 3, false);//clear gap
+            speed = 0;
+            motorBackLeft.setPower(speed);
+            motorBackRight.setPower(speed);
+            motorFrontLeft.setPower(speed);
+            motorFrontRight.setPower(speed);
+            armEncoder(midPoleVal + 1000, 1, 2, false);//clear gap
             //vars
-            double finished = 0;
-            for (int repetitions = 1; repetitions > 0; repetitions--) {
-                //branch 3 get to stack
-                simpleGoSpotRight(ovrCurrX, ovrCurrY, targetX, 3, ovrPower, true, topPoleVal,
-                        false, false, 0, 3, 1, false);
-                setOvr(2, 3.5);
-                openClaw();
-                simpleGoSpotRight(ovrCurrX, ovrCurrY, targetX, 3.5, ovrPower, true, midPoleVal + 500,
-                        true, false, 0, 3, 3, true);
-                setOvr(3.5, 3);
-                closeClaw();
-                correctToCones();
-                //branch 4 grab second cone
-                armEncoder(fiveTallConeVal - (coneSubtraction * finished) + 500, 1, 2, true);
-                openClaw();
-                armEncoder(fiveTallConeVal - (coneSubtraction * finished), 1, 2, true);
-                sleep(300);
-                closeClaw();
-                armEncoder(midPoleVal + 500, 1, 1, false);
-                finished++;
-            }
-            //branch 5 go to spot
-            double stackDist = 23.5;
-            encoderComboFwd(1, -stackDist, -stackDist, baseArmPosition, 3, true);
-            setOvr(2, 3);
+            //branch 3 get to stack
+            simpleGoSpotRight(ovrCurrX, ovrCurrY, targetX, targetY2, ovrPower, true, topPoleVal,
+                    false, false, 0, 2, 4, false);
+            encoderDrive(1, 2, 2, 0.5);
+            setOvr(targetX, targetY2);
+            openClaw();
+            simpleGoSpotRight(ovrCurrX, ovrCurrY, targetX, targetY1, ovrPower, true, midPoleVal + 500,
+                    true, false, 0, 0.2, 1, true);
+            setOvr(targetX, targetY1);
+            closeClaw();
             //2,3
-            stackDist = 19;
+            double stackDist = 19;
+            armEncoder(0, 1, 2, true);
             if (spot == 3) {
                 encoderDrive(1, stackDist, stackDist, 3);//opposite of 3 lines higher
                 //3,3
@@ -273,9 +268,10 @@ public class advAutoR extends scrap {
             //should already be here at spot 2
             if (spot == 2) {
                 //2,3
+                encoderDrive(1, 2, 2, 1);
             }
             if (spot == 1) {
-                encoderDrive(1, -stackDist, -stackDist, 3);
+                encoderDrive(1, -15, -15, 3);
                 //1,3
             }
             telemetry.update();
@@ -297,7 +293,7 @@ public class advAutoR extends scrap {
             runVu(6, true);
         }
         if (spot == 0) {
-            spot = (int) (Math.floor(Math.random() * (3 - 1 + 1) + 1));
+            spot = (int) (Math.floor(Math.random() * (3) + 1));
         }
         if (spot == 1) {
             green1.setState(true);
@@ -619,8 +615,8 @@ public class advAutoR extends scrap {
     }
 
     public void simpleGoSpotRight(double currX, double currY, double targetX, double targetY, double power,
-                                  boolean combo, int pose, boolean isUp, boolean endTurn, int turn, int timeOutX,
-                                  int timeOutY, boolean prioritizeY) {
+                                  boolean combo, int pose, boolean isUp, boolean endTurn, int turn, double timeOutX,
+                                  double timeOutY, boolean prioritizeY) {
         double XMULT = 9.0;
         double YMULT = 20.0;
         double sidewaysInches = (targetY - currY) * XMULT * -1;
