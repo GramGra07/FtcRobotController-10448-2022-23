@@ -1,6 +1,7 @@
 package org.firstinspires.ftc.teamcode.auto;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
+import static java.lang.Math.abs;
 
 import android.graphics.Color;
 
@@ -109,8 +110,8 @@ public class advAutoR extends scrap {
     public NormalizedColorSensor colorSensorL;//declaring the colorSensorR variable
     public TouchSensor touchSensor;
     public boolean touchPressed = false;
-    public int ovrCurrX = 2;
-    public int ovrCurrY = 1;
+    public double ovrCurrX = 2;
+    public double ovrCurrY = 1;
     private final boolean bypassCam = true;
     public RevBlinkinLedDriver lights;
     public DigitalChannel red1;
@@ -167,6 +168,7 @@ public class advAutoR extends scrap {
         motorBackLeft.setZeroPowerBehavior(BRAKE);
         motorFrontRight.setZeroPowerBehavior(BRAKE);
         motorFrontLeft.setZeroPowerBehavior(BRAKE);
+        sparkLong.setZeroPowerBehavior(BRAKE);
         red1.setMode(DigitalChannel.Mode.OUTPUT);
         green1.setMode(DigitalChannel.Mode.OUTPUT);
         red2.setMode(DigitalChannel.Mode.OUTPUT);
@@ -208,24 +210,25 @@ public class advAutoR extends scrap {
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
         waitForStart();
         if (opModeIsActive()) {
+            double ovrPower = 0.65;
             final double alterHeading = 0;
             final int rotation = -90;
             final double coneSubtraction = (fiveTallConeVal * 0.2);
             doSetup();
             //branch 1 get to spot
-            simplerGoSpot(ovrCurrX, ovrCurrY, 1, 3, 0.6, false, 0, false
+            simplerGoSpot(ovrCurrX, ovrCurrY, 1, 3, ovrPower, false, 0, false
                     , false, 0, 2, 4);
             setOvr(1, 3);
             double targetX = 2.1;
-            simplerGoSpot(ovrCurrX, ovrCurrY, targetX, 3.5, 0.6, true, topPoleVal,
-                    false, true, -90, 3, 2);
-            setOvr(targetX, 3.5);
+            simplerGoSpot(ovrCurrX, ovrCurrY, targetX, 3.525, ovrPower, true, topPoleVal,
+                    false, true, -90, 2, 3);
+            encoderDrive(1, -1, -1, 0.5);
+            setOvr(2.1, 3.55);
             openClaw();
             sleep(200);
             closeClaw();
-            //!goofy robot go turn 2x
-            simpleGoSpotRight(ovrCurrX, ovrCurrY, 3.5, 3, 0.6, true, midPoleVal + 500,
-                    true, true, 90, 4, 2);
+            simpleGoSpotRight(ovrCurrX, ovrCurrY, 3.5, 2.8, ovrPower, true, midPoleVal + 500,
+                    true, false, 0, 2, 3, true);
             setOvr(3.5, 3);
             // Branch 2 place first cone
             correctToCones();
@@ -239,15 +242,12 @@ public class advAutoR extends scrap {
             double finished = 0;
             for (int repetitions = 1; repetitions > 0; repetitions--) {
                 //branch 3 get to stack
-                simpleGoSpotRight(ovrCurrX, ovrCurrY, 2, 3, 0.6, true, topPoleVal,
-                        false, false, 0, 3, 1);
-                setOvr(2, 3);
-                simpleGoSpotRight(ovrCurrX, ovrCurrY, 2, 3.5, 0.6, false, topPoleVal,
-                        false, false, 0, 1, 3);
+                simpleGoSpotRight(ovrCurrX, ovrCurrY, targetX, 3, ovrPower, true, topPoleVal,
+                        false, false, 0, 3, 1, false);
                 setOvr(2, 3.5);
                 openClaw();
-                simpleGoSpotRight(ovrCurrX, ovrCurrY, 3.5, 3, 0.6, true, midPoleVal + 500,
-                        true, false, 0, 3, 3);
+                simpleGoSpotRight(ovrCurrX, ovrCurrY, targetX, 3.5, ovrPower, true, midPoleVal + 500,
+                        true, false, 0, 3, 3, true);
                 setOvr(3.5, 3);
                 closeClaw();
                 correctToCones();
@@ -282,6 +282,10 @@ public class advAutoR extends scrap {
         }
     }
 
+    public void correctByImu(float currentAngle, int targetAngle) {
+        int angle = (int) (targetAngle - currentAngle);
+        turn(angle);
+    }
 
     public void correctToCones() {
         correctByColor();
@@ -451,8 +455,8 @@ public class advAutoR extends scrap {
                     for (Recognition recognition : updatedRecognitions) {
                         double col = (recognition.getLeft() + recognition.getRight()) / 2;
                         double row = (recognition.getTop() + recognition.getBottom()) / 2;
-                        double width = Math.abs(recognition.getRight() - recognition.getLeft());
-                        double height = Math.abs(recognition.getTop() - recognition.getBottom());
+                        double width = abs(recognition.getRight() - recognition.getLeft());
+                        double height = abs(recognition.getTop() - recognition.getBottom());
 
                         telemetry.addData("", " ");
                         telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
@@ -616,17 +620,23 @@ public class advAutoR extends scrap {
 
     public void simpleGoSpotRight(double currX, double currY, double targetX, double targetY, double power,
                                   boolean combo, int pose, boolean isUp, boolean endTurn, int turn, int timeOutX,
-                                  int timeOutY) {
-        double sidewaysInches = (targetY - currY) * xMult;
-        double fwdInches = (targetX - currX) * yMult;
-        telemetry.addData("fwdInches", fwdInches);
-        telemetry.addData("sidewaysInches", sidewaysInches);
-        sleep(2000);
-        sideWaysEncoderDrive(power, sidewaysInches, timeOutY);
+                                  int timeOutY, boolean prioritizeY) {
+        double XMULT = 9.0;
+        double YMULT = 20.0;
+        double sidewaysInches = (targetY - currY) * XMULT * -1;
+        double fwdInches = (targetX - currX) * YMULT;
+        if (prioritizeY) {
+            sideWaysEncoderDrive(power, sidewaysInches, timeOutY);
+            sleep(100);
+        }
         if (!combo) {
             encoderDrive(power, fwdInches, fwdInches, timeOutX);
         } else {
             encoderComboFwd(power, fwdInches, fwdInches, pose, timeOutX, isUp);
+        }
+        if (!prioritizeY) {
+            sleep(100);
+            sideWaysEncoderDrive(power, sidewaysInches, timeOutY);
         }
         if (endTurn) {
             turn(turn);
@@ -635,7 +645,7 @@ public class advAutoR extends scrap {
         telemetry.update();
     }
 
-    public void setOvr(int x, int y) {
+    public void setOvr(double x, double y) {
         ovrCurrX = x;
         ovrCurrY = y;
     }
