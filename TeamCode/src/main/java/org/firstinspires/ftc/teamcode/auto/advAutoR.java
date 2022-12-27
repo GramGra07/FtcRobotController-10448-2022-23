@@ -261,6 +261,7 @@ public class advAutoR extends scrap {
             //2,3
             double stackDist = 19;
             armEncoder(0, 1, 2, true);
+            sleep(50);
             if (spot == 3) {
                 encoderDrive(1, stackDist, stackDist, 3);//opposite of 3 lines higher
                 //3,3
@@ -268,7 +269,6 @@ public class advAutoR extends scrap {
             //should already be here at spot 2
             if (spot == 2) {
                 //2,3
-                encoderDrive(1, 2, 2, 1);
             }
             if (spot == 1) {
                 encoderDrive(1, -15, -15, 3);
