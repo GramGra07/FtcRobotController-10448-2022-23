@@ -38,7 +38,7 @@ Expansion Hub Motors
 - None
 - Touch Sensor touchSensorEject
 - None
-- Touch Sensor touchSensorL Analog Device
+- Touch Sensor touchSensorL
 - None I2C Device
 - Internal IMU imu
 - 2M Distance Sensor lDistance
