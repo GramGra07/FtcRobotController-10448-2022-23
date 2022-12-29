@@ -3,26 +3,13 @@ package org.firstinspires.ftc.teamcode.teleOp;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcore.external.ClassFactory;
-import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
-import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.teamcode.teleOp.scrap;
-
-import java.util.List;
-import java.util.Objects;
 
 @TeleOp(name = "maintainanceMode", group = "Robot")
 //@Disabled
@@ -67,16 +54,16 @@ public class maintainance extends scrap {
     public DigitalChannel green4;
     NormalizedColorSensor colorSensor;//declaring the colorSensor variable
     public TouchSensor touchSensor;
-    public TouchSensor touchSensorFlipper;
+    public TouchSensor touchSensorL;
     public TouchSensor touchSensorClaw;
     public TouchSensor touchSensorEject;
-    public boolean armUp=false;
-    public boolean clawOpen=false;
-    public final int timeout=1;
-    public final int delay =1;
+    public boolean armUp = false;
+    public boolean clawOpen = false;
+    public final int timeout = 1;
+    public final int delay = 1;
     RevBlinkinLedDriver lights;
-    public boolean isSolid=false;
-    public String color="none";
+    public boolean isSolid = false;
+    public String color = "none";
 
     @Override
     public void runOpMode() {
@@ -89,9 +76,9 @@ public class maintainance extends scrap {
         red4 = hardwareMap.get(DigitalChannel.class, "red4");//getting the red4 light
         green4 = hardwareMap.get(DigitalChannel.class, "green4");//getting the green4 light
         touchSensor = hardwareMap.get(TouchSensor.class, ("touchSensor"));
-        touchSensorFlipper = hardwareMap.get(TouchSensor.class, ("touchSensorFlipper"));
-        touchSensorClaw = hardwareMap.get(   TouchSensor.class, ("touchSensorClaw"));
-        touchSensorEject = hardwareMap.get(  TouchSensor  .class, ("touchSensorEject"));
+        touchSensorL = hardwareMap.get(TouchSensor.class, ("touchSensorL"));
+        touchSensorClaw = hardwareMap.get(TouchSensor.class, ("touchSensorClaw"));
+        touchSensorEject = hardwareMap.get(TouchSensor.class, ("touchSensorEject"));
         clawServo = hardwareMap.get(Servo.class, "clawServo");
         sparkLong = hardwareMap.get(DcMotor.class, "sparkLong");
         lights = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
@@ -110,14 +97,14 @@ public class maintainance extends scrap {
         if (isStopRequested()) return;
         waitForStart();
         runtime.reset();
-        while (opModeIsActive()){
-            if (isSolid){
-                sleep(delay*1000);
+        while (opModeIsActive()) {
+            if (isSolid) {
+                sleep(delay * 1000);
                 lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
-                isSolid=false;
+                isSolid = false;
             }
             //lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
-            if (runtime.seconds()>timeout) { // if runtime is greater than timeout, allow it to switch
+            if (runtime.seconds() > timeout) { // if runtime is greater than timeout, allow it to switch
                 //should prevent it from just cycling on and off
                 if (touchSensor.isPressed()) {
                     armUp = !armUp;
@@ -133,7 +120,7 @@ public class maintainance extends scrap {
                     lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
                     runtime.reset();
                 }
-                if (touchSensorFlipper.isPressed()) {
+                if (touchSensorL.isPressed()) {
                     greenRed();
                     runtime.reset();
                 }
@@ -142,7 +129,7 @@ public class maintainance extends scrap {
                 armEncoder(scrap.topPoleVal, 0.8, 6, false);
                 green1.setState(true);
                 red1.setState(false);
-            }else{
+            } else {
                 armEncoder(0, 0.8, 6, true);
                 green1.setState(false);
                 red1.setState(true);
@@ -151,7 +138,7 @@ public class maintainance extends scrap {
                 openClaw();
                 green2.setState(false);
                 red2.setState(true);
-            }else{
+            } else {
                 closeClaw();
                 green2.setState(true);
                 red2.setState(false);
@@ -162,15 +149,17 @@ public class maintainance extends scrap {
             telemetry.update();
         }
     }
-    public void greenRed(){
+
+    public void greenRed() {
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
         color = "RED";
-        sleep(delay*1000);
+        sleep(delay * 1000);
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
         color = "GREEN";
-        isSolid=true;
+        isSolid = true;
     }
-    public String getColor(){
+
+    public String getColor() {
         final String[] favColors = {
                 "RAINBOW_RAINBOW_PALETTE",
                 "RAINBOW_PARTY_PALETTE",
@@ -187,10 +176,10 @@ public class maintainance extends scrap {
                 "GOLD",
                 "VIOLET"
         };
-        final int min=0;
-        final int max= favColors.length-1;
+        final int min = 0;
+        final int max = favColors.length - 1;
         String c = favColors[(int) Math.floor(Math.random() * (max - min + 1) + min)];
-        color=c;
+        color = c;
         return c;
     }
 }

@@ -98,7 +98,7 @@ public class systemsCheck extends scrap {
     NormalizedColorSensor colorSensorR;//declaring the colorSensor variable
     NormalizedColorSensor colorSensorL;//declaring the colorSensor variable
     public TouchSensor touchSensor;
-    public TouchSensor touchSensorFlipper;
+    public TouchSensor touchSensorL;
     public TouchSensor touchSensorClaw;
     public TouchSensor touchSensorEject;
     public RevBlinkinLedDriver lights;
@@ -121,9 +121,9 @@ public class systemsCheck extends scrap {
         colorSensorR = hardwareMap.get(NormalizedColorSensor.class, "colorSensorR");
         colorSensorL = hardwareMap.get(NormalizedColorSensor.class, "colorSensorL");
         touchSensor = hardwareMap.get(TouchSensor.class, ("touchSensor"));
-        touchSensorFlipper = hardwareMap.get(TouchSensor.class, ("touchSensorFlipper"));
-        touchSensorClaw = hardwareMap.get(   TouchSensor.class, ("touchSensorClaw"));
-        touchSensorEject = hardwareMap.get(  TouchSensor  .class, ("touchSensorEject"));
+        touchSensorL = hardwareMap.get(TouchSensor.class, ("touchSensorL"));
+        touchSensorClaw = hardwareMap.get(TouchSensor.class, ("touchSensorClaw"));
+        touchSensorEject = hardwareMap.get(TouchSensor.class, ("touchSensorEject"));
 
         motorFrontLeft = hardwareMap.get(DcMotor.class, "motorFrontLeft");
         motorBackLeft = hardwareMap.get(DcMotor.class, "motorBackLeft");
@@ -182,53 +182,53 @@ public class systemsCheck extends scrap {
         closeClaw();
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        if( isStopRequested()) return;
+        if (isStopRequested()) return;
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
         if (opModeIsActive()) {
             //check touchSensors
-            while (!touchSensor.isPressed()){
-                telemetry.addData("Hit the touch sensor","Arm Touch Sensor");
+            while (!touchSensor.isPressed()) {
+                telemetry.addData("Hit the touch sensor", "Arm Touch Sensor");
                 telemetry.update();
             }
-            boolean armFinished=false;
+            boolean armFinished = false;
             while (!armFinished) {
                 armEncoder(fiveTallConeVal, 1, 1, false);
                 armEncoder(0, 1, 1, true);
-                armFinished=true;
+                armFinished = true;
             }
-            while (!touchSensorEject.isPressed()){
-                telemetry.addData("Hit the touch sensor","Eject Touch Sensor");
+            while (!touchSensorEject.isPressed()) {
+                telemetry.addData("Hit the touch sensor", "Eject Touch Sensor");
                 telemetry.update();
             }
-            while (!touchSensorFlipper.isPressed()){
-                telemetry.addData("Hit the touch sensor","Flipper Touch Sensor");
+            while (!touchSensorL.isPressed()) {
+                telemetry.addData("Hit the touch sensor", "Front Left Touch Sensor");
                 telemetry.update();
             }
-            while (!touchSensorClaw.isPressed()){
-                telemetry.addData("Hit the touch sensor","Claw Touch Sensor");
+            while (!touchSensorClaw.isPressed()) {
+                telemetry.addData("Hit the touch sensor", "Claw Touch Sensor");
                 telemetry.update();
             }
-            boolean clawFinished=false;
+            boolean clawFinished = false;
             while (!clawFinished) {
                 openClaw();
                 sleep(1000);
                 closeClaw();
-                clawFinished=true;
+                clawFinished = true;
             }
             //check systems
-            telemetry.addData("Press eject touch sensor to start","Wheels test");
+            telemetry.addData("Press eject touch sensor to start", "Wheels test");
             telemetry.update();
-            while (!touchSensorEject.isPressed()){
-                telemetry.addData("Hit the touch sensor","Eject Touch Sensor");
+            while (!touchSensorEject.isPressed()) {
+                telemetry.addData("Hit the touch sensor", "Eject Touch Sensor");
                 telemetry.update();
             }
-            boolean ran=false;
+            boolean ran = false;
             while (!ran) {
                 lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
-                telemetry.addData("Running Wheels","Clear");
+                telemetry.addData("Running Wheels", "Clear");
                 sleep(2000);
                 lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
-                encoderDrive(1,4,4,1);
+                encoderDrive(1, 4, 4, 1);
                 telemetry.update();
                 sleep(500);
                 turn(90);
@@ -237,14 +237,14 @@ public class systemsCheck extends scrap {
                 turn(-90);
                 telemetry.update();
                 sleep(500);
-                encoderDrive(1,-4,-4,1);
+                encoderDrive(1, -4, -4, 1);
                 telemetry.update();
                 sleep(500);
                 motorBackLeft.setPower(0);
                 motorBackRight.setPower(0);
                 motorFrontLeft.setPower(0);
                 motorFrontRight.setPower(0);
-                ran=true;
+                ran = true;
             }
             lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
             sleep(1000);
@@ -272,7 +272,7 @@ public class systemsCheck extends scrap {
             green4.setState(true);
             sleep(3000);
 
-            while (spot==0) {
+            while (spot == 0) {
                 runVu(6, true);
                 telemetry.update();
             }
@@ -282,6 +282,7 @@ public class systemsCheck extends scrap {
             telemetry.update();
         }
     }
+
     //precise if exact 180, if not, then use the following
     //final int actualF=50;
     //final int actualR=100;
@@ -302,7 +303,7 @@ public class systemsCheck extends scrap {
     //    motorFrontLeft.setPower(-0.8);
     //    motorFrontRight.setPower(-0.8);
     //}
-    public String getColor(){
+    public String getColor() {
         final String[] favColors = {
                 "RAINBOW_RAINBOW_PALETTE",
                 "RAINBOW_PARTY_PALETTE",
@@ -319,8 +320,8 @@ public class systemsCheck extends scrap {
                 "GOLD",
                 "VIOLET"
         };
-        final int min=0;
-        final int max= favColors.length-1;
+        final int min = 0;
+        final int max = favColors.length - 1;
         return favColors[(int) Math.floor(Math.random() * (max - min + 1) + min)];
     }
 

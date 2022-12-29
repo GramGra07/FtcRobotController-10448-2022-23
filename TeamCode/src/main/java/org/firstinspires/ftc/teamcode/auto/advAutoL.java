@@ -37,9 +37,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 
-@Autonomous(name = "advAutoR", group = "Robot")
+@Autonomous(name = "advAutoL", group = "Robot")
 //@Disabled
-public class advAutoR extends scrap {
+public class advAutoL extends scrap {
     public int turn = 77;
 
 
@@ -113,7 +113,7 @@ public class advAutoR extends scrap {
     public boolean touchPressed = false;
     public double ovrCurrX = 2;
     public double ovrCurrY = 1;
-    private final boolean bypassCam = false;
+    private final boolean bypassCam = true;
     public RevBlinkinLedDriver lights;
     public DigitalChannel red1;
     public DigitalChannel green1;
@@ -212,23 +212,25 @@ public class advAutoR extends scrap {
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
         waitForStart();
         if (opModeIsActive()) {
-            double ovrPower = 0.65;
+            double ovrPower = 0.55;
             doSetup();
+            encoderDrive(1, 1, 1, 0.5);
             //branch 1 get to spot
-            simplerGoSpot(ovrCurrX, ovrCurrY, 1, 3, ovrPower, false, 0, false
+            simplerGoSpot(ovrCurrX, ovrCurrY, 3, 3, ovrPower, false, 0, false
                     , false, 0, 1, 4);
-            setOvr(1, 3);
-            double targetX = 2.1;
-            simplerGoSpot(ovrCurrX, ovrCurrY, targetX, 3.6, ovrPower, true, topPoleVal,
-                    false, true, -90, 1, 3);
+            setOvr(3, 3);
+            double targetX = 2.2;
+            double targetY2 = 3.5;// at pole
+            simplerGoSpot(ovrCurrX, ovrCurrY, targetX, targetY2, ovrPower, false, topPoleVal,
+                    false, true, 90, 2, 1);
             encoderDrive(1, 2, 2, 0.5);
-            setOvr(targetX, 3.6);
+            armEncoder(topPoleVal, 1, 3, false);
+            setOvr(targetX, targetY2);
             openClaw();
             sleep(200);
             closeClaw();
-            double targetY1 = 2.9;//lined up with cones
-            double targetY2 = 3.6;// at pole
-            simpleGoSpotRight(ovrCurrX, ovrCurrY, 3.5, targetY1, ovrPower, true, midPoleVal + 500,
+            double targetY1 = 2.5;//lined up with cones
+            simpleGoSpotRight(ovrCurrX, ovrCurrY, 0.5, targetY1, ovrPower, true, midPoleVal + 500,
                     true, false, 0, 1, 1, true);
             setOvr(3.5, targetY1);
             // Branch 2 place first cone
