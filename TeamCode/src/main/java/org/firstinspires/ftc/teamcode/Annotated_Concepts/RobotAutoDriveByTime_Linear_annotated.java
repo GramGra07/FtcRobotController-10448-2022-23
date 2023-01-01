@@ -1,5 +1,5 @@
 //much less accurate than encoders but still usefull to learn
-package org.firstinspires.ftc.teamcode.ggsamples.Annotated_Concepts;
+package org.firstinspires.ftc.teamcode.Annotated_Concepts;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;

@@ -27,49 +27,92 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.teamcode.testOpModes;
+package org.firstinspires.ftc.teamcode.testOpModes.IMU;
 
+import com.qualcomm.hardware.adafruit.AdafruitBNO055IMU;
 import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.util.ReadWriteFile;
 
 import org.firstinspires.ftc.robotcore.external.Func;
-import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
+import org.firstinspires.ftc.robotcore.internal.system.AppUtil;
 
+import java.io.File;
 import java.util.Locale;
 
 /**
- * {@link SensorBNO055IMU} gives a short demo on how to use the BNO055 Inertial Motion Unit (IMU) from AdaFruit.
+ * {@link SensorBNO055IMUCalibrationtest} calibrates the IMU accelerometer per
+ * "Section 3.11 Calibration" of the BNO055 specification.
  * <p>
  * Note: this is a Legacy example that will not work with newer Control/Expansion Hubs that use a different IMU
  * Please use the new SensorIMUOrthogonal or SensorIMUNonOrthogonal samples for a more universal IMU interface.
- * <p>
- * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  *
- * @see <a href="http://www.adafruit.com/products/2472">Adafruit IMU</a>
+ * <p>Manual calibration of the IMU is definitely NOT necessary: except for the magnetometer
+ * (which is not used by the default {@link BNO055IMU.SensorMode#IMU
+ * SensorMode#IMU}), the BNO055 is internally self-calibrating and thus can be very successfully
+ * used without manual intervention. That said, performing a one-time calibration, saving the
+ * results persistently, then loading them again at each run can help reduce the time that automatic
+ * calibration requires.</p>
+ *
+ * <p>This summary of the calibration process, from <a href="http://iotdk.intel.com/docs/master/upm/classupm_1_1_b_n_o055.html">
+ * Intel</a>, is informative:</p>
+ *
+ * <p>"This device requires calibration in order to operate accurately. [...] Calibration data is
+ * lost on a power cycle. See one of the examples for a description of how to calibrate the device,
+ * but in essence:</p>
+ *
+ * <p>There is a calibration status register available [...] that returns the calibration status
+ * of the accelerometer (ACC), magnetometer (MAG), gyroscope (GYR), and overall system (SYS).
+ * Each of these values range from 0 (uncalibrated) to 3 (fully calibrated). Calibration [ideally]
+ * involves certain motions to get all 4 values at 3. The motions are as follows (though see the
+ * datasheet for more information):</p>
+ *
+ * <li>
+ *     <ol>GYR: Simply let the sensor sit flat for a few seconds.</ol>
+ *     <ol>ACC: Move the sensor in various positions. Start flat, then rotate slowly by 45
+ *              degrees, hold for a few seconds, then continue rotating another 45 degrees and
+ *              hold, etc. 6 or more movements of this type may be required. You can move through
+ *              any axis you desire, but make sure that the device is lying at least once
+ *              perpendicular to the x, y, and z axis.</ol>
+ *     <ol>MAG: Move slowly in a figure 8 pattern in the air, until the calibration values reaches 3.</ol>
+ *     <ol>SYS: This will usually reach 3 when the other items have also reached 3. If not, continue
+ *              slowly moving the device though various axes until it does."</ol>
+ * </li>
+ *
+ * <p>To calibrate the IMU, run this sample opmode with a gamepad attached to the driver station.
+ * Once the IMU has reached sufficient calibration as reported on telemetry, press the 'A'
+ * button on the gamepad to write the calibration to a file. That file can then be indicated
+ * later when running an opmode which uses the IMU.</p>
+ *
+ * <p>Note: if your intended uses of the IMU do not include use of all its sensors (for exmaple,
+ * you might not use the magnetometer), then it makes little sense for you to wait for full
+ * calibration of the sensors you are not using before saving the calibration data. Indeed,
+ * it appears that in a SensorMode that doesn't use the magnetometer (for example), the
+ * magnetometer cannot actually be calibrated.</p>
+ *
+ * @see AdafruitBNO055IMU
+ * @see BNO055IMU.Parameters#calibrationDataFile
+ * @see <a href="https://www.bosch-sensortec.com/bst/products/all_products/bno055">BNO055 product page</a>
+ * @see <a href="https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST_BNO055_DS000_14.pdf">BNO055 specification</a>
  */
-@TeleOp(name = "Sensor: BNO055 IMU test", group = "Sensor")
-@Disabled   // Comment this out to add to the opmode list
-public class SensorBNO055IMU extends LinearOpMode {
+@TeleOp(name = "Sensor: BNO055 IMU Calibration test", group = "Sensor")
+@Disabled                            // Uncomment this to add to the opmode list
+public class SensorBNO055IMUCalibrationtest extends LinearOpMode {
     //----------------------------------------------------------------------------------------------
     // State
     //----------------------------------------------------------------------------------------------
 
-    // The IMU sensor object
+    // Our sensors, motors, and other devices go here, along with other long term state
     BNO055IMU imu;
 
     // State used for updating telemetry
     Orientation angles;
-    Acceleration gravity;
 
     //----------------------------------------------------------------------------------------------
     // Main logic
@@ -78,41 +121,62 @@ public class SensorBNO055IMU extends LinearOpMode {
     @Override
     public void runOpMode() {
 
-        // Set up the parameters with which we will use our IMU. Note that integration
-        // algorithm here just reports accelerations to the logcat log; it doesn't actually
-        // provide positional information.
+        telemetry.log().setCapacity(12);
+        telemetry.log().add("");
+        telemetry.log().add("Please refer to the calibration instructions");
+        telemetry.log().add("contained in the Adafruit IMU calibration");
+        telemetry.log().add("sample opmode.");
+        telemetry.log().add("");
+        telemetry.log().add("When sufficient calibration has been reached,");
+        telemetry.log().add("press the 'A' button to write the current");
+        telemetry.log().add("calibration data to a file.");
+        telemetry.log().add("");
+
+        // We are expecting the IMU to be attached to an I2C port on a Core Device Interface Module and named "imu".
         BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
         parameters.loggingEnabled = true;
         parameters.loggingTag = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-
-        // Retrieve and initialize the IMU. We expect the IMU to be attached to an I2C port
-        // on a Core Device Interface Module, configured to be a sensor of type "AdaFruit IMU",
-        // and named "imu".
         imu = hardwareMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
 
-        // Set up our telemetry dashboard
         composeTelemetry();
+        telemetry.log().add("Waiting for start...");
 
         // Wait until we're told to go
-        waitForStart();
+        while (!isStarted()) {
+            telemetry.update();
+            idle();
+        }
 
-        // Start the logging of measured acceleration
-        imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
+        telemetry.log().add("...started...");
 
-        // Loop and update the dashboard
         while (opModeIsActive()) {
+
+            if (gamepad1.a) {
+
+                // Get the calibration data
+                BNO055IMU.CalibrationData calibrationData = imu.readCalibrationData();
+
+                // Save the calibration data to a file. You can choose whatever file
+                // name you wish here, but you'll want to indicate the same file name
+                // when you initialize the IMU in an opmode in which it is used. If you
+                // have more than one IMU on your robot, you'll of course want to use
+                // different configuration file names for each.
+                String filename = "AdafruitIMUCalibration.json";
+                File file = AppUtil.getInstance().getSettingsFile(filename);
+                ReadWriteFile.writeFile(file, calibrationData.serialize());
+                telemetry.log().add("saved to '%s'", filename);
+
+                // Wait for the button to be released
+                while (gamepad1.a) {
+                    telemetry.update();
+                    idle();
+                }
+            }
+
             telemetry.update();
         }
     }
-
-    //----------------------------------------------------------------------------------------------
-    // Telemetry Configuration
-    //----------------------------------------------------------------------------------------------
 
     void composeTelemetry() {
 
@@ -125,7 +189,6 @@ public class SensorBNO055IMU extends LinearOpMode {
                 // to do that in each of the three items that need that info, as that's
                 // three times the necessary expense.
                 angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-                gravity = imu.getGravity();
             }
         });
 
@@ -160,23 +223,6 @@ public class SensorBNO055IMU extends LinearOpMode {
                     @Override
                     public String value() {
                         return formatAngle(angles.angleUnit, angles.thirdAngle);
-                    }
-                });
-
-        telemetry.addLine()
-                .addData("grvty", new Func<String>() {
-                    @Override
-                    public String value() {
-                        return gravity.toString();
-                    }
-                })
-                .addData("mag", new Func<String>() {
-                    @Override
-                    public String value() {
-                        return String.format(Locale.getDefault(), "%.3f",
-                                Math.sqrt(gravity.xAccel * gravity.xAccel
-                                        + gravity.yAccel * gravity.yAccel
-                                        + gravity.zAccel * gravity.zAccel));
                     }
                 });
     }

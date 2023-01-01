@@ -1,11 +1,10 @@
+package org.firstinspires.ftc.teamcode.Annotated_Concepts;// gets the package name you are currently in
 
-package org.firstinspires.ftc.teamcode.ggsamples.Annotated_Concepts;// gets the package name you are currently in
-
-import com.qualcomm.robotcore.eventloop.opmode.Disabled; // allows for the opmode to be disabled
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;//adds the base extended opmode
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;//adds the teleop call
-import com.qualcomm.robotcore.hardware.DcMotor;//adds ability to usse motors
-import com.qualcomm.robotcore.util.ElapsedTime;//adds run time
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name = "Basic: Omni Linear OpMode", group = "Linear Opmode")
 //name is the name on the final controler

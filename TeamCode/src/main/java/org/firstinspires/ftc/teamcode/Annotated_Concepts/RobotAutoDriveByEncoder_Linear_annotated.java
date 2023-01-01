@@ -1,8 +1,8 @@
 // this uses encoder movements to help you move your robot exactly where it needs to go
 
-package org.firstinspires.ftc.teamcode.ggsamples.Annotated_Concepts; // gets the place this is located
+package org.firstinspires.ftc.teamcode.Annotated_Concepts; // gets the place this is located
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;//allows it to be used as auto
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
