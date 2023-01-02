@@ -18,6 +18,7 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -180,6 +181,16 @@ public class fieldCentricTest extends LinearOpMode {//declaring the class
     public BNO055IMU imu;    //imu module inside expansion hub
     public Orientation angles;     //imu uses these to find angles and classify them
     public Acceleration gravity;    //Imu uses to get acceleration
+    double gamepadX;
+    double gamepadY;
+    double gamepadHypot;
+    double controllerAngle;
+    double robotDegree;
+    double movementDegree;
+    double xControl;
+    double yControl;
+    double slowMult = 3;
+    double slowPower;
 
     @Override
     public void runOpMode() {//if opmode is started
@@ -281,65 +292,6 @@ public class fieldCentricTest extends LinearOpMode {//declaring the class
         if (isStopRequested()) return;//if the stop button is pressed, stop the program
 
         while (opModeIsActive()) {//while the op mode is active
-            if (gamepad1.dpad_up) {
-                assisting = !assisting;
-            }
-            while (assisting) {
-                assist();
-            }
-            if (gamepad2.dpad_down) {
-                sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            }
-            if (gamepad1.touchpad_finger_1) {       //if the touchpad is pressed
-                telemetry.addData("Finger 1: ", "%2f : %2f", gamepad1.touchpad_finger_1_x, gamepad1.touchpad_finger_1_y);
-                if (gamepad1.touchpad_finger_1_x > 0) {//right side
-                    right = true;
-                }
-                if (gamepad1.touchpad_finger_1_x < 0) {//left side
-                    right = false;
-                }
-            }
-            if (rumble) {
-                if ((runtime.seconds() > endgame) && !isEndgame) {
-                    gamepad1.runRumbleEffect(customRumbleEffect);
-                    gamepad2.runRumbleEffect(customRumbleEffect);
-                    isEndgame = true;
-                }
-                if ((runtime.seconds() > end) && !isEnd) {
-                    gamepad1.runRumbleEffect(customRumbleEffect1);
-                    gamepad2.runRumbleEffect(customRumbleEffect1);
-                    isEnd = true;
-                }
-            }
-            limiter = true;//make sure limiter is on
-
-
-            double y = gamepad1.left_stick_y; // Remember, this is reversed!
-            double x = -gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
-            double rx = -gamepad1.right_stick_x;
-            double armPower = -gamepad2.left_stick_y;
-            if (gamepad1.back) {
-                //reverse controls
-                reversed = !reversed;
-            }
-            if (!right) {
-                reversed = true;
-            }
-            if (right) {
-                reversed = false;
-            }
-            if (reversed) {
-                y = -y;
-                x = -x;
-            }
-
-            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-            double frontLeftPower = (y + x + rx) / denominator;
-            double backLeftPower = (y - x + rx) / denominator;
-            double frontRightPower = (y - x - rx) / denominator;
-            double backRightPower = (y + x - rx) / denominator;
-            //armPower/=denominator;
             //switches
             if (gamepad1.left_trigger > 0) {
                 slowModeIsOn = false;//toggle
@@ -347,95 +299,24 @@ public class fieldCentricTest extends LinearOpMode {//declaring the class
             if (gamepad1.right_trigger > 0) {
                 slowModeIsOn = true;//toggle
             }
-            //
-            //if (gamepad1.dpad_right) {
-            //    unConeDown();
-            //} else if (!unConed) {
-            //    unConeUp();
-            //}
-            //
-            //
-            if (sparkLong.getCurrentPosition() >= armLimit - 200 || sparkLong.getCurrentPosition() <= baseArm + 500) {
-                green2.setState(false);
-                red2.setState(true);
-                limiting = true;
+            if (slowModeIsOn) {
+                slowPower = slowMult;
             } else {
-                green2.setState(true);
-                red2.setState(false);
-                limiting = false;
+                slowPower = 1;
             }
-            //arm extend controller 2
-            if (sparkLong.getCurrentPosition() <= armLimit && limiter) {
-                sparkLong.setPower(armPower);
-            } else {
-                sparkLong.setPower(0);
-            }
-            //
-            //claw code
-            if (gamepad2.left_bumper) {
-                clawServo.setPosition(setServo(magicNumOpen));
-                clawOpen = true;
-                //open claw
-            } else if (gamepad2.right_bumper) {
-                clawServo.setPosition(setServo(baseClawVal));
-                //close claw
-                clawOpen = false;
-            }//else{
-            //    clawServo.setPosition(setServo(0));
-            //}//auto close
-            if (clawOpen) {
-                green1.setState(false);
-                red1.setState(true);
-            } else {
-                green1.setState(true);
-                red1.setState(false);
-            }
-            //
-            //set values
-            if ((slowModeIsOn)) {//is false
-                frontLeftPower /= 4;
-                backLeftPower /= 4;
-                frontRightPower /= 4;
-                backRightPower /= 4;
-            }
-
-            //
-            //presets
-            if (gamepad2.y) {//top level
-                if (sparkLong.getCurrentPosition() < topPoleVal) {//go up
-                    sparkLong.setPower(1);
-                } else {
-                    sparkLong.setPower(0);
-                }
-            }
-            if (gamepad2.a) {//base
-                if (sparkLong.getCurrentPosition() > baseArm) {//go down
-                    sparkLong.setPower(-1);
-                } else {
-                    sparkLong.setPower(0);
-                }
-            }
-            if (gamepad2.b) {//middle
-                if (sparkLong.getCurrentPosition() > midPoleVal + 50) {//go down
-                    sparkLong.setPower(-1);
-                }
-                if (sparkLong.getCurrentPosition() < midPoleVal - 50) {//go up
-                    sparkLong.setPower(1);
-                } else {
-                    sparkLong.setPower(0);
-                }
-            }
-            if (gamepad2.x) {//low
-                if (sparkLong.getCurrentPosition() > lowPoleVal + 50) {//go down
-                    sparkLong.setPower(1);
-                }
-                if (sparkLong.getCurrentPosition() < lowPoleVal - 50) {//go up
-                    sparkLong.setPower(-1);
-                } else {
-                    sparkLong.setPower(0);
-                }
-            }
-            //
+            gamepadX = gamepad1.left_stick_x;
+            gamepadY = -gamepad1.left_stick_y;
+            gamepadHypot = Range.clip(Math.hypot(gamepadX, gamepadY), 0, 1);
+            controllerAngle = Math.atan2(gamepadY, gamepadX);
+            robotDegree = getAngle();
+            movementDegree = controllerAngle - robotDegree;
+            xControl = Math.cos(Math.toRadians(movementDegree)) * gamepadHypot;
+            yControl = Math.sin(Math.toRadians(movementDegree)) * gamepadHypot;
+            double turn = -gamepad1.right_stick_x;
+            double frontRightPower = (yControl * Math.abs(yControl) - xControl * Math.abs(xControl) + turn) / slowPower;
+            double backRightPower = (yControl * Math.abs(yControl) + xControl * Math.abs(xControl) + turn) / slowPower;
+            double frontLeftPower = (yControl * Math.abs(yControl) + xControl * Math.abs(xControl) - turn) / slowPower;
+            double backLeftPower = (yControl * Math.abs(yControl) - xControl * Math.abs(xControl) - turn) / slowPower;
             motorFrontLeft.setPower(frontLeftPower);
             motorBackLeft.setPower(backLeftPower);
             motorFrontRight.setPower(frontRightPower);
@@ -450,19 +331,13 @@ public class fieldCentricTest extends LinearOpMode {//declaring the class
             telemetry.addData("reversed", reversed);
             telemetry.addData("slowMode", slowModeIsOn);
             telemetry.addData("dead", deadWheel.getCurrentPosition());
-            getGamepadAngle();
             telemetry.update();
         }
     }
 
-    public void getGamepadAngle() {
-        double x = gamepad1.left_stick_x;
-        telemetry.addData("Angle", x);
-        double y = -gamepad1.left_stick_y;
-        telemetry.addData("Angle", y);
-        double angle = Math.atan2(y, x);
-        double degrees = Math.toDegrees(angle);
-        telemetry.addData("Angle", degrees);
+    public double getAngle() {
+        double angle = angles.firstAngle;
+        return angle;
     }
 
     public String getColor() {
