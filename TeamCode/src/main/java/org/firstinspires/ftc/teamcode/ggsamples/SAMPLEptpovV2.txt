@@ -1,10 +1,8 @@
 //import
 package org.firstinspires.ftc.teamcode.ggsamples;
 
-import android.content.Context;
 import android.graphics.Color;
 
-import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
@@ -18,7 +16,7 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.HardWareGrade;
+import org.firstinspires.ftc.teamcode.HardwareConfig;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Func;
 import org.firstinspires.ftc.robotcore.external.Telemetry;
@@ -43,7 +41,7 @@ import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 @TeleOp(name = "SAMPLEptpovV2", group = "Pushbot")
 @Disabled
 public class SAMPLEptpovV2 extends LinearOpMode {
-    HardWareGrade robot = new HardWareGrade();
+    HardwareConfig robot = new HardwareConfig();
     //channels
     public final int motorFrontLeftChannel = 0;
     public final int motorFrontRightChannel = 1;

@@ -116,7 +116,6 @@ public class scrap extends LinearOpMode {//declaring the class
     public DcMotor motorBackRight = null;
     public DcMotor sparkLong = null;
     public Servo clawServo = null;
-    public Servo flipper = null;
     //public Servo unConer = null;
     public DigitalChannel red1;
     public DigitalChannel green1;
@@ -515,7 +514,6 @@ public class scrap extends LinearOpMode {//declaring the class
     public void situate() {
         encoderDrive(1, 4, 4, 1);
     }
-
 
     public void encoderComboFwd(double speed, double lInches, double rInches,
                                 double pose, double timeoutS, boolean isUp) {

@@ -1,29 +1,15 @@
 //import
 package org.firstinspires.ftc.teamcode.ggsamples;
 
-import android.content.Context;
-import android.graphics.Color;
-
-import com.qualcomm.ftccommon.SoundPlayer;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
-import com.qualcomm.hardware.rev.Rev2mDistanceSensor;
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.HardWareGrade;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.Func;
-import org.firstinspires.ftc.robotcore.external.Telemetry;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -31,11 +17,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.robotcore.internal.system.Deadline;
+import org.firstinspires.ftc.teamcode.HardwareConfig;
 
 import java.util.List;
 import java.util.Locale;
@@ -44,7 +29,7 @@ import java.util.Locale;
 @TeleOp(name = "teleOpBuild", group = "Pushbot")
 @Disabled
 public class teleOpBuild extends LinearOpMode {
-    HardWareGrade robot = new HardWareGrade();
+    HardwareConfig robot = new HardwareConfig();
     //initiations
     //camera
     public double spot = 0;
@@ -193,7 +178,6 @@ public class teleOpBuild extends LinearOpMode {
             //sets power to respective motors
             //setAllDrivePower(frontRightPower,frontLeftPower,backRightPower,backLeftPower);
             robot.sparkLong.setPower(sparkLongHelp);
-            robot.sparkShort.setPower(sparkShortHelp);
             robot.motorFrontLeft.setPower(frontLeftPower);
             robot.motorFrontRight.setPower(frontRightPower);
             robot.motorBackLeft.setPower(backLeftPower);
