@@ -187,6 +187,7 @@ public class fieldCentricTest extends LinearOpMode {//declaring the class
     double controllerAngle;
     double robotDegree;
     double movementDegree;
+    double offSet;
     double xControl;
     double yControl;
     double slowMult = 3;
@@ -294,10 +295,10 @@ public class fieldCentricTest extends LinearOpMode {//declaring the class
         while (opModeIsActive()) {//while the op mode is active
             //switches
             if (gamepad1.left_trigger > 0) {
-                slowModeIsOn = false;//toggle
+                slowModeIsOn = false;
             }
             if (gamepad1.right_trigger > 0) {
-                slowModeIsOn = true;//toggle
+                slowModeIsOn = true;
             }
             if (slowModeIsOn) {
                 slowPower = slowMult;
@@ -309,7 +310,7 @@ public class fieldCentricTest extends LinearOpMode {//declaring the class
             gamepadHypot = Range.clip(Math.hypot(gamepadX, gamepadY), 0, 1);
             controllerAngle = Math.atan2(gamepadY, gamepadX);
             robotDegree = getAngle();
-            movementDegree = controllerAngle - robotDegree;
+            movementDegree = (controllerAngle - robotDegree) + offSet;
             xControl = Math.cos(Math.toRadians(movementDegree)) * gamepadHypot;
             yControl = Math.sin(Math.toRadians(movementDegree)) * gamepadHypot;
             double turn = -gamepad1.right_stick_x;
@@ -336,8 +337,7 @@ public class fieldCentricTest extends LinearOpMode {//declaring the class
     }
 
     public double getAngle() {
-        double angle = angles.firstAngle;
-        return angle;
+        return angles.firstAngle;
     }
 
     public String getColor() {
@@ -368,20 +368,6 @@ public class fieldCentricTest extends LinearOpMode {//declaring the class
         motorFrontRight.setPower(power);
         motorBackRight.setPower(power);
     }
-    //public void unConeUp() {
-    //    unConer.setPosition(setServo(magicUnCone));
-    //    unConed = true;
-    //}
-    //public void unConeDown() {
-    //    unConer.setPosition(setServo(baseUnCone));
-    //    unConed = false;
-    //}
-    //public void ejectUp() {
-    //    unConer.setPosition(setServo(magicEject));
-    //}
-    //public void ejectDown() {
-    //    unConer.setPosition(setServo(baseEject));
-    //}
 
     public void teleSpace() {
         telemetry.addLine();
@@ -421,13 +407,10 @@ public class fieldCentricTest extends LinearOpMode {//declaring the class
         encoderDrive(1, 4, 4, 1);
     }
 
-
     public void encoderComboFwd(double speed, double lInches, double rInches,
                                 double pose, double timeoutS, boolean isUp) {
         int newLeftTarget;
         int newRightTarget;
-        int newDLeftTarget;
-        int newDRightTarget;
         int target;
         target = (int) pose;
         sparkLong.setTargetPosition(target);
@@ -498,8 +481,6 @@ public class fieldCentricTest extends LinearOpMode {//declaring the class
                              double timeoutS) {
         int newLeftTarget;
         int newRightTarget;
-        int newDLeftTarget;
-        int newDRightTarget;
         if (opModeIsActive()) {
 
             newLeftTarget = motorBackLeft.getCurrentPosition() + (int) (leftInches * COUNTS_PER_INCH);
@@ -572,7 +553,7 @@ public class fieldCentricTest extends LinearOpMode {//declaring the class
                 newDeadTarget = deadWheel.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side_dead);
                 motorFrontLeft.setTargetPosition(-newFLTarget);
                 motorBackLeft.setTargetPosition(newBLTarget);
-                motorBackRight.setTargetPosition(-newBRTarget - 10);
+                motorBackRight.setTargetPosition(-newBRTarget);
                 motorFrontRight.setTargetPosition(newFRTarget);
                 deadWheel.setTargetPosition(-newDeadTarget);
             }
@@ -665,9 +646,6 @@ public class fieldCentricTest extends LinearOpMode {//declaring the class
         motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         deadWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //deadWheelL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //deadWheelR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
     public double setServo(int degrees) {
