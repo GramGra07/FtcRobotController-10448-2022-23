@@ -220,7 +220,7 @@ public class scrap extends LinearOpMode {//declaring the class
         //deadWheelR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the deadWheelR encoder
 
         motorFrontRight.setDirection(DcMotor.Direction.REVERSE);//setting the motorFrontRight direction
-        motorBackRight.setDirection(DcMotor.Direction.REVERSE);//setting the motorBackRight direction
+        motorBackLeft.setDirection(DcMotor.Direction.REVERSE);//setting the motorBackRight direction
 
         sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the sparkLong encoder to run using encoder
         motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorFrontLeft encoder to run using encoder
@@ -288,9 +288,9 @@ public class scrap extends LinearOpMode {//declaring the class
             limiter = true;//make sure limiter is on
 
 
-            double y = gamepad1.left_stick_y; // Remember, this is reversed!
-            double x = -gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
-            double rx = -gamepad1.right_stick_x;
+            double y = -gamepad1.left_stick_y; // Remember, this is reversed!
+            double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
+            double rx = gamepad1.right_stick_x;
             double armPower = -gamepad2.left_stick_y;
             if (gamepad1.back) {
                 //reverse controls

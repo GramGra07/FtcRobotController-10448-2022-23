@@ -187,7 +187,7 @@ public class fieldCentricTest extends LinearOpMode {//declaring the class
     double controllerAngle;
     double robotDegree;
     double movementDegree;
-    double offSet;
+    double offSet = 0;
     double xControl;
     double yControl;
     double slowMult = 3;
@@ -245,7 +245,7 @@ public class fieldCentricTest extends LinearOpMode {//declaring the class
         deadWheel = hardwareMap.get(DcMotor.class, "deadWheel");//getting the deadWheel motor
         //deadWheelL = hardwareMap.get(DcMotor.class, "deadWheelL");//getting the deadWheelL motor
         //deadWheelR = hardwareMap.get(DcMotor.class, "deadWheelR");//getting the deadWheelR motor
-        Servo clawServo = hardwareMap.get(Servo.class, "clawServo");//getting the clawServo servo
+        clawServo = hardwareMap.get(Servo.class, "clawServo");//getting the clawServo servo
         sparkLong = hardwareMap.get(DcMotor.class, "sparkLong");//getting the sparkLong motor
         touchSensor = hardwareMap.get(TouchSensor.class, ("touchSensor"));
 
@@ -259,7 +259,8 @@ public class fieldCentricTest extends LinearOpMode {//declaring the class
         //deadWheelR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the deadWheelR encoder
 
         motorFrontRight.setDirection(DcMotor.Direction.REVERSE);//setting the motorFrontRight direction
-        motorBackRight.setDirection(DcMotor.Direction.REVERSE);//setting the motorBackRight direction
+        motorBackLeft.setDirection(DcMotor.Direction.REVERSE);//setting the motorBackRight direction
+
 
         sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the sparkLong encoder to run using encoder
         motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorFrontLeft encoder to run using encoder
@@ -306,13 +307,21 @@ public class fieldCentricTest extends LinearOpMode {//declaring the class
                 slowPower = 1;
             }
             gamepadX = gamepad1.left_stick_x;
+            telemetry.addData("gamepadX", gamepadX);
             gamepadY = -gamepad1.left_stick_y;
+            telemetry.addData("gamepadY", gamepadY);
             gamepadHypot = Range.clip(Math.hypot(gamepadX, gamepadY), 0, 1);
-            controllerAngle = Math.atan2(gamepadY, gamepadX);
-            robotDegree = getAngle();
+            telemetry.addData("gamepadHypot", gamepadHypot);
+            controllerAngle = Math.toDegrees(Math.atan2(gamepadY, gamepadX));
+            telemetry.addData("controllerAngle", controllerAngle);
+            robotDegree = angles.firstAngle;
+            telemetry.addData("robotDegree", angles.firstAngle);
             movementDegree = (controllerAngle - robotDegree) + offSet;
+            telemetry.addData("movementDegree", movementDegree);
             xControl = Math.cos(Math.toRadians(movementDegree)) * gamepadHypot;
+            telemetry.addData("xControl", xControl);
             yControl = Math.sin(Math.toRadians(movementDegree)) * gamepadHypot;
+            telemetry.addData("yControl", yControl);
             double turn = -gamepad1.right_stick_x;
             double frontRightPower = (yControl * Math.abs(yControl) - xControl * Math.abs(xControl) + turn) / slowPower;
             double backRightPower = (yControl * Math.abs(yControl) + xControl * Math.abs(xControl) + turn) / slowPower;
@@ -322,16 +331,6 @@ public class fieldCentricTest extends LinearOpMode {//declaring the class
             motorBackLeft.setPower(backLeftPower);
             motorFrontRight.setPower(frontRightPower);
             motorBackRight.setPower(backRightPower);
-            telemetry.addData("Status", statusVal);//shows current status
-            telemetry.addLine("Limiter")
-                    .addData("Val", String.valueOf(sparkLong.getCurrentPosition()))
-                    .addData("Max", armLimit)
-                    .addData("Limiter", limiter)
-                    .addData("Is broken", (sparkLong.getCurrentPosition() > armLimit));
-            //.addData("Is Limiting",limiting);
-            telemetry.addData("reversed", reversed);
-            telemetry.addData("slowMode", slowModeIsOn);
-            telemetry.addData("dead", deadWheel.getCurrentPosition());
             telemetry.update();
         }
     }
