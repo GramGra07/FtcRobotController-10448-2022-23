@@ -4,6 +4,8 @@ import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
 import android.graphics.Color;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -16,10 +18,18 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
@@ -167,6 +177,21 @@ public class scrap extends LinearOpMode {//declaring the class
     private float greenValL = 0;//the green value in rgb
     private float blueValL = 0;//the blue value in rgb
 
+    public BNO055IMU imu;    //imu module inside expansion hub
+    public Orientation angles;     //imu uses these to find angles and classify them
+    public Acceleration gravity;    //Imu uses to get acceleration
+    double gamepadX;
+    double gamepadY;
+    double gamepadHypot;
+    double controllerAngle;
+    double robotDegree;
+    double movementDegree;
+    double offSet = 0;
+    double xControl;
+    double yControl;
+    double slowMult = 3;
+    double slowPower;
+
     @Override
     public void runOpMode() {//if opmode is started
         updateStatus("Initializing");
@@ -206,9 +231,21 @@ public class scrap extends LinearOpMode {//declaring the class
         deadWheel = hardwareMap.get(DcMotor.class, "deadWheel");//getting the deadWheel motor
         //deadWheelL = hardwareMap.get(DcMotor.class, "deadWheelL");//getting the deadWheelL motor
         //deadWheelR = hardwareMap.get(DcMotor.class, "deadWheelR");//getting the deadWheelR motor
-        Servo clawServo = hardwareMap.get(Servo.class, "clawServo");//getting the clawServo servo
+        clawServo = hardwareMap.get(Servo.class, "clawServo");//getting the clawServo servo
         sparkLong = hardwareMap.get(DcMotor.class, "sparkLong");//getting the sparkLong motor
         touchSensor = hardwareMap.get(TouchSensor.class, ("touchSensor"));
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+        imu = hardwareMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        gravity = imu.getGravity();
+        imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
 
         sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the sparkLong encoder
         motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorFrontLeft encoder
@@ -254,6 +291,7 @@ public class scrap extends LinearOpMode {//declaring the class
         if (isStopRequested()) return;//if the stop button is pressed, stop the program
 
         while (opModeIsActive()) {//while the op mode is active
+            double armPower = gamepad2.left_stick_y;
             if (gamepad1.dpad_up) {
                 assisting = !assisting;
             }
@@ -288,38 +326,40 @@ public class scrap extends LinearOpMode {//declaring the class
             limiter = true;//make sure limiter is on
 
 
-            double y = -gamepad1.left_stick_y; // Remember, this is reversed!
-            double x = gamepad1.left_stick_x * 1.1; // Counteract imperfect strafing
-            double rx = gamepad1.right_stick_x;
-            double armPower = -gamepad2.left_stick_y;
-            if (gamepad1.back) {
-                //reverse controls
-                reversed = !reversed;
-            }
-            if (!right) {
-                reversed = true;
-            }
-            if (right) {
-                reversed = false;
-            }
-            if (reversed) {
-                y = -y;
-                x = -x;
-            }
-
-            double denominator = Math.max(Math.abs(y) + Math.abs(x) + Math.abs(rx), 1);
-            double frontLeftPower = (y + x + rx) / denominator;
-            double backLeftPower = (y - x + rx) / denominator;
-            double frontRightPower = (y - x - rx) / denominator;
-            double backRightPower = (y + x - rx) / denominator;
-            //armPower/=denominator;
             //switches
             if (gamepad1.left_trigger > 0) {
-                slowModeIsOn = false;//toggle
+                slowModeIsOn = false;
             }
             if (gamepad1.right_trigger > 0) {
-                slowModeIsOn = true;//toggle
+                slowModeIsOn = true;
             }
+            if (slowModeIsOn) {
+                slowPower = slowMult;
+            } else {
+                slowPower = 1;
+            }
+            gamepadX = gamepad1.left_stick_x;
+            telemetry.addData("gamepadX", gamepadX);
+            gamepadY = -gamepad1.left_stick_y;
+            telemetry.addData("gamepadY", gamepadY);
+            gamepadHypot = Range.clip(Math.hypot(gamepadX, gamepadY), 0, 1);
+            telemetry.addData("gamepadHypot", gamepadHypot);
+            controllerAngle = Math.toDegrees(Math.atan2(gamepadY, gamepadX));
+            telemetry.addData("controllerAngle", controllerAngle);
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+            robotDegree = angles.firstAngle;
+            telemetry.addData("robotDegree", robotDegree);
+            movementDegree = (controllerAngle - robotDegree) + offSet;
+            telemetry.addData("movementDegree", movementDegree);
+            xControl = Math.cos(Math.toRadians(movementDegree)) * gamepadHypot;
+            telemetry.addData("xControl", xControl);
+            yControl = Math.sin(Math.toRadians(movementDegree)) * gamepadHypot;
+            telemetry.addData("yControl", yControl);
+            double turn = -gamepad1.right_stick_x;
+            double frontRightPower = (yControl * Math.abs(yControl) - xControl * Math.abs(xControl) + turn) / slowPower;
+            double backRightPower = (yControl * Math.abs(yControl) + xControl * Math.abs(xControl) + turn) / slowPower;
+            double frontLeftPower = (yControl * Math.abs(yControl) + xControl * Math.abs(xControl) - turn) / slowPower;
+            double backLeftPower = (yControl * Math.abs(yControl) - xControl * Math.abs(xControl) - turn) / slowPower;
             //
             //if (gamepad1.dpad_right) {
             //    unConeDown();

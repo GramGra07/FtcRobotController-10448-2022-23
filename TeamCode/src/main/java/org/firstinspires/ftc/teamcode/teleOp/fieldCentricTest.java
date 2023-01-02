@@ -314,8 +314,9 @@ public class fieldCentricTest extends LinearOpMode {//declaring the class
             telemetry.addData("gamepadHypot", gamepadHypot);
             controllerAngle = Math.toDegrees(Math.atan2(gamepadY, gamepadX));
             telemetry.addData("controllerAngle", controllerAngle);
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
             robotDegree = angles.firstAngle;
-            telemetry.addData("robotDegree", angles.firstAngle);
+            telemetry.addData("robotDegree", robotDegree);
             movementDegree = (controllerAngle - robotDegree) + offSet;
             telemetry.addData("movementDegree", movementDegree);
             xControl = Math.cos(Math.toRadians(movementDegree)) * gamepadHypot;
@@ -327,6 +328,7 @@ public class fieldCentricTest extends LinearOpMode {//declaring the class
             double backRightPower = (yControl * Math.abs(yControl) + xControl * Math.abs(xControl) + turn) / slowPower;
             double frontLeftPower = (yControl * Math.abs(yControl) + xControl * Math.abs(xControl) - turn) / slowPower;
             double backLeftPower = (yControl * Math.abs(yControl) - xControl * Math.abs(xControl) - turn) / slowPower;
+            telemetry.addData("backleftpower", backLeftPower);
             motorFrontLeft.setPower(frontLeftPower);
             motorBackLeft.setPower(backLeftPower);
             motorFrontRight.setPower(frontRightPower);
