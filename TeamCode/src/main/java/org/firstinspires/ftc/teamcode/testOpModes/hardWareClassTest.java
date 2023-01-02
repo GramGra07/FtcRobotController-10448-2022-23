@@ -23,7 +23,7 @@ import org.firstinspires.ftc.teamcode.teleOp.scrap;
 import java.util.List;
 import java.util.Objects;
 
-@Autonomous(name = "blankAuto", group = "Robot")
+@Autonomous(name = "hardWareClassTest", group = "Robot")
 @Disabled
 public class hardWareClassTest extends scrap {
     public int turn = 77;
