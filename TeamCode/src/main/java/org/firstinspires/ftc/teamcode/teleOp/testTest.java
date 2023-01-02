@@ -42,21 +42,8 @@ import java.util.Objects;
 @TeleOp(name = "testTest", group = "Robot")//declaring the name and group of the opmode
 //@Disabled//disabling the opmode
 public class testTest extends LinearOpMode {//declaring the class
-    private ElapsedTime runtime = new ElapsedTime();
-    //encoder var
-    public int turn = 77;
-    public double yMult = 24;
-    public double xMult = 10;
-    public double ovrCurrX = 0;
-    public double ovrCurrY = 0;
-    public double ovrTurn = 0;
     public static final double COUNTS_PER_INCH_Side_dead = -665.08;
     public static final double COUNTS_PER_INCH_Side = -100;
-    //offset
-    public double rOffset = distanceSensorCalibrator.rOffset;
-    public double lOffset = distanceSensorCalibrator.lOffset;//-5.1;
-    public double fOffset = distanceSensorCalibrator.fOffset;
-    public double bOffset = distanceSensorCalibrator.bOffset;
     //arm
     public static final double COUNTS_PER_MOTOR_REV_arm = 28;
     public static final double DRIVE_GEAR_REDUCTION_arm = 40;
@@ -75,44 +62,71 @@ public class testTest extends LinearOpMode {//declaring the class
     public static final double WHEEL_DIAMETER_INCHES_dead = WHEEL_DIAMETER_MM_dead * 0.0393701;     // For figuring circumference
     public static final double COUNTS_PER_INCH_dead = (COUNTS_PER_MOTOR_REV_dead) /
             (WHEEL_DIAMETER_INCHES_dead * Math.PI);
-    //other variables
-    public boolean slowModeIsOn = false;//declaring the slowModeIsOn variable
-    public boolean reversed = false;//declaring the reversed variable
-
-    //servo variables
-    public double position = 0;//sets servo position to 0-1 multiplier
-    public final double degree_mult = 0.00555555554;//100/180
-    public final int baseClawVal = 30;//declaring the baseClawVal variable
-    public final int magicNumOpen = 60;//declaring the magicNumOpen variable
-    public boolean clawOpen = false;//declaring the clawOpen variable
-
-    //arm labels
-    public final int baseArmPosition = 0;
     public static final int armLimit = 4250;//declaring the armLimit variable
-    public final int baseArm = 0;//declaring the baseArm variable
     public static final int lowPoleVal = 1570;//should be about 1/3 of arm limit
     public static final int midPoleVal = 290;//should be about 2/3 of arm limit
     public static final int fiveTallConeVal = 300;
     public static final int topPoleVal = armLimit;//should be close to armLimit
-    public boolean limiter = true;//declaring the limiter variable, is on or off
-    public boolean limiting = false;//declaring the limiting variable
-
-    //rumble
-    Gamepad.RumbleEffect customRumbleEffect;//declaring the customRumbleEffect variable
-    final double endgame = 120;//declaring the endgame variable
-    public boolean isEndgame = false;//declaring the isEndgame variable
-    Gamepad.RumbleEffect customRumbleEffect1;// declaring the customRumbleEffect1 variable
-    public boolean rumble = false;//declaring the rumble variable
-    final double end = 150;//declaring the end variable
-    public boolean isEnd = false;//declaring the isEnd variable
-
+    private static final String TFOD_MODEL_ASSET = "custom.tflite";
+    private static final String[] LABELS = {
+            "capacitor",//3
+            "led",//1
+            "resistor"//2
+    };
+    private static final String VUFORIA_KEY =
+            "AXmzBcj/////AAABme5HSJ/H3Ucup73WSIaV87tx/sFHYaWfor9OZVg6afr2Bw7kNolHd+mF5Ps91SlQpgBHulieI0jcd86kqJSwx46BZ8v8DS5S5x//eQWMEGjMDnvco4/oTcDwuSOLIVZG2UtLmJXPS1L3CipjabePFlqAL2JtBlN78p6ZZbRFSHW680hWEMSimZuQy/cMudD7J/MjMjMs7b925b8BkijlnTQYr7CbSlXrpDh5K+9fLlk2OyEZ4w7tm7e4UJDInJ/T3oi8PqqKCqkUaTkJWlQsvoELbDu5L2FgzsuDhBLe2rHtJRqfORd7n+6M30UdFSsxqq5TaZztkWgzRUr1GC3yBSTS6iFqEuL3g06GrfwOJF0F";
+    public final double degree_mult = 0.00555555554;//100/180
+    public final int baseClawVal = 30;//declaring the baseClawVal variable
+    public final int magicNumOpen = 60;//declaring the magicNumOpen variable
+    //arm labels
+    public final int baseArmPosition = 0;
+    public final int baseArm = 0;//declaring the baseArm variable
     //rake
     public final int baseFlip = -90;//declaring the baseFlip variable
     public final int magicFlip = baseFlip + 50;//declaring the magicFlip variable
     public final int baseUnCone = 0;
     public final int magicUnCone = baseUnCone + 90;
+    public final int baseEject = 0;
+    public final int magicEject = baseEject + 90;
+    final double endgame = 120;//declaring the endgame variable
+    final double end = 150;//declaring the end variable
+    //color
+    final float[] hsvValues = new float[3];//gets values for color sensor
+    private final ElapsedTime runtime = new ElapsedTime();
+    private final float redVal = 0;//the red value in rgb
+    private final float greenVal = 0;//the green value in rgb
+    private final float blueVal = 0;//the blue value in rgb
+    private final String colorName = "N/A";//gets color name
+    private final float redValR = 0;//the red value in rgb
+    private final float greenValR = 0;//the green value in rgb
+    private final float blueValR = 0;//the blue value in rgb
+    private final float redValL = 0;//the red value in rgb
+    private final float greenValL = 0;//the green value in rgb
+    private final float blueValL = 0;//the blue value in rgb
+    //encoder var
+    public int turn = 77;
+    public double yMult = 24;
+    public double xMult = 10;
+    public double ovrCurrX = 0;
+    public double ovrCurrY = 0;
     //public boolean unConed = false;
-
+    public double ovrTurn = 0;
+    //offset
+    public double rOffset = distanceSensorCalibrator.rOffset;
+    public double lOffset = distanceSensorCalibrator.lOffset;//-5.1;
+    public double fOffset = distanceSensorCalibrator.fOffset;
+    public double bOffset = distanceSensorCalibrator.bOffset;
+    //other variables
+    public boolean slowModeIsOn = false;//declaring the slowModeIsOn variable
+    public boolean reversed = false;//declaring the reversed variable
+    //servo variables
+    public double position = 0;//sets servo position to 0-1 multiplier
+    public boolean clawOpen = false;//declaring the clawOpen variable
+    public boolean limiter = true;//declaring the limiter variable, is on or off
+    public boolean limiting = false;//declaring the limiting variable
+    public boolean isEndgame = false;//declaring the isEndgame variable
+    public boolean rumble = false;//declaring the rumble variable
+    public boolean isEnd = false;//declaring the isEnd variable
     //motors/servos
     public DcMotor deadWheel = null;//declaring the deadWheel motor
     //public DcMotor deadWheelL = null;//declaring the deadWheelL motor
@@ -121,6 +135,8 @@ public class testTest extends LinearOpMode {//declaring the class
     public DistanceSensor lDistance;//declaring the lDistance sensor
     public DistanceSensor fDistance;//declaring the fDistance sensor
     public DcMotor motorFrontLeft = null;
+
+    //vuforia
     public DcMotor motorBackLeft = null;
     public DcMotor motorFrontRight = null;
     public DcMotor motorBackRight = null;
@@ -136,28 +152,6 @@ public class testTest extends LinearOpMode {//declaring the class
     public DigitalChannel green3;
     public DigitalChannel red4;
     public DigitalChannel green4;
-
-    //vuforia
-
-    private static final String TFOD_MODEL_ASSET = "custom.tflite";
-    private static final String[] LABELS = {
-            "capacitor",//3
-            "led",//1
-            "resistor"//2
-    };
-    private static final String VUFORIA_KEY =
-            "AXmzBcj/////AAABme5HSJ/H3Ucup73WSIaV87tx/sFHYaWfor9OZVg6afr2Bw7kNolHd+mF5Ps91SlQpgBHulieI0jcd86kqJSwx46BZ8v8DS5S5x//eQWMEGjMDnvco4/oTcDwuSOLIVZG2UtLmJXPS1L3CipjabePFlqAL2JtBlN78p6ZZbRFSHW680hWEMSimZuQy/cMudD7J/MjMjMs7b925b8BkijlnTQYr7CbSlXrpDh5K+9fLlk2OyEZ4w7tm7e4UJDInJ/T3oi8PqqKCqkUaTkJWlQsvoELbDu5L2FgzsuDhBLe2rHtJRqfORd7n+6M30UdFSsxqq5TaZztkWgzRUr1GC3yBSTS6iFqEuL3g06GrfwOJF0F";
-    private VuforiaLocalizer vuforia;
-    private TFObjectDetector tfod;
-    private int spot = 0;
-    //color
-    final float[] hsvValues = new float[3];//gets values for color sensor
-    private float redVal = 0;//the red value in rgb
-    private float greenVal = 0;//the green value in rgb
-    private float blueVal = 0;//the blue value in rgb
-    private String colorName = "N/A";//gets color name
-    NormalizedColorSensor colorSensorR;//declaring the colorSensor variable
-    NormalizedColorSensor colorSensorL;//declaring the colorSensor variable
     //
     public String statusVal = "OFFLINE";
     public double fDistanceVal = 0;
@@ -166,21 +160,16 @@ public class testTest extends LinearOpMode {//declaring the class
     public TouchSensor touchSensor;
     //isRight side
     public boolean right = true;//declaring the right variable
-    public final int baseEject = 0;
-    public final int magicEject = baseEject + 90;
     public RevBlinkinLedDriver lights;
-
     public boolean assisting = false;
-    private float redValR = 0;//the red value in rgb
-    private float greenValR = 0;//the green value in rgb
-    private float blueValR = 0;//the blue value in rgb
-    private float redValL = 0;//the red value in rgb
-    private float greenValL = 0;//the green value in rgb
-    private float blueValL = 0;//the blue value in rgb
-
     public BNO055IMU imu;    //imu module inside expansion hub
     public Orientation angles;     //imu uses these to find angles and classify them
     public Acceleration gravity;    //Imu uses to get acceleration
+    //rumble
+    Gamepad.RumbleEffect customRumbleEffect;//declaring the customRumbleEffect variable
+    Gamepad.RumbleEffect customRumbleEffect1;// declaring the customRumbleEffect1 variable
+    NormalizedColorSensor colorSensorR;//declaring the colorSensor variable
+    NormalizedColorSensor colorSensorL;//declaring the colorSensor variable
     double gamepadX;
     double gamepadY;
     double gamepadHypot;
@@ -191,6 +180,9 @@ public class testTest extends LinearOpMode {//declaring the class
     double yControl;
     double slowMult = 3;
     double slowPower;
+    private VuforiaLocalizer vuforia;
+    private TFObjectDetector tfod;
+    private int spot = 0;
 
     @Override
     public void runOpMode() {//if opmode is started
@@ -336,8 +328,7 @@ public class testTest extends LinearOpMode {//declaring the class
     }
 
     public double getAngle() {
-        double angle = angles.firstAngle;
-        return angle;
+        return angles.firstAngle;
     }
 
     public String getColor() {
