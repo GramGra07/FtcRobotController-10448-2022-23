@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.auto.advAutoR;
-import org.firstinspires.ftc.teamcode.teleOp.scrap;
+import org.firstinspires.ftc.teamcode.teleOp.robotCentric;
 
 @Autonomous(name = "touchTest", group = "Robot")
 @Disabled

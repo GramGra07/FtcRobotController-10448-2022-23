@@ -8,13 +8,13 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.teamcode.teleOp.scrap;
+import org.firstinspires.ftc.teamcode.teleOp.robotCentric;
 
 import java.util.Objects;
 
 @TeleOp(name = "distanceSensorCalibrator", group = "robot")
 @Disabled
-public class distanceSensorCalibrator extends scrap {
+public class distanceSensorCalibrator extends robotCentric {
     //distance
     //range
     private DistanceSensor rDistance;

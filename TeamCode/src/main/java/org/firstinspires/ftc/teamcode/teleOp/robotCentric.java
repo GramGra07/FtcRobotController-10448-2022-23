@@ -4,8 +4,6 @@ import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
 import android.graphics.Color;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -21,14 +19,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
@@ -38,9 +29,9 @@ import java.util.List;
 import java.util.Objects;
 
 
-@TeleOp(name = "teleop", group = "Robot")//declaring the name and group of the opmode
+@TeleOp(name = "robotCentric", group = "Robot")//declaring the name and group of the opmode
 //@Disabled//disabling the opmode
-public class scrap extends LinearOpMode {//declaring the class
+public class robotCentric extends LinearOpMode {//declaring the class
     private ElapsedTime runtime = new ElapsedTime();
     //encoder var
     public int turn = 77;
@@ -175,17 +166,6 @@ public class scrap extends LinearOpMode {//declaring the class
     private float redValL = 0;//the red value in rgb
     private float greenValL = 0;//the green value in rgb
     private float blueValL = 0;//the blue value in rgb
-
-    public BNO055IMU imu;    //imu module inside expansion hub
-    public Orientation angles;     //imu uses these to find angles and classify them
-    public Acceleration gravity;    //Imu uses to get acceleration
-    double gamepadX;
-    double gamepadY;
-    double gamepadHypot;
-    double controllerAngle;
-    double robotDegree;
-    double movementDegree;
-    double offSet = 0;
     double xControl;
     double yControl;
     double slowMult = 3;
@@ -233,18 +213,6 @@ public class scrap extends LinearOpMode {//declaring the class
         clawServo = hardwareMap.get(Servo.class, "clawServo");//getting the clawServo servo
         sparkLong = hardwareMap.get(DcMotor.class, "sparkLong");//getting the sparkLong motor
         touchSensor = hardwareMap.get(TouchSensor.class, ("touchSensor"));
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled = true;
-        parameters.loggingTag = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-        imu = hardwareMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
-        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        gravity = imu.getGravity();
-        imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
 
         sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the sparkLong encoder
         motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorFrontLeft encoder
@@ -287,7 +255,7 @@ public class scrap extends LinearOpMode {//declaring the class
         waitForStart();//waiting for the start button to be pressed
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
 
-        if (isStopRequested()) return;//if the stop button is pressed, stop the program
+        //if (isStopRequested()) return;//if the stop button is pressed, stop the program
 
         while (opModeIsActive()) {//while the op mode is active
             double armPower = gamepad2.left_stick_y;

@@ -288,7 +288,7 @@ public class fieldCentric extends LinearOpMode {//declaring the class
         waitForStart();//waiting for the start button to be pressed
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
 
-        if (isStopRequested()) return;//if the stop button is pressed, stop the program
+        //if (isStopRequested()) return;//if the stop button is pressed, stop the program
 
         while (opModeIsActive()) {//while the op mode is active
             double armPower = gamepad2.left_stick_y;

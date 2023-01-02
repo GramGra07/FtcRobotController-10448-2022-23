@@ -13,7 +13,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name = "maintainanceMode", group = "Robot")
 //@Disabled
-public class maintainance extends scrap {
+public class maintainance extends robotCentric {
     public int turn = 77;
     private ElapsedTime runtime = new ElapsedTime();
     static final double COUNTS_PER_MOTOR_REV = 28;
@@ -31,9 +31,9 @@ public class maintainance extends scrap {
     static final double ROBOT_DIAMETER = 13.05;
     //arm
     final int baseArmPosition = 0;
-    public final int armLimit = scrap.armLimit;
-    public final int lowPoleVal = scrap.lowPoleVal;//should be about 1/3 of arm limit
-    public final int midPoleVal = scrap.midPoleVal;//should be about 2/3 of arm limit
+    public final int armLimit = robotCentric.armLimit;
+    public final int lowPoleVal = robotCentric.lowPoleVal;//should be about 1/3 of arm limit
+    public final int midPoleVal = robotCentric.midPoleVal;//should be about 2/3 of arm limit
     public final int topPoleVal = armLimit;//should be close to armLimit
     static final double COUNTS_PER_MOTOR_REV_arm = 28;
     static final double DRIVE_GEAR_REDUCTION_arm = 40;
@@ -126,7 +126,7 @@ public class maintainance extends scrap {
                 }
             }
             if (armUp) {
-                armEncoder(scrap.topPoleVal, 0.8, 6, false);
+                armEncoder(robotCentric.topPoleVal, 0.8, 6, false);
                 green1.setState(true);
                 red1.setState(false);
             } else {

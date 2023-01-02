@@ -18,14 +18,14 @@ import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.teamcode.teleOp.scrap;
+import org.firstinspires.ftc.teamcode.teleOp.robotCentric;
 
 import java.util.List;
 import java.util.Objects;
 
 @Autonomous(name = "hardWareClassTest", group = "Robot")
 @Disabled
-public class hardWareClassTest extends scrap {
+public class hardWareClassTest extends robotCentric {
     public int turn = 77;
     hardWareClassTest robot = new hardWareClassTest();
 
@@ -46,9 +46,9 @@ public class hardWareClassTest extends scrap {
     static final double ROBOT_DIAMETER = 13.05;
     //arm
     final int baseArmPosition = 0;
-    public final int armLimit = scrap.armLimit;
-    public final int lowPoleVal = scrap.lowPoleVal;//should be about 1/3 of arm limit
-    public final int midPoleVal = scrap.midPoleVal;//should be about 2/3 of arm limit
+    public final int armLimit = robotCentric.armLimit;
+    public final int lowPoleVal = robotCentric.lowPoleVal;//should be about 1/3 of arm limit
+    public final int midPoleVal = robotCentric.midPoleVal;//should be about 2/3 of arm limit
     public final int topPoleVal = armLimit;//should be close to armLimit
     static final double COUNTS_PER_MOTOR_REV_arm = 28;
     static final double DRIVE_GEAR_REDUCTION_arm = 40;
