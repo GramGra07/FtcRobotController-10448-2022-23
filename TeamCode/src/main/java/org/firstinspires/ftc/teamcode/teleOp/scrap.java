@@ -18,7 +18,6 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -338,28 +337,13 @@ public class scrap extends LinearOpMode {//declaring the class
             } else {
                 slowPower = 1;
             }
-            gamepadX = gamepad1.left_stick_x;
-            telemetry.addData("gamepadX", gamepadX);
-            gamepadY = -gamepad1.left_stick_y;
-            telemetry.addData("gamepadY", gamepadY);
-            gamepadHypot = Range.clip(Math.hypot(gamepadX, gamepadY), 0, 1);
-            telemetry.addData("gamepadHypot", gamepadHypot);
-            controllerAngle = Math.toDegrees(Math.atan2(gamepadY, gamepadX));
-            telemetry.addData("controllerAngle", controllerAngle);
-            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            robotDegree = angles.firstAngle;
-            telemetry.addData("robotDegree", robotDegree);
-            movementDegree = (controllerAngle - robotDegree) + offSet;
-            telemetry.addData("movementDegree", movementDegree);
-            xControl = Math.cos(Math.toRadians(movementDegree)) * gamepadHypot;
-            telemetry.addData("xControl", xControl);
-            yControl = Math.sin(Math.toRadians(movementDegree)) * gamepadHypot;
-            telemetry.addData("yControl", yControl);
+            yControl = -gamepad1.left_stick_y;
+            xControl = gamepad1.left_stick_x;
             double turn = -gamepad1.right_stick_x;
-            double frontRightPower = (yControl * Math.abs(yControl) - xControl * Math.abs(xControl) + turn) / slowPower;
-            double backRightPower = (yControl * Math.abs(yControl) + xControl * Math.abs(xControl) + turn) / slowPower;
-            double frontLeftPower = (yControl * Math.abs(yControl) + xControl * Math.abs(xControl) - turn) / slowPower;
-            double backLeftPower = (yControl * Math.abs(yControl) - xControl * Math.abs(xControl) - turn) / slowPower;
+            double frontRightPower = (yControl - xControl + turn) / slowPower;
+            double backRightPower = (yControl + xControl + turn) / slowPower;
+            double frontLeftPower = (yControl + xControl - turn) / slowPower;
+            double backLeftPower = (yControl - xControl - turn) / slowPower;
             //
             //if (gamepad1.dpad_right) {
             //    unConeDown();
@@ -404,14 +388,6 @@ public class scrap extends LinearOpMode {//declaring the class
                 red1.setState(false);
             }
             //
-            //set values
-            if ((slowModeIsOn)) {//is false
-                frontLeftPower /= 4;
-                backLeftPower /= 4;
-                frontRightPower /= 4;
-                backRightPower /= 4;
-            }
-
             //
             //presets
             if (gamepad2.y) {//top level

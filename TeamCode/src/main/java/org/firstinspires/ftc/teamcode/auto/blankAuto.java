@@ -181,6 +181,7 @@ public class blankAuto extends scrap {
             telemetry.update();
         }
     }
+
     //precise if exact 180, if not, then use the following
     //final int actualF=50;
     //final int actualR=100;
@@ -201,7 +202,7 @@ public class blankAuto extends scrap {
     //    motorFrontLeft.setPower(-0.8);
     //    motorFrontRight.setPower(-0.8);
     //}
-    public String getColor(){
+    public String getColor() {
         final String[] favColors = {
                 "RAINBOW_RAINBOW_PALETTE",
                 "RAINBOW_PARTY_PALETTE",
@@ -218,8 +219,8 @@ public class blankAuto extends scrap {
                 "GOLD",
                 "VIOLET"
         };
-        final int min=0;
-        final int max= favColors.length-1;
+        final int min = 0;
+        final int max = favColors.length - 1;
         return favColors[(int) Math.floor(Math.random() * (max - min + 1) + min)];
     }
 

@@ -5,7 +5,6 @@ import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -204,10 +203,11 @@ public class imuTest extends scrap {
             telemetry.update();
         }
     }
+
     //!added
-    public int refreshHeading(float usedAngle, double alterHeading){
+    public int refreshHeading(float usedAngle, double alterHeading) {
         angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        int trueHeading = (int) ((int) usedAngle-alterHeading);
+        int trueHeading = (int) ((int) usedAngle - alterHeading);
         if (trueHeading < 0) {
             trueHeading = 360 + trueHeading;
         }
@@ -217,10 +217,12 @@ public class imuTest extends scrap {
         telemetry.update();
         return -trueHeading;
     }
+
     public void correctByImu(float currentAngle, int targetAngle) {
         int angle = (int) (targetAngle - currentAngle);
         turn(angle);
     }
+
     void composeTelemetry() {
         // At the beginning of each telemetry update, grab a bunch of data
         // from the IMU that we will then display in separate lines.
@@ -268,6 +270,7 @@ public class imuTest extends scrap {
                     }
                 });
     }
+
     String formatAngle(AngleUnit angleUnit, double angle) {
         return formatDegrees(AngleUnit.DEGREES.fromUnit(angleUnit, angle));
     }
@@ -275,6 +278,7 @@ public class imuTest extends scrap {
     String formatDegrees(double degrees) {
         return String.format(Locale.getDefault(), "%.1f", AngleUnit.DEGREES.normalize(degrees));
     }
+
     //end
     //precise if exact 180, if not, then use the following
     //final int actualF=50;
@@ -296,7 +300,7 @@ public class imuTest extends scrap {
     //    motorFrontLeft.setPower(-0.8);
     //    motorFrontRight.setPower(-0.8);
     //}
-    public String getColor(){
+    public String getColor() {
         final String[] favColors = {
                 "RAINBOW_RAINBOW_PALETTE",
                 "RAINBOW_PARTY_PALETTE",
@@ -313,8 +317,8 @@ public class imuTest extends scrap {
                 "GOLD",
                 "VIOLET"
         };
-        final int min=0;
-        final int max= favColors.length-1;
+        final int min = 0;
+        final int max = favColors.length - 1;
         return favColors[(int) Math.floor(Math.random() * (max - min + 1) + min)];
     }
 
