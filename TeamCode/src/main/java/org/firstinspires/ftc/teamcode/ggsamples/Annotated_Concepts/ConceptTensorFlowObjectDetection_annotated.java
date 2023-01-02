@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Annotated_Concepts;
+package org.firstinspires.ftc.teamcode.ggsamples.Annotated_Concepts;
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
