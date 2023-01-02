@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.Annotated_Concepts;// gets the package name you are currently in
+package org.firstinspires.ftc.teamcode.ggsamples.Annotated_Concepts;// gets the package name you are currently in
 
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
