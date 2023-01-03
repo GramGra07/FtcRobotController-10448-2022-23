@@ -8,6 +8,7 @@ import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
@@ -37,7 +38,7 @@ import java.util.Locale;
 import java.util.Objects;
 
 @Autonomous(name = "autoRSimpV2", group = "Robot")
-//@Disabled
+@Disabled
 public class autoRSimpV2 extends robotCentric {
     public int turn = 77;
 
