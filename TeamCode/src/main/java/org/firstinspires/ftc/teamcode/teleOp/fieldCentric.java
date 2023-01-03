@@ -338,23 +338,24 @@ public class fieldCentric extends LinearOpMode {//declaring the class
             } else {
                 slowPower = 1;
             }
-            gamepadX = gamepad1.left_stick_x;
-            telemetry.addData("gamepadX", gamepadX);
-            gamepadY = -gamepad1.left_stick_y;
-            telemetry.addData("gamepadY", gamepadY);
-            gamepadHypot = Range.clip(Math.hypot(gamepadX, gamepadY), 0, 1);
-            telemetry.addData("gamepadHypot", gamepadHypot);
-            controllerAngle = Math.toDegrees(Math.atan2(gamepadY, gamepadX));
-            telemetry.addData("controllerAngle", controllerAngle);
-            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-            robotDegree = angles.firstAngle;
-            telemetry.addData("robotDegree", robotDegree);
-            movementDegree = (controllerAngle - robotDegree) + offSet;
-            telemetry.addData("movementDegree", movementDegree);
-            xControl = Math.cos(Math.toRadians(movementDegree)) * gamepadHypot;
-            telemetry.addData("xControl", xControl);
-            yControl = Math.sin(Math.toRadians(movementDegree)) * gamepadHypot;
-            telemetry.addData("yControl", yControl);
+            gamepadX = gamepad1.left_stick_x;//get the x val of left stick and store
+            telemetry.addData("gamepadX", gamepadX);//tell us what gamepadX is
+            gamepadY = -gamepad1.left_stick_y;//get the y val of left stick and store
+            telemetry.addData("gamepadY", gamepadY);//tell us what gamepadY is
+            gamepadHypot = Range.clip(Math.hypot(gamepadX, gamepadY), 0, 1);//get the
+            // hypotenuse of the x and y values,clip it to a max of 1 and store
+            telemetry.addData("gamepadHypot", gamepadHypot);//tell us what gamepadHypot is
+            controllerAngle = Math.toDegrees(Math.atan2(gamepadY, gamepadX));//Get the angle of the controller stick using arc tangent
+            telemetry.addData("controllerAngle", controllerAngle);//tell us what controllerAngle is
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);//get and initialize the IMU
+            robotDegree = angles.firstAngle;//store robot angle in robotDegree
+            telemetry.addData("robotDegree", robotDegree);//tell us what robotDegree is
+            movementDegree = (controllerAngle - robotDegree);//get the movement degree based on the controller vs robot angle
+            telemetry.addData("movementDegree", movementDegree);//tell us what movementDegree is
+            xControl = Math.cos(Math.toRadians(movementDegree)) * gamepadHypot;//get the x value of the movement
+            telemetry.addData("xControl", xControl);//tell us what xControl is
+            yControl = Math.sin(Math.toRadians(movementDegree)) * gamepadHypot;//get the y value of the movement
+            telemetry.addData("yControl", yControl);//tell us what yControl is
             double turn = -gamepad1.right_stick_x;
             double frontRightPower = (yControl * Math.abs(yControl) - xControl * Math.abs(xControl) + turn) / slowPower;
             double backRightPower = (yControl * Math.abs(yControl) + xControl * Math.abs(xControl) + turn) / slowPower;
