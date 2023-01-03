@@ -313,13 +313,6 @@ public class robotCentric extends LinearOpMode {//declaring the class
             double frontLeftPower = (yControl + xControl - turn) / slowPower;
             double backLeftPower = (yControl - xControl - turn) / slowPower;
             //
-            //if (gamepad1.dpad_right) {
-            //    unConeDown();
-            //} else if (!unConed) {
-            //    unConeUp();
-            //}
-            //
-            //
             if (sparkLong.getCurrentPosition() >= armLimit - 200 || sparkLong.getCurrentPosition() <= baseArm + 500) {
                 green2.setState(false);
                 red2.setState(true);
@@ -611,6 +604,7 @@ public class robotCentric extends LinearOpMode {//declaring the class
                 //telemetry.addData("Running to", "%7d :%7d", -newDLeftTarget, -newDRightTarget);//"%7d :%7d"
                 //telemetry.addData("Currently at", "%7d :%7d",
                 //        deadWheelL.getCurrentPosition(), deadWheelR.getCurrentPosition());
+                telemetry.addData("fr", motorFrontRight.getCurrentPosition());
                 telemetry.update();
             }
 

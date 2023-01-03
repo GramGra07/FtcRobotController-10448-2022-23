@@ -151,7 +151,7 @@ public class advAutoR extends robotCentric {
         touchSensorL = hardwareMap.get(TouchSensor.class, ("touchSensorL"));
 
         //onInit();
-        motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
+        motorFrontLeft.setDirection(DcMotor.Direction.REVERSE);
         motorBackRight.setDirection(DcMotor.Direction.REVERSE);
 
         resetEncoders();
@@ -215,12 +215,14 @@ public class advAutoR extends robotCentric {
             double ovrPower = 0.65;
             doSetup();
             //branch 1 get to spot
+            encoderDrive(1, 1, 1, 0.5);
             simplerGoSpot(ovrCurrX, ovrCurrY, 1, 3, ovrPower, false, 0, false
                     , false, 0, 1, 4);
             setOvr(1, 3);
             double targetX = 2.1;
             simplerGoSpot(ovrCurrX, ovrCurrY, targetX, 3.6, ovrPower, true, topPoleVal,
-                    false, true, -90, 1, 3);
+                    false, false, -90, 1, 2);
+            turn(-90);
             encoderDrive(1, 2, 2, 0.5);
             setOvr(targetX, 3.6);
             openClaw();
