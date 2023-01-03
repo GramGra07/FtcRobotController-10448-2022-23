@@ -151,7 +151,6 @@ public class advAutoR extends robotCentric {
         touchSensorL = hardwareMap.get(TouchSensor.class, ("touchSensorL"));
 
         //onInit();
-        motorFrontLeft.setDirection(DcMotor.Direction.REVERSE);
         motorBackRight.setDirection(DcMotor.Direction.REVERSE);
 
         resetEncoders();

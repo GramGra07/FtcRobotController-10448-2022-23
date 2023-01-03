@@ -223,7 +223,6 @@ public class robotCentric extends LinearOpMode {//declaring the class
         //deadWheelL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the deadWheelL encoder
         //deadWheelR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the deadWheelR encoder
 
-        motorFrontRight.setDirection(DcMotor.Direction.REVERSE);//setting the motorFrontRight direction
         motorBackLeft.setDirection(DcMotor.Direction.REVERSE);//setting the motorBackRight direction
 
         sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the sparkLong encoder to run using encoder
@@ -1121,7 +1120,7 @@ public class robotCentric extends LinearOpMode {//declaring the class
         double blueTargetGL = 0.003;//the green value in rgb
         double blueTargetBL = 0.0038;//the blue value in rgb
         double range = 0.0005;
-        double speed = 0.2;
+        double speed = -0.2;
         //left
         while (colorInRange(redValL, redTargetRL, greenValL, redTargetGL, blueValL, redTargetBL, (float) range)
                 || colorInRange(redValL, blueTargetRL, greenValL, blueTargetGL, blueValL, blueTargetBL, (float) range)
@@ -1158,7 +1157,7 @@ public class robotCentric extends LinearOpMode {//declaring the class
             if (pressed) {
                 break;
             }
-            double speed1 = -0.5;
+            double speed1 = 0.5;
             motorBackLeft.setPower(speed1);
             motorBackRight.setPower(speed1);
             motorFrontLeft.setPower(speed1);
