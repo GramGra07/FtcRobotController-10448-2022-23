@@ -659,6 +659,12 @@ public class robotCentric extends LinearOpMode {//declaring the class
                 motorBackRight.setTargetPosition(-newBRTarget);
                 motorFrontRight.setTargetPosition(newFRTarget);
                 deadWheel.setTargetPosition(newDeadTarget);
+            } else {
+                motorFrontLeft.setTargetPosition(0);
+                motorBackLeft.setTargetPosition(0);
+                motorBackRight.setTargetPosition(0);
+                motorFrontRight.setTargetPosition(0);
+                deadWheel.setTargetPosition(0);
             }
 
             motorFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
