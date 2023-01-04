@@ -176,46 +176,28 @@ public class minimalAuto extends robotCentric {
         waitForStart();
         if (opModeIsActive()) {
             lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
-            doSetup();
+            runVu(6, true);
+            if (spot == 0) {
+                spot = (int) (Math.floor(Math.random() * (3) + 1));
+            }
             if (spot == 1) {
+                green1.setState(true);
+                red1.setState(false);
                 simplerGoSpot(2, 0, 1, 2.5, 0.5, false, 0, false, false, 0,
                         2, 4);
-            }
-            if (spot == 2) {
+            } else if (spot == 2) {
+                green2.setState(true);
+                red2.setState(false);
                 simplerGoSpot(2, 0, 2, 2.5, 0.5, false, 0, false, false, 0,
                         2, 4);
-            }
-            if (spot == 3) {
+            } else if (spot == 3) {
+                green3.setState(true);
+                red3.setState(false);
                 simplerGoSpot(2, 0, 3, 2.5, 0.5, false, 0, false, false, 0,
                         2, 4);
             }
             telemetry.update();
         }
-    }
-
-    public void doSetup() {
-        runVu(6, true);
-        if (spot == 0) {
-            spot = (int) (Math.floor(Math.random() * (3) + 1));
-        }
-        if (spot == 1) {
-            green1.setState(true);
-            red1.setState(false);
-        } else if (spot == 2) {
-            green2.setState(true);
-            red2.setState(false);
-        } else if (spot == 3) {
-            green3.setState(true);
-            red3.setState(false);
-        } else {
-            green1.setState(false);
-            red1.setState(false);
-            green2.setState(false);
-            red2.setState(false);
-            green3.setState(false);
-            red3.setState(false);
-        }
-        lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
     }
 
     public void simplerGoSpot(double currX, double currY, double targetX, double targetY, double power, boolean combo, int pose
