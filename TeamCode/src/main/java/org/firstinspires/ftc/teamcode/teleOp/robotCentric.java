@@ -277,6 +277,7 @@ public class robotCentric extends LinearOpMode {//declaring the class
                     right = false;
                 }
             }
+            //
             if (rumble) {
                 if ((runtime.seconds() > endgame) && !isEndgame) {
                     gamepad1.runRumbleEffect(customRumbleEffect);
@@ -304,6 +305,7 @@ public class robotCentric extends LinearOpMode {//declaring the class
             } else {
                 slowPower = 1;
             }
+            //
             yControl = -gamepad1.left_stick_y;
             xControl = gamepad1.left_stick_x;
             double turn = -gamepad1.right_stick_x;
@@ -404,7 +406,7 @@ public class robotCentric extends LinearOpMode {//declaring the class
             teleSpace();
             //getAllColor();
             //teleSpace();
-            distanceTelemetry();
+            //distanceTelemetry();
             updateStatus("Running");
             telemetry.update();
         }

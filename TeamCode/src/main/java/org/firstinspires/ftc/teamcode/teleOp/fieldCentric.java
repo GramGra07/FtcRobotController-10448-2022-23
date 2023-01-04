@@ -450,7 +450,7 @@ public class fieldCentric extends LinearOpMode {//declaring the class
             telemetry.addData("slowMode", slowModeIsOn);
             telemetry.addData("dead", deadWheel.getCurrentPosition());
             telemetry.addLine();
-            distanceTelemetry();
+            //distanceTelemetry();
             updateStatus("Running");
             telemetry.update();
         }
