@@ -129,7 +129,6 @@ public class minimalAuto extends robotCentric {
 
         //onInit();
         motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
-        motorBackRight.setDirection(DcMotor.Direction.REVERSE);
 
         resetEncoders();
         sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -181,31 +180,39 @@ public class minimalAuto extends robotCentric {
             if (spot == 0) {
                 spot = (int) (Math.floor(Math.random() * (3) + 1));
             }
-            if (spot == 1) {
-                green1.setState(true);
-                red1.setState(false);
-                simplerGoSpot(2, 0, 1, 2.5, 0.5, false, 0, false, false, 0,
-                        2, 4);
-            } else if (spot == 2) {
-                green2.setState(true);
-                red2.setState(false);
-                simplerGoSpot(2, 0, 2, 2.5, 0.5, false, 0, false, false, 0,
-                        2, 4);
-            } else if (spot == 3) {
-                green3.setState(true);
-                red3.setState(false);
-                simplerGoSpot(2, 0, 3, 2.5, 0.5, false, 0, false, false, 0,
-                        2, 4);
-            }
+            drive();
             armEncoder(0, 1, 2, true);
             telemetry.update();
             //
         }
     }
 
+    public void drive() {
+        if (spot == 0) {
+            simplerGoSpot(2, 0, 3.5, 0, 0.5, false, 0, false, false, 0,
+                    2, 4);
+        }
+        if (spot == 1) {
+            green1.setState(true);
+            red1.setState(false);
+            simplerGoSpot(2, 0, 1, 2.5, 0.5, false, 0, false, false, 0,
+                    2, 4);
+        } else if (spot == 2) {
+            green2.setState(true);
+            red2.setState(false);
+            simplerGoSpot(0, 0, 2.5, 0, 0.5, false, 0, false, false, 0,
+                    2, 4);
+        } else if (spot == 3) {
+            green3.setState(true);
+            red3.setState(false);
+            simplerGoSpot(2, 0, 3, 2.5, 0.5, false, 0, false, false, 0,
+                    2, 4);
+        }
+    }
+
     public void simplerGoSpot(double currX, double currY, double targetX, double targetY, double power, boolean combo, int pose
             , boolean isUp, boolean endTurn, int turn, int timeOutX, int timeOutY) {
-        double sidewaysInches = (targetX - currX) * xMult;
+        double sidewaysInches = (targetX - currX) * 4;
         double fwdInches = (targetY - currY) * yMult;
         telemetry.addData("fwdInches", fwdInches);
         telemetry.addData("sidewaysInches", sidewaysInches);
