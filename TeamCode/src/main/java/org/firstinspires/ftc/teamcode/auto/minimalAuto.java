@@ -177,6 +177,7 @@ public class minimalAuto extends robotCentric {
         if (opModeIsActive()) {
             lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
             runVu(6, true);
+            armEncoder(500, 1, 2, false);
             if (spot == 0) {
                 spot = (int) (Math.floor(Math.random() * (3) + 1));
             }
@@ -196,6 +197,7 @@ public class minimalAuto extends robotCentric {
                 simplerGoSpot(2, 0, 3, 2.5, 0.5, false, 0, false, false, 0,
                         2, 4);
             }
+            armEncoder(0, 1, 2, true);
             telemetry.update();
             //
         }
