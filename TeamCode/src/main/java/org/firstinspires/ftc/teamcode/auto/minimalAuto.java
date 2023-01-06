@@ -335,10 +335,6 @@ public class minimalAuto extends robotCentric {
     public void runVu(int timeoutS, boolean giveSpot) {
         runtime.reset();
         while (opModeIsActive() && (spot == 0)) {
-            if (runtime.seconds() > timeoutS) {
-                spot = 4;
-                break;
-            }
             if (tfod != null) {
                 // getUpdatedRecognitions() will return null if no new information is available since
                 // the last time that call was made.

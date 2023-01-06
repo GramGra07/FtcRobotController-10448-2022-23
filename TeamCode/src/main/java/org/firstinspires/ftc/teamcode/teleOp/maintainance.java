@@ -15,7 +15,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 //@Disabled
 public class maintainance extends robotCentric {
     public int turn = 77;
-    private ElapsedTime runtime = new ElapsedTime();
+    private final ElapsedTime runtime = new ElapsedTime();
     static final double COUNTS_PER_MOTOR_REV = 28;
     static final double WHEEL_DIAMETER_MM = 96;
     static final double WHEEL_DIAMETER_INCHES = WHEEL_DIAMETER_MM * 0.0393701;     // For figuring circumference
@@ -126,7 +126,7 @@ public class maintainance extends robotCentric {
                 }
             }
             if (armUp) {
-                armEncoder(robotCentric.topPoleVal, 0.8, 6, false);
+                armEncoder(robotCentric.midPoleVal, 0.8, 6, false);
                 green1.setState(true);
                 red1.setState(false);
             } else {
