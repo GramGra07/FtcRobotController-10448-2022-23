@@ -28,7 +28,7 @@ public class minimalAuto extends robotCentric {
     public int turn = 77;
 
 
-    private ElapsedTime runtime = new ElapsedTime();
+    private final ElapsedTime runtime = new ElapsedTime();
 
     static final double COUNTS_PER_MOTOR_REV = 28;
     static final double WHEEL_DIAMETER_MM = 96;
@@ -82,10 +82,10 @@ public class minimalAuto extends robotCentric {
     public double myMagic = 7;
     //color
     final float[] hsvValues = new float[3];//gets values for color sensor
-    private int redVal = 0;//the red value in rgb
-    private int greenVal = 0;//the green value in rgb
-    private int blueVal = 0;//the blue value in rgb
-    private String colorName = "N/A";//gets color name
+    private final int redVal = 0;//the red value in rgb
+    private final int greenVal = 0;//the green value in rgb
+    private final int blueVal = 0;//the blue value in rgb
+    private final String colorName = "N/A";//gets color name
     NormalizedColorSensor colorSensorR;//declaring the colorSensor variable
     NormalizedColorSensor colorSensorL;//declaring the colorSensor variable
     public TouchSensor touchSensor;
@@ -201,9 +201,6 @@ public class minimalAuto extends robotCentric {
                 red2.setState(false);
                 green3.setState(true);
                 red3.setState(false);
-                telemetry.addData("Spot", spot);
-                telemetry.update();
-                sleep(1000);
                 sideWaysEncoderDrive(0.5, -sdw, 3);
                 sleep(50);
                 encoderDrive(0.5, fwd, fwd, 3);
