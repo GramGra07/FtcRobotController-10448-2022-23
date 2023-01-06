@@ -323,7 +323,7 @@ public class robotCentric extends LinearOpMode {//declaring the class
                 limiting = false;
             }
             //arm extend controller 2
-            if (sparkLong.getCurrentPosition() <= armLimit && limiter) {
+            if (sparkLong.getCurrentPosition() <= armLimit) {// && limiter) {
                 sparkLong.setPower(armPower);
             } else {
                 sparkLong.setPower(0);

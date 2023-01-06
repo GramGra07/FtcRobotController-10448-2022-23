@@ -175,33 +175,30 @@ public class minimalAuto extends robotCentric {
         waitForStart();
         if (opModeIsActive()) {
             lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
-            runVu(true);
             armEncoder(500, 1, 2, false);
-            if (spot == 0) {
-                spot = (int) (Math.floor(Math.random() * (3) + 1));
+            runVu(true);
+            double fwd = 14;
+            double sdw = 16;
+            resetRuntime();
+            if (spot == 1) {
+                green1.setState(true);
+                red1.setState(false);
+                sideWaysEncoderDrive(1, fwd, 6);
+                sleep(50);
+                encoderDrive(1, sdw, sdw, 3);
+            } else if (spot == 2) {
+                green2.setState(true);
+                red2.setState(false);
+                encoderDrive(1, sdw, sdw, 3);
+            } else if (spot == 3) {
+                green3.setState(true);
+                red3.setState(false);
+                sideWaysEncoderDrive(1, -fwd, 6);
+                sleep(50);
+                encoderDrive(1, sdw, sdw, 3);
             }
-            drive();
             armEncoder(0, 1, 2, true);
             telemetry.update();
-        }
-    }
-
-    public void drive() {
-        if (spot == 1) {
-            green1.setState(true);
-            red1.setState(false);
-            simplerGoSpot(2, 0, 1, 2.5, 0.5, false, 0, false, false, 0,
-                    2, 4);
-        } else if (spot == 2) {
-            green2.setState(true);
-            red2.setState(false);
-            simplerGoSpot(0, 0, 0, 2.5, 0.5, false, 0, false, false, 0,
-                    2, 4);
-        } else if (spot == 3) {
-            green3.setState(true);
-            red3.setState(false);
-            simplerGoSpot(0, 0, 1, 2.5, 0.5, false, 0, false, false, 0,
-                    2, 4);
         }
     }
 
