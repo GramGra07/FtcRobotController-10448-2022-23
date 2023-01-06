@@ -84,7 +84,7 @@ public class robotCentric extends LinearOpMode {//declaring the class
     public static final int midPoleVal = 290;//should be about 2/3 of arm limit
     public static final int fiveTallConeVal = 300;
     public static final int topPoleVal = armLimit;//should be close to armLimit
-    public boolean limiter = true;//declaring the limiter variable, is on or off
+    public boolean limiter = false;//declaring the limiter variable, is on or off
     public boolean limiting = false;//declaring the limiting variable
 
     //rumble
@@ -290,7 +290,6 @@ public class robotCentric extends LinearOpMode {//declaring the class
                     isEnd = true;
                 }
             }
-            limiter = true;//make sure limiter is on
 
 
             //switches
@@ -392,7 +391,7 @@ public class robotCentric extends LinearOpMode {//declaring the class
             motorFrontRight.setPower(frontRightPower);
             motorBackRight.setPower(backRightPower);
             telemetry.addData("Status", statusVal);//shows current status
-            telemetry.addLine("Limiter")
+            telemetry.addLine("Arm")
                     .addData("Val", String.valueOf(sparkLong.getCurrentPosition()))
                     .addData("Max", armLimit)
                     .addData("Limiter", limiter)
