@@ -129,6 +129,8 @@ public class minimalAuto extends robotCentric {
 
         //onInit();
         motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
+        motorFrontLeft.setDirection(DcMotor.Direction.REVERSE);
+        motorBackRight.setDirection(DcMotor.Direction.REVERSE);
 
         resetEncoders();
         sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -167,7 +169,7 @@ public class minimalAuto extends robotCentric {
             tfod.activate();
             tfod.setZoom(1.0, 16.0 / 9.0);
         }
-        runVu(false);
+        runVu(6, false);
         telemetry.update();
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
         closeClaw();
@@ -176,29 +178,119 @@ public class minimalAuto extends robotCentric {
         if (opModeIsActive()) {
             lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
             armEncoder(500, 1, 2, false);
-            runVu(true);
-            double fwd = 14;
-            double sdw = 16;
+            //runVu(6, true);
+            double fwd = 16;
+            double sdw = 10;
             resetRuntime();
             if (spot == 1) {
                 green1.setState(true);
                 red1.setState(false);
-                sideWaysEncoderDrive(1, fwd, 6);
+                sideWaysEncoderDrive(0.5, sdw, 3);
                 sleep(50);
-                encoderDrive(1, sdw, sdw, 3);
+                encoderDrive(0.5, fwd, fwd, 3);
             } else if (spot == 2) {
+                green1.setState(true);
+                red1.setState(false);
                 green2.setState(true);
                 red2.setState(false);
-                encoderDrive(1, sdw, sdw, 3);
+                encoderDrive(0.5, fwd, fwd, 3);
             } else if (spot == 3) {
+                green1.setState(true);
+                red1.setState(false);
+                green2.setState(true);
+                red2.setState(false);
                 green3.setState(true);
                 red3.setState(false);
-                sideWaysEncoderDrive(1, -fwd, 6);
+                telemetry.addData("Spot", spot);
+                telemetry.update();
+                sleep(1000);
+                sideWaysEncoderDrive(0.5, -sdw, 3);
                 sleep(50);
-                encoderDrive(1, sdw, sdw, 3);
+                encoderDrive(0.5, fwd, fwd, 3);
+            } else if (spot == 4) {
+                sideWaysEncoderDrive(0.5, -sdw - 3, 3);
             }
             armEncoder(0, 1, 2, true);
             telemetry.update();
+        }
+    }
+
+    public void sideWaysEncoderDrive(double speed,
+                                     double inches,
+                                     double timeoutS) {
+        int newFRTarget;
+        int newFLTarget;
+        int newBRTarget;
+        int newBLTarget;
+        int newDeadTarget;
+        if (opModeIsActive()) {
+            if (inches > 0) {
+                newFLTarget = motorFrontLeft.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
+                newBLTarget = motorBackLeft.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
+                newFRTarget = motorFrontRight.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
+                newBRTarget = motorBackRight.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
+                newDeadTarget = deadWheel.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side_dead);
+                motorFrontLeft.setTargetPosition(-newFLTarget);
+                motorBackLeft.setTargetPosition(newBLTarget);
+                motorBackRight.setTargetPosition(-newBRTarget);
+                motorFrontRight.setTargetPosition(newFRTarget);
+                deadWheel.setTargetPosition(-newDeadTarget);
+            }
+            if (inches < 0) {
+                newFLTarget = motorFrontLeft.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
+                newBLTarget = motorBackLeft.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
+                newFRTarget = motorFrontRight.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
+                newBRTarget = motorBackRight.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
+                newDeadTarget = deadWheel.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side_dead);
+                motorFrontLeft.setTargetPosition(-newFLTarget);
+                motorBackLeft.setTargetPosition(newBLTarget);
+                motorBackRight.setTargetPosition(-newBRTarget);
+                motorFrontRight.setTargetPosition(newFRTarget);
+                deadWheel.setTargetPosition(newDeadTarget);
+            }
+
+            motorFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorBackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorBackRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            motorFrontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            deadWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+
+            runtime.reset();
+            motorBackLeft.setPower(Math.abs(speed));
+            motorFrontRight.setPower(Math.abs(speed));
+            motorFrontLeft.setPower(Math.abs(speed));
+            motorBackRight.setPower(Math.abs(speed));
+            resetRuntime();
+            while (opModeIsActive() &&
+                    (runtime.seconds() < timeoutS)) {
+
+                // Display it for the driver.
+                telemetry.addData("Running to", "%7d:%7d", motorFrontLeft.getCurrentPosition()
+                        , motorBackRight.getCurrentPosition());
+                telemetry.addData("Running to", "%7d:%7d", motorBackLeft.getCurrentPosition()
+                        , motorFrontRight.getCurrentPosition());
+                telemetry.addData("Currently at", "%7d:%7d",
+                        motorFrontLeft.getCurrentPosition()
+                        , motorBackRight.getCurrentPosition());
+                telemetry.addData("Currently at", "%7d:%7d",
+                        motorFrontRight.getCurrentPosition()
+                        , motorBackLeft.getCurrentPosition());
+                telemetry.update();
+            }
+
+            // Stop all motion;
+            motorBackLeft.setPower(0);
+            motorFrontRight.setPower(0);
+            motorFrontLeft.setPower(0);
+            motorBackRight.setPower(0);
+
+            // Turn off RUN_TO_POSITION
+            motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            deadWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            resetEncoders();
         }
     }
 
@@ -243,9 +335,13 @@ public class minimalAuto extends robotCentric {
         return favColors[(int) Math.floor(Math.random() * (max - min + 1) + min)];
     }
 
-    public void runVu(boolean giveSpot) {
+    public void runVu(int timeoutS, boolean giveSpot) {
         runtime.reset();
         while (opModeIsActive() && (spot == 0)) {
+            if (runtime.seconds() > timeoutS) {
+                spot = 4;
+                break;
+            }
             if (tfod != null) {
                 // getUpdatedRecognitions() will return null if no new information is available since
                 // the last time that call was made.
