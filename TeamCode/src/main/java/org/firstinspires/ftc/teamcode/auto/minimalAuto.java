@@ -177,11 +177,11 @@ public class minimalAuto extends robotCentric {
         waitForStart();
         if (opModeIsActive()) {
             lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
-            armEncoder(500, 1, 2, false);
-            //runVu(6, true);
-            double fwd = 16;
+            runVu(6, true);
+            double fwd = 28;
             double sdw = 10;
             resetRuntime();
+            armEncoder(500, 1, 2, false);
             if (spot == 1) {
                 green1.setState(true);
                 red1.setState(false);
