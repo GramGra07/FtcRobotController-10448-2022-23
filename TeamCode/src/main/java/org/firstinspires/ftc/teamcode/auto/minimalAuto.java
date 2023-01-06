@@ -167,7 +167,7 @@ public class minimalAuto extends robotCentric {
             tfod.activate();
             tfod.setZoom(1.0, 16.0 / 9.0);
         }
-        runVu(6, false);
+        runVu(false);
         telemetry.update();
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
         closeClaw();
@@ -175,7 +175,7 @@ public class minimalAuto extends robotCentric {
         waitForStart();
         if (opModeIsActive()) {
             lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
-            runVu(6, true);
+            runVu(true);
             armEncoder(500, 1, 2, false);
             if (spot == 0) {
                 spot = (int) (Math.floor(Math.random() * (3) + 1));
@@ -183,15 +183,10 @@ public class minimalAuto extends robotCentric {
             drive();
             armEncoder(0, 1, 2, true);
             telemetry.update();
-            //
         }
     }
 
     public void drive() {
-        if (spot == 0) {
-            simplerGoSpot(2, 0, 3.5, 0, 0.5, false, 0, false, false, 0,
-                    2, 4);
-        }
         if (spot == 1) {
             green1.setState(true);
             red1.setState(false);
@@ -200,20 +195,20 @@ public class minimalAuto extends robotCentric {
         } else if (spot == 2) {
             green2.setState(true);
             red2.setState(false);
-            simplerGoSpot(0, 0, 2.5, 0, 0.5, false, 0, false, false, 0,
+            simplerGoSpot(0, 0, 0, 2.5, 0.5, false, 0, false, false, 0,
                     2, 4);
         } else if (spot == 3) {
             green3.setState(true);
             red3.setState(false);
-            simplerGoSpot(2, 0, 3, 2.5, 0.5, false, 0, false, false, 0,
+            simplerGoSpot(0, 0, 1, 2.5, 0.5, false, 0, false, false, 0,
                     2, 4);
         }
     }
 
     public void simplerGoSpot(double currX, double currY, double targetX, double targetY, double power, boolean combo, int pose
             , boolean isUp, boolean endTurn, int turn, int timeOutX, int timeOutY) {
-        double sidewaysInches = (targetX - currX) * 4;
-        double fwdInches = (targetY - currY) * yMult;
+        double sidewaysInches = (targetX - currX) * 10;
+        double fwdInches = (targetY - currY) * 10;
         telemetry.addData("fwdInches", fwdInches);
         telemetry.addData("sidewaysInches", sidewaysInches);
         sideWaysEncoderDrive(power, sidewaysInches, timeOutX);
@@ -251,12 +246,9 @@ public class minimalAuto extends robotCentric {
         return favColors[(int) Math.floor(Math.random() * (max - min + 1) + min)];
     }
 
-    public void runVu(int timeoutS, boolean giveSpot) {
+    public void runVu(boolean giveSpot) {
         runtime.reset();
         while (opModeIsActive() && (spot == 0)) {
-            if (runtime.seconds() > timeoutS) {
-                spot = 4;
-            }
             if (tfod != null) {
                 // getUpdatedRecognitions() will return null if no new information is available since
                 // the last time that call was made.

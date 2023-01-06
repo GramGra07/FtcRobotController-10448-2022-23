@@ -257,7 +257,7 @@ public class robotCentric extends LinearOpMode {//declaring the class
         //if (isStopRequested()) return;//if the stop button is pressed, stop the program
 
         while (opModeIsActive()) {//while the op mode is active
-            double armPower = gamepad2.left_stick_y;
+            double armPower = -gamepad2.left_stick_y;
             if (gamepad1.dpad_up) {
                 assisting = !assisting;
             }
