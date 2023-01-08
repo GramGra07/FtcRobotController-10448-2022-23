@@ -43,7 +43,7 @@ public class advAutoR extends robotCentric {
     public int turn = 77;
 
 
-    private ElapsedTime runtime = new ElapsedTime();
+    private final ElapsedTime runtime = new ElapsedTime();
 
     static final double COUNTS_PER_MOTOR_REV = 28;
     static final double WHEEL_DIAMETER_MM = 96;
@@ -99,13 +99,13 @@ public class advAutoR extends robotCentric {
     private DigitalChannel green2;
     //color
     final float[] hsvValues = new float[3];//gets values for color sensor
-    private float redValR = 0;//the red value in rgb
-    private float greenValR = 0;//the green value in rgb
-    private float blueValR = 0;//the blue value in rgb
-    private float redValL = 0;//the red value in rgb
-    private float greenValL = 0;//the green value in rgb
-    private float blueValL = 0;//the blue value in rgb
-    private String colorName = "N/A";//gets color name
+    private final float redValR = 0;//the red value in rgb
+    private final float greenValR = 0;//the green value in rgb
+    private final float blueValR = 0;//the blue value in rgb
+    private final float redValL = 0;//the red value in rgb
+    private final float greenValL = 0;//the green value in rgb
+    private final float blueValL = 0;//the blue value in rgb
+    private final String colorName = "N/A";//gets color name
     public NormalizedColorSensor colorSensorR;//declaring the colorSensorR variable
     public NormalizedColorSensor colorSensorL;//declaring the colorSensorR variable
     public TouchSensor touchSensor;
@@ -195,15 +195,13 @@ public class advAutoR extends robotCentric {
                 motorBackLeft.getCurrentPosition(),
                 motorFrontLeft.getCurrentPosition());
         closeClaw();
-        if (!bypassCam) {
-            initVuforia();
-            initTfod();
-            if (tfod != null) {
-                tfod.activate();
-                tfod.setZoom(1.0, 16.0 / 9.0);
-            }
-            runVu(6, false);
+        initVuforia();
+        initTfod();
+        if (tfod != null) {
+            tfod.activate();
+            tfod.setZoom(1.0, 16.0 / 9.0);
         }
+        runVu(6, false);
         telemetry.update();
         closeClaw();
         // Wait for the game to start (driver presses PLAY)
@@ -292,9 +290,7 @@ public class advAutoR extends robotCentric {
     }
 
     public void doSetup() {
-        if (!bypassCam) {
-            runVu(6, true);
-        }
+        runVu(6, true);
         if (spot == 0) {
             spot = (int) (Math.floor(Math.random() * (3) + 1));
         }

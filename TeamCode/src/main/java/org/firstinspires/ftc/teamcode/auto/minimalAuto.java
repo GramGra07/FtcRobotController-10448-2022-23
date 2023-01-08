@@ -181,6 +181,7 @@ public class minimalAuto extends robotCentric {
             double fwd = 28;
             double sdw = 10;
             resetRuntime();
+            encoderDrive(1, 1, 1, 0.5);
             armEncoder(500, 1, 2, false);
             if (spot == 1) {
                 green1.setState(true);

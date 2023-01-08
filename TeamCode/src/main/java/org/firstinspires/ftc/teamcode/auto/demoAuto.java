@@ -35,7 +35,7 @@ public class demoAuto extends LinearOpMode {
     private DcMotor sparkLong = null;
     private Servo clawServo = null;
 
-    private ElapsedTime runtime = new ElapsedTime();
+    private final ElapsedTime runtime = new ElapsedTime();
 
     static final double COUNTS_PER_MOTOR_REV = 28;
     static final double WHEEL_DIAMETER_MM = 96;
@@ -114,7 +114,6 @@ public class demoAuto extends LinearOpMode {
         sparkLong = hardwareMap.get(DcMotor.class, "sparkLong");
 
         //onInit();
-        motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
         motorBackRight.setDirection(DcMotor.Direction.REVERSE);
 
         resetEncoders();
