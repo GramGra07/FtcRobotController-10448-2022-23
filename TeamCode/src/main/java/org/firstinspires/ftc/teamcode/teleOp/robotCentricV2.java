@@ -5,7 +5,6 @@ import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 import android.graphics.Color;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -30,9 +29,9 @@ import java.util.List;
 import java.util.Objects;
 
 
-@TeleOp(name = "robotCentric", group = "Robot")//declaring the name and group of the opmode
-@Disabled//disabling the opmode
-public class robotCentric extends LinearOpMode {//declaring the class
+@TeleOp(name = "robotCentricV2", group = "Robot")//declaring the name and group of the opmode
+//@Disabled//disabling the opmode
+public class robotCentricV2 extends LinearOpMode {//declaring the class
     private final ElapsedTime runtime = new ElapsedTime();
     //encoder var
     public int turn = 77;
@@ -85,8 +84,8 @@ public class robotCentric extends LinearOpMode {//declaring the class
     public static final int midPoleVal = 290;//should be about 2/3 of arm limit
     public static final int fiveTallConeVal = 300;
     public static final int topPoleVal = armLimit;//should be close to armLimit
-    public boolean limiter = false;//declaring the limiter variable, is on or off
-    public boolean limiting = false;//declaring the limiting variable
+    //public boolean limiter = false;//declaring the limiter variable, is on or off
+    //public boolean limiting = false;//declaring the limiting variable
 
     //rumble
     Gamepad.RumbleEffect customRumbleEffect;//declaring the customRumbleEffect variable
@@ -314,21 +313,8 @@ public class robotCentric extends LinearOpMode {//declaring the class
             double frontLeftPower = (yControl + xControl - turn) / slowPower;
             double backLeftPower = (yControl - xControl - turn) / slowPower;
             //
-            if (sparkLong.getCurrentPosition() >= armLimit - 200 || sparkLong.getCurrentPosition() <= baseArm + 500) {
-                green2.setState(false);
-                red2.setState(true);
-                limiting = true;
-            } else {
-                green2.setState(true);
-                red2.setState(false);
-                limiting = false;
-            }
             //arm extend controller 2
-            if (sparkLong.getCurrentPosition() <= armLimit) {// && limiter) {
-                sparkLong.setPower(armPower);
-            } else {
-                sparkLong.setPower(0);
-            }
+            sparkLong.setPower(armPower);
             //
             //claw code
             if (gamepad2.left_bumper) {
@@ -352,51 +338,51 @@ public class robotCentric extends LinearOpMode {//declaring the class
             //
             //
             //presets
-            if (gamepad2.y) {//top level
-                if (sparkLong.getCurrentPosition() < topPoleVal) {//go up
-                    sparkLong.setPower(1);
-                } else {
-                    sparkLong.setPower(0);
-                }
-            }
-            if (gamepad2.a) {//base
-                if (sparkLong.getCurrentPosition() > baseArm) {//go down
-                    sparkLong.setPower(-1);
-                } else {
-                    sparkLong.setPower(0);
-                }
-            }
-            if (gamepad2.b) {//middle
-                if (sparkLong.getCurrentPosition() > midPoleVal + 50) {//go down
-                    sparkLong.setPower(-1);
-                }
-                if (sparkLong.getCurrentPosition() < midPoleVal - 50) {//go up
-                    sparkLong.setPower(1);
-                } else {
-                    sparkLong.setPower(0);
-                }
-            }
-            if (gamepad2.x) {//low
-                if (sparkLong.getCurrentPosition() > lowPoleVal + 50) {//go down
-                    sparkLong.setPower(1);
-                }
-                if (sparkLong.getCurrentPosition() < lowPoleVal - 50) {//go up
-                    sparkLong.setPower(-1);
-                } else {
-                    sparkLong.setPower(0);
-                }
-            }
+            //if (gamepad2.y) {//top level
+            //    if (sparkLong.getCurrentPosition() < topPoleVal) {//go up
+            //        sparkLong.setPower(1);
+            //    } else {
+            //        sparkLong.setPower(0);
+            //    }
+            //}
+            //if (gamepad2.a) {//base
+            //    if (sparkLong.getCurrentPosition() > baseArm) {//go down
+            //        sparkLong.setPower(-1);
+            //    } else {
+            //        sparkLong.setPower(0);
+            //    }
+            //}
+            //if (gamepad2.b) {//middle
+            //    if (sparkLong.getCurrentPosition() > midPoleVal + 50) {//go down
+            //        sparkLong.setPower(-1);
+            //    }
+            //    if (sparkLong.getCurrentPosition() < midPoleVal - 50) {//go up
+            //        sparkLong.setPower(1);
+            //    } else {
+            //        sparkLong.setPower(0);
+            //    }
+            //}
+            //if (gamepad2.x) {//low
+            //    if (sparkLong.getCurrentPosition() > lowPoleVal + 50) {//go down
+            //        sparkLong.setPower(1);
+            //    }
+            //    if (sparkLong.getCurrentPosition() < lowPoleVal - 50) {//go up
+            //        sparkLong.setPower(-1);
+            //    } else {
+            //        sparkLong.setPower(0);
+            //    }
+            //}
             //
             motorFrontLeft.setPower(frontLeftPower);
             motorBackLeft.setPower(backLeftPower);
             motorFrontRight.setPower(frontRightPower);
             motorBackRight.setPower(backRightPower);
             telemetry.addData("Status", statusVal);//shows current status
-            telemetry.addLine("Arm")
-                    .addData("Val", String.valueOf(sparkLong.getCurrentPosition()))
-                    .addData("Max", armLimit)
-                    .addData("Limiter", limiter)
-                    .addData("Is broken", (sparkLong.getCurrentPosition() > armLimit));
+            //telemetry.addLine("Arm")
+            //        .addData("Val", String.valueOf(sparkLong.getCurrentPosition()))
+            //        .addData("Max", armLimit)
+            //        .addData("Limiter", limiter)
+            //        .addData("Is broken", (sparkLong.getCurrentPosition() > armLimit));
             //.addData("Is Limiting",limiting);
             telemetry.addData("reversed", reversed);
             telemetry.addData("slowMode", slowModeIsOn);
