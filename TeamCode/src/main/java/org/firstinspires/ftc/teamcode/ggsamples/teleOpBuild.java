@@ -20,7 +20,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.teamcode.HardwareConfig;
+import org.firstinspires.ftc.teamcode.externalTests.HardwareConfig;
 
 import java.util.List;
 import java.util.Locale;
@@ -29,7 +29,7 @@ import java.util.Locale;
 @TeleOp(name = "teleOpBuild", group = "Pushbot")
 @Disabled
 public class teleOpBuild extends LinearOpMode {
-    HardwareConfig robot = new HardwareConfig();
+    HardwareConfig robot = new HardwareConfig(this);
     //initiations
     //camera
     public double spot = 0;
