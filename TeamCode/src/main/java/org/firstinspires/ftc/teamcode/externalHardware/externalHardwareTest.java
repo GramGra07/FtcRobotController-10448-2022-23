@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.externalTests;
+package org.firstinspires.ftc.teamcode.externalHardware;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;

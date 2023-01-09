@@ -20,7 +20,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.teamcode.externalTests.HardwareConfig;
+import org.firstinspires.ftc.teamcode.externalHardware.HardwareConfig;
 
 import java.util.List;
 import java.util.Locale;

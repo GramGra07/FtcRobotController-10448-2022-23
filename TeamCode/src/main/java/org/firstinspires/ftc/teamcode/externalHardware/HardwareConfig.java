@@ -1,16 +1,18 @@
-package org.firstinspires.ftc.teamcode.teleOp;
+//import
+package org.firstinspires.ftc.teamcode.externalHardware;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
 import android.graphics.Color;
 
+import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -28,12 +30,9 @@ import org.firstinspires.ftc.teamcode.testOpModes.distanceSensorCalibrator;
 import java.util.List;
 import java.util.Objects;
 
-
-@TeleOp(name = "robotCentricV2", group = "Robot")//declaring the name and group of the opmode
-//@Disabled//disabling the opmode
-public class robotCentricV2 extends LinearOpMode {//declaring the class
-    private final ElapsedTime runtime = new ElapsedTime();
-    //encoder var
+//import com.qualcomm.robotcore.eventloop.opmode.Disabled;
+public class HardwareConfig {
+    public final ElapsedTime runtime = new ElapsedTime();
     public int turn = 77;
     public double yMult = 24;
     public double xMult = 10;
@@ -88,12 +87,12 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
     //public boolean limiting = false;//declaring the limiting variable
 
     //rumble
-    Gamepad.RumbleEffect customRumbleEffect;//declaring the customRumbleEffect variable
-    final double endgame = 120;//declaring the endgame variable
+    public Gamepad.RumbleEffect customRumbleEffect;//declaring the customRumbleEffect variable
+    public final double endgame = 120;//declaring the endgame variable
     public boolean isEndgame = false;//declaring the isEndgame variable
-    Gamepad.RumbleEffect customRumbleEffect1;// declaring the customRumbleEffect1 variable
+    public Gamepad.RumbleEffect customRumbleEffect1;// declaring the customRumbleEffect1 variable
     public boolean rumble = false;//declaring the rumble variable
-    final double end = 150;//declaring the end variable
+    public final double end = 150;//declaring the end variable
     public boolean isEnd = false;//declaring the isEnd variable
 
     //rake
@@ -101,22 +100,17 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
     public final int magicFlip = baseFlip + 50;//declaring the magicFlip variable
     public final int baseUnCone = 0;
     public final int magicUnCone = baseUnCone + 90;
-    //public boolean unConed = false;
-
-    //motors/servos
-    public DcMotor deadWheel = null;//declaring the deadWheel motor
-    //public DcMotor deadWheelL = null;//declaring the deadWheelL motor
-    //public DcMotor deadWheelR = null;//declaring the deadWheelR motor
-    public DistanceSensor rDistance;//declaring the rDistance sensor
-    public DistanceSensor lDistance;//declaring the lDistance sensor
-    public DistanceSensor fDistance;//declaring the fDistance sensor
+    //motors
     public DcMotor motorFrontLeft = null;
     public DcMotor motorBackLeft = null;
     public DcMotor motorFrontRight = null;
     public DcMotor motorBackRight = null;
+    public DcMotor deadWheel = null;//declaring the deadWheel motor
+    //servo
     public DcMotor sparkLong = null;
-    public Servo clawServo = null;
-    //public Servo unConer = null;
+    public TouchSensor touchSensor;
+    public NormalizedColorSensor colorSensorR;//declaring the colorSensor variable
+    public NormalizedColorSensor colorSensorL;//declaring the colorSensor variable
     public DigitalChannel red1;
     public DigitalChannel green1;
     public DigitalChannel red2;
@@ -125,9 +119,13 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
     public DigitalChannel green3;
     public DigitalChannel red4;
     public DigitalChannel green4;
-
-    //vuforia
-
+    public DistanceSensor rDistance;//declaring the rDistance sensor
+    public DistanceSensor lDistance;//declaring the lDistance sensor
+    public DistanceSensor fDistance;//declaring the fDistance sensor
+    public RevBlinkinLedDriver lights;
+    public Servo clawServo = null;
+    public BNO055IMU imu;
+    HardwareMap hardwareMap = null;
     private static final String TFOD_MODEL_ASSET = "custom.tflite";
     private static final String[] LABELS = {
             "capacitor",//3
@@ -145,19 +143,15 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
     private final float greenVal = 0;//the green value in rgb
     private final float blueVal = 0;//the blue value in rgb
     private final String colorName = "N/A";//gets color name
-    NormalizedColorSensor colorSensorR;//declaring the colorSensor variable
-    NormalizedColorSensor colorSensorL;//declaring the colorSensor variable
     //
     public String statusVal = "OFFLINE";
     public double fDistanceVal = 0;
     public double lDistanceVal = 0;
     public double rDistanceVal = 0;
-    public TouchSensor touchSensor;
     //isRight side
     public boolean right = true;//declaring the right variable
     public final int baseEject = 0;
     public final int magicEject = baseEject + 90;
-    public RevBlinkinLedDriver lights;
 
     public boolean assisting = false;
     private final float redValR = 0;//the red value in rgb
@@ -166,26 +160,17 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
     private final float redValL = 0;//the red value in rgb
     private final float greenValL = 0;//the green value in rgb
     private final float blueValL = 0;//the blue value in rgb
-    double xControl;
-    double yControl;
-    double slowMult = 3;
-    double slowPower;
+    public double xControl;
+    public double yControl;
+    public double slowMult = 3;
+    public double slowPower;
+    private LinearOpMode myOpMode = null;   // gain access to methods in the calling OpMode.
 
-    @Override
-    public void runOpMode() {//if opmode is started
-        updateStatus("Initializing");
-        customRumbleEffect = new Gamepad.RumbleEffect.Builder()//build effect
-                .addStep(1.0, 1.0, 250)
-                .addStep(0.0, 0.0, 300)
-                .addStep(1.0, 1.0, 250)
-                .build();
-        customRumbleEffect1 = new Gamepad.RumbleEffect.Builder()//build effect
-                .addStep(1.0, 1.0, 200)
-                .addStep(0.0, 0.0, 200)
-                .addStep(1.0, 1.0, 200)
-                .addStep(0.0, 0.0, 200)
-                .addStep(1.0, 1.0, 1000)
-                .build();
+    public HardwareConfig(LinearOpMode opmode) {
+        myOpMode = opmode;
+    }
+
+    public void init(HardwareMap ahwMap) {
         ElapsedTime runtime = new ElapsedTime();//declaring the runtime variable
         lights = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
         rDistance = hardwareMap.get(DistanceSensor.class, "rDistance");//getting the rDistance sensor
@@ -208,8 +193,6 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
         motorFrontRight = hardwareMap.get(DcMotor.class, "motorFrontRight");//getting the motorFrontRight motor
         motorBackRight = hardwareMap.get(DcMotor.class, "motorBackRight");//getting the motorBackRight motor
         deadWheel = hardwareMap.get(DcMotor.class, "deadWheel");//getting the deadWheel motor
-        //deadWheelL = hardwareMap.get(DcMotor.class, "deadWheelL");//getting the deadWheelL motor
-        //deadWheelR = hardwareMap.get(DcMotor.class, "deadWheelR");//getting the deadWheelR motor
         clawServo = hardwareMap.get(Servo.class, "clawServo");//getting the clawServo servo
         sparkLong = hardwareMap.get(DcMotor.class, "sparkLong");//getting the sparkLong motor
         touchSensor = hardwareMap.get(TouchSensor.class, ("touchSensor"));
@@ -220,10 +203,8 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
         motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorBackLeft encoder
         motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorFrontRight encoder
         deadWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the deadWheel encoder
-        //deadWheelL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the deadWheelL encoder
-        //deadWheelR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the deadWheelR encoder
 
-        motorBackLeft.setDirection(DcMotor.Direction.REVERSE);//setting the motorBackRight direction
+        motorBackRight.setDirection(DcMotor.Direction.REVERSE);//setting the motorBackRight direction
 
         sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the sparkLong encoder to run using encoder
         motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorFrontLeft encoder to run using encoder
@@ -231,8 +212,6 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
         motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorBackRight encoder to run using encoder
         motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorFrontRight encoder to run using encoder
         deadWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the deadWheel encoder to run using encoder
-        //deadWheelL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the deadWheelL encoder to run using encoder
-        //deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the deadWheelR encoder to run using encoder
 
         motorBackRight.setZeroPowerBehavior(BRAKE);
         motorBackLeft.setZeroPowerBehavior(BRAKE);
@@ -251,115 +230,6 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
         //flipper.setPosition(setServo(magicFlip));//setting the flipper servo to the magicFlip position
         runtime.reset();//resetting the runtime variable
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
-        waitForStart();//waiting for the start button to be pressed
-        lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
-
-        //if (isStopRequested()) return;//if the stop button is pressed, stop the program
-
-        while (opModeIsActive()) {//while the op mode is active
-            double armPower = -gamepad2.left_stick_y;
-            if (gamepad1.dpad_up) {
-                assisting = !assisting;
-            }
-            while (assisting) {
-                assist();
-            }
-            if (gamepad2.dpad_down) {
-                sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-                sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            }
-            if (gamepad1.touchpad_finger_1) {       //if the touchpad is pressed
-                telemetry.addData("Finger 1: ", "%2f : %2f", gamepad1.touchpad_finger_1_x, gamepad1.touchpad_finger_1_y);
-                if (gamepad1.touchpad_finger_1_x > 0) {//right side
-                    right = true;
-                }
-                if (gamepad1.touchpad_finger_1_x < 0) {//left side
-                    right = false;
-                }
-            }
-            //
-            if (rumble) {
-                if ((runtime.seconds() > endgame) && !isEndgame) {
-                    gamepad1.runRumbleEffect(customRumbleEffect);
-                    gamepad2.runRumbleEffect(customRumbleEffect);
-                    isEndgame = true;
-                }
-                if ((runtime.seconds() > end) && !isEnd) {
-                    gamepad1.runRumbleEffect(customRumbleEffect1);
-                    gamepad2.runRumbleEffect(customRumbleEffect1);
-                    isEnd = true;
-                }
-            }
-
-
-            //switches
-            if (gamepad1.left_trigger > 0) {
-                slowModeIsOn = false;
-            }
-            if (gamepad1.right_trigger > 0) {
-                slowModeIsOn = true;
-            }
-            if (slowModeIsOn) {
-                slowPower = slowMult;
-            } else {
-                slowPower = 1;
-            }
-            //
-            yControl = -gamepad1.left_stick_y;
-            xControl = gamepad1.left_stick_x;
-            double turn = -gamepad1.right_stick_x;
-            double frontRightPower = (yControl - xControl + turn) / slowPower;
-            double backRightPower = (yControl + xControl + turn) / slowPower;
-            double frontLeftPower = (yControl + xControl - turn) / slowPower;
-            double backLeftPower = (yControl - xControl - turn) / slowPower;
-            //
-            //arm extend controller 2
-            sparkLong.setPower(armPower);
-            //
-            //claw code
-            if (gamepad2.left_bumper) {
-                clawServo.setPosition(setServo(magicNumOpen));
-                clawOpen = true;
-                //open claw
-            } else if (gamepad2.right_bumper) {
-                clawServo.setPosition(setServo(baseClawVal));
-                //close claw
-                clawOpen = false;
-            }//else{
-            //    clawServo.setPosition(setServo(0));
-            //}//auto close
-            if (clawOpen) {
-                green1.setState(false);
-                red1.setState(true);
-            } else {
-                green1.setState(true);
-                red1.setState(false);
-            }
-            //
-            //
-            motorFrontLeft.setPower(frontLeftPower);
-            motorBackLeft.setPower(backLeftPower);
-            motorFrontRight.setPower(frontRightPower);
-            motorBackRight.setPower(backRightPower);
-            telemetry.addData("Status", statusVal);//shows current status
-            //telemetry.addLine("Arm")
-            //        .addData("Val", String.valueOf(sparkLong.getCurrentPosition()))
-            //        .addData("Max", armLimit)
-            //        .addData("Limiter", limiter)
-            //        .addData("Is broken", (sparkLong.getCurrentPosition() > armLimit));
-            //.addData("Is Limiting",limiting);
-            telemetry.addData("reversed", reversed);
-            telemetry.addData("slowMode", slowModeIsOn);
-            telemetry.addData("dead", deadWheel.getCurrentPosition());
-            //telemetry.addData("deadR", deadWheelR.getCurrentPosition());
-            //telemetry.addData("deadL", deadWheelL.getCurrentPosition());
-            teleSpace();
-            //getAllColor();
-            //teleSpace();
-            //distanceTelemetry();
-            updateStatus("Running");
-            telemetry.update();
-        }
     }
 
     public String getColor() {
@@ -406,7 +276,7 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
     //}
 
     public void teleSpace() {
-        telemetry.addLine();
+        myOpMode.telemetry.addLine();
     }
 
     public void updateStatus(String status) {
@@ -432,7 +302,7 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
 
     public void distanceTelemetry() {
         updateDistance();
-        telemetry.addLine("Distance")
+        myOpMode.telemetry.addLine("Distance")
                 .addData("", "")
                 .addData("f", String.valueOf(fDistanceVal))
                 .addData("l", String.valueOf(lDistanceVal))
@@ -484,15 +354,15 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
         motorBackRight.setPower((speed));
         motorFrontRight.setPower((speed));
         motorFrontLeft.setPower((speed));
-        while (opModeIsActive() &&
+        while (myOpMode.opModeIsActive() &&
                 (runtime.seconds() < timeoutS) && sparkLong.isBusy()) {
 
             // Display it for the driver.
-            telemetry.addData(" arm Running to", sparkLong.getCurrentPosition());
-            telemetry.addData("arm Currently at",
+            myOpMode.telemetry.addData(" arm Running to", sparkLong.getCurrentPosition());
+            myOpMode.telemetry.addData("arm Currently at",
                     sparkLong.getCurrentPosition());
             // Display it for the driver.
-            telemetry.update();
+            myOpMode.telemetry.update();
         }
 
         // Stop all motion;
@@ -511,7 +381,7 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
         //deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //deadWheelL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         resetEncoders();
-        telemetry.update();
+        myOpMode.telemetry.update();
     }
 
     public void encoderDrive(double speed,
@@ -521,7 +391,7 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
         int newRightTarget;
         int newDLeftTarget;
         int newDRightTarget;
-        if (opModeIsActive()) {
+        if (myOpMode.opModeIsActive()) {
 
             newLeftTarget = motorBackLeft.getCurrentPosition() + (int) (leftInches * COUNTS_PER_INCH);
             newRightTarget = motorBackRight.getCurrentPosition() + (int) (rightInches * COUNTS_PER_INCH);
@@ -547,7 +417,7 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
             motorFrontRight.setPower((speed));
             motorFrontLeft.setPower((speed));
             motorBackRight.setPower((speed));
-            while (opModeIsActive() &&
+            while (myOpMode.opModeIsActive() &&
                     (runtime.seconds() < timeoutS) &&
                     (motorBackLeft.isBusy())) {
 
@@ -555,8 +425,8 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
                 //telemetry.addData("Running to", "%7d :%7d", -newDLeftTarget, -newDRightTarget);//"%7d :%7d"
                 //telemetry.addData("Currently at", "%7d :%7d",
                 //        deadWheelL.getCurrentPosition(), deadWheelR.getCurrentPosition());
-                telemetry.addData("fr", motorFrontRight.getCurrentPosition());
-                telemetry.update();
+                myOpMode.telemetry.addData("fr", motorFrontRight.getCurrentPosition());
+                myOpMode.telemetry.update();
             }
 
             // Stop all motion;
@@ -585,7 +455,7 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
         int newBLTarget;
         int newDeadTarget;
         inches *= -1;
-        if (opModeIsActive()) {
+        if (myOpMode.opModeIsActive()) {
             if (inches < 0) {
                 newFLTarget = motorFrontLeft.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
                 newBLTarget = motorBackLeft.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
@@ -628,21 +498,21 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
             motorFrontRight.setPower(Math.abs(speed));
             motorFrontLeft.setPower(Math.abs(speed));
             motorBackRight.setPower(Math.abs(speed));
-            while (opModeIsActive() &&
+            while (myOpMode.opModeIsActive() &&
                     (runtime.seconds() < timeoutS) && deadWheel.isBusy()) {
 
                 // Display it for the driver.
-                telemetry.addData("Running to", "%7d:%7d", motorFrontLeft.getCurrentPosition()
+                myOpMode.telemetry.addData("Running to", "%7d:%7d", motorFrontLeft.getCurrentPosition()
                         , motorBackRight.getCurrentPosition());
-                telemetry.addData("Running to", "%7d:%7d", motorBackLeft.getCurrentPosition()
+                myOpMode.telemetry.addData("Running to", "%7d:%7d", motorBackLeft.getCurrentPosition()
                         , motorFrontRight.getCurrentPosition());
-                telemetry.addData("Currently at", "%7d:%7d",
+                myOpMode.telemetry.addData("Currently at", "%7d:%7d",
                         motorFrontLeft.getCurrentPosition()
                         , motorBackRight.getCurrentPosition());
-                telemetry.addData("Currently at", "%7d:%7d",
+                myOpMode.telemetry.addData("Currently at", "%7d:%7d",
                         motorFrontRight.getCurrentPosition()
                         , motorBackLeft.getCurrentPosition());
-                telemetry.update();
+                myOpMode.telemetry.update();
             }
 
             // Stop all motion;
@@ -673,18 +543,18 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
         if (!isUp) {
             sparkLong.setPower(-speed);
         }
-        while (opModeIsActive() &&
+        while (myOpMode.opModeIsActive() &&
                 (runtime.seconds() < timeOut) && sparkLong.isBusy()) {
 
             // Display it for the driver.
-            telemetry.addData("Running to", sparkLong.getCurrentPosition());
-            telemetry.addData("Currently at",
+            myOpMode.telemetry.addData("Running to", sparkLong.getCurrentPosition());
+            myOpMode.telemetry.addData("Currently at",
                     sparkLong.getCurrentPosition());
-            telemetry.update();
+            myOpMode.telemetry.update();
         }
         sparkLong.setPower(0);
         sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        telemetry.update();
+        myOpMode.telemetry.update();
     }
 
     public void resetEncoders() {
@@ -716,8 +586,8 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
                 while (fDistanceVal > dist) {
                     updateDistance();
                     fDistanceVal = (fDistance.getDistance(DistanceUnit.CM) + fOffset);
-                    telemetry.addData("Distance", fDistanceVal);
-                    telemetry.update();
+                    myOpMode.telemetry.addData("Distance", fDistanceVal);
+                    myOpMode.telemetry.update();
                     motorFrontLeft.setPower(-power);
                     motorFrontRight.setPower(-power);
                     motorBackLeft.setPower(-power);
@@ -735,8 +605,8 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
                 while (fDistanceVal < dist) {
                     updateDistance();
                     fDistanceVal = (fDistance.getDistance(DistanceUnit.CM) + fOffset);
-                    telemetry.addData("Distance", fDistanceVal);
-                    telemetry.update();
+                    myOpMode.telemetry.addData("Distance", fDistanceVal);
+                    myOpMode.telemetry.update();
                     motorFrontLeft.setPower(-power);
                     motorFrontRight.setPower(-power);
                     motorBackLeft.setPower(-power);
@@ -754,8 +624,8 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
             if (!closerThanDist) {
                 while (rDistanceVal > dist) {
                     updateDistance();
-                    telemetry.addData("Distance", rDistanceVal);
-                    telemetry.update();
+                    myOpMode.telemetry.addData("Distance", rDistanceVal);
+                    myOpMode.telemetry.update();
                     rDistanceVal = (rDistance.getDistance(DistanceUnit.CM) + rOffset);
                     motorFrontLeft.setPower(-power);
                     motorFrontRight.setPower(power);
@@ -772,8 +642,8 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
             if (closerThanDist) {
                 while (rDistanceVal < dist) {
                     updateDistance();
-                    telemetry.addData("Distance", rDistanceVal);
-                    telemetry.update();
+                    myOpMode.telemetry.addData("Distance", rDistanceVal);
+                    myOpMode.telemetry.update();
                     rDistanceVal = (rDistance.getDistance(DistanceUnit.CM) + rOffset);
                     motorFrontLeft.setPower(power);
                     motorFrontRight.setPower(-power);
@@ -792,8 +662,8 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
             if (!closerThanDist) {
                 while (lDistanceVal > dist) {
                     updateDistance();
-                    telemetry.addData("Distance", lDistanceVal);
-                    telemetry.update();
+                    myOpMode.telemetry.addData("Distance", lDistanceVal);
+                    myOpMode.telemetry.update();
                     lDistanceVal = (lDistance.getDistance(DistanceUnit.CM) + lOffset);
                     motorFrontLeft.setPower(power);
                     motorFrontRight.setPower(-power);
@@ -810,8 +680,8 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
             if (closerThanDist) {
                 while (lDistanceVal < dist) {
                     updateDistance();
-                    telemetry.addData("Distance", lDistanceVal);
-                    telemetry.update();
+                    myOpMode.telemetry.addData("Distance", lDistanceVal);
+                    myOpMode.telemetry.update();
                     lDistanceVal = (lDistance.getDistance(DistanceUnit.CM) + lOffset);
                     motorFrontLeft.setPower(-power);
                     motorFrontRight.setPower(power);
@@ -846,8 +716,8 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
             double fwdInches = (targetY - currY) * yMult;
             fwdInches *= orientationVal;
             sidewaysInches *= orientationVal;
-            telemetry.addData("fwdInches", fwdInches);
-            telemetry.addData("sidewaysInches", sidewaysInches);
+            myOpMode.telemetry.addData("fwdInches", fwdInches);
+            myOpMode.telemetry.addData("sidewaysInches", sidewaysInches);
             if (currX < targetX) {
                 sideWaysEncoderDrive(power, sidewaysInches, 1);
             } else if (currX > targetX) {
@@ -875,8 +745,8 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
             }
             fwdInches *= orientationVal;
             sidewaysInches *= orientationVal;
-            telemetry.addData("fwdInches", fwdInches);
-            telemetry.addData("sidewaysInches", sidewaysInches);
+            myOpMode.telemetry.addData("fwdInches", fwdInches);
+            myOpMode.telemetry.addData("sidewaysInches", sidewaysInches);
             if (currY < targetY) {
                 sideWaysEncoderDrive(power, sidewaysInches, 6);
             } else if (currY > targetY) {
@@ -908,7 +778,7 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
         setOvr(targetX, targetY);
         ovrTurn += turn;
         //telemetry.addData("orientation", orientation);
-        telemetry.update();
+        myOpMode.telemetry.update();
         //sleep(5000);
     }
 
@@ -928,7 +798,7 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
 
     public void runVu(int timeoutS, boolean giveSpot) {
         runtime.reset();
-        while (opModeIsActive() && (spot == 0)) {
+        while (myOpMode.opModeIsActive() && (spot == 0)) {
             if (runtime.seconds() > timeoutS) {
                 spot = 4;
             }
@@ -937,7 +807,7 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
                 // the last time that call was made.
                 List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                 if (updatedRecognitions != null) {
-                    telemetry.addData("# Objects Detected", updatedRecognitions.size());
+                    myOpMode.telemetry.addData("# Objects Detected", updatedRecognitions.size());
 
                     // step through the list of recognitions and display image position/size information for each one
                     // Note: "Image number" refers to the randomized image orientation/number
@@ -947,10 +817,10 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
                         double width = Math.abs(recognition.getRight() - recognition.getLeft());
                         double height = Math.abs(recognition.getTop() - recognition.getBottom());
 
-                        telemetry.addData("", " ");
-                        telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
-                        telemetry.addData("- Position (Row/Col)", "%.0f / %.0f", row, col);
-                        telemetry.addData("- Size (Width/Height)", "%.0f / %.0f", width, height);
+                        myOpMode.telemetry.addData("", " ");
+                        myOpMode.telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
+                        myOpMode.telemetry.addData("- Position (Row/Col)", "%.0f / %.0f", row, col);
+                        myOpMode.telemetry.addData("- Size (Width/Height)", "%.0f / %.0f", width, height);
                         if (giveSpot && spot == 0) {
                             if (Objects.equals(recognition.getLabel(), "led")) {
                                 spot += 1;
@@ -966,7 +836,7 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
                             }
                         }
                     }
-                    telemetry.update();
+                    myOpMode.telemetry.update();
                 }
             }
         }
@@ -1017,7 +887,7 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
         //gives color values
         NormalizedRGBA colorsR = colorSensorR.getNormalizedColors();
         Color.colorToHSV(colorsR.toColor(), hsvValues);
-        telemetry.addLine()
+        myOpMode.telemetry.addLine()
                 .addData("Red", "%.3f", colorsR.red)
                 .addData("Green", "%.3f", colorsR.green)
                 .addData("Blue", "%.3f", colorsR.blue)
@@ -1025,7 +895,7 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
                 .addData("Saturation", "%.3f", hsvValues[1])
                 .addData("Value", "%.3f", hsvValues[2])
                 .addData("Alpha", "%.3f", colorsR.alpha);
-        telemetry.addLine()
+        myOpMode.telemetry.addLine()
                 .addData("Color", colorName)
                 .addData("RGB", "(" + redValR + "," + greenValR + "," + blueValR + ")");//shows rgb value
     }
@@ -1034,7 +904,7 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
         //gives color values
         NormalizedRGBA colors = colorSensorL.getNormalizedColors();
         Color.colorToHSV(colors.toColor(), hsvValues);
-        telemetry.addLine()
+        myOpMode.telemetry.addLine()
                 .addData("Red", "%.3f", colors.red)
                 .addData("Green", "%.3f", colors.green)
                 .addData("Blue", "%.3f", colors.blue)
@@ -1042,7 +912,7 @@ public class robotCentricV2 extends LinearOpMode {//declaring the class
                 .addData("Saturation", "%.3f", hsvValues[1])
                 .addData("Value", "%.3f", hsvValues[2])
                 .addData("Alpha", "%.3f", colors.alpha);
-        telemetry.addLine()
+        myOpMode.telemetry.addLine()
                 .addData("Color", colorName)
                 .addData("RGB", "(" + redValL + "," + greenValL + "," + blueValL + ")");//shows rgb value
     }

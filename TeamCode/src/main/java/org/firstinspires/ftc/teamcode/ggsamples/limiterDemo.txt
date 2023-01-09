@@ -1,18 +1,17 @@
-//import
-package org.firstinspires.ftc.teamcode.externalTests;
+package org.firstinspires.ftc.teamcode.teleOp;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
 import android.graphics.Color;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.Gamepad;
-import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -30,51 +29,11 @@ import org.firstinspires.ftc.teamcode.testOpModes.distanceSensorCalibrator;
 import java.util.List;
 import java.util.Objects;
 
-//import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-public class HardwareConfig {
-    public final ElapsedTime runtime = new ElapsedTime();
-    public int turn = 77;
-    public double yMult = 24;
-    public double xMult = 10;
-    public double ovrCurrX = 0;
-    public double ovrCurrY = 0;
-    public double ovrTurn = 0;
-    public static final double COUNTS_PER_INCH_Side_dead = -665.08;
-    public static final double COUNTS_PER_INCH_Side = -100;
-    //offset
-    public double rOffset = distanceSensorCalibrator.rOffset;
-    public double lOffset = distanceSensorCalibrator.lOffset;//-5.1;
-    public double fOffset = distanceSensorCalibrator.fOffset;
-    public double bOffset = distanceSensorCalibrator.bOffset;
-    //arm
-    public static final double COUNTS_PER_MOTOR_REV_arm = 28;
-    public static final double DRIVE_GEAR_REDUCTION_arm = 40;
-    public static final double WHEEL_DIAMETER_INCHES_arm = 1.102;     // For figuring circumference
-    public static final double COUNTS_PER_INCH_arm = (COUNTS_PER_MOTOR_REV_arm * DRIVE_GEAR_REDUCTION_arm) /
-            (WHEEL_DIAMETER_INCHES_arm * 3.1415);
-    //wheels
-    public static final double COUNTS_PER_MOTOR_REV = 28;
-    public static final double WHEEL_DIAMETER_MM = 96;
-    public static final double DRIVE_GEAR_REDUCTION = 15;
-    public static final double WHEEL_DIAMETER_INCHES = WHEEL_DIAMETER_MM * 0.0393701;     // For figuring circumference
-    public static final double COUNTS_PER_INCH = (COUNTS_PER_MOTOR_REV * DRIVE_GEAR_REDUCTION) /
-            (WHEEL_DIAMETER_INCHES * Math.PI);
-    public static final double COUNTS_PER_MOTOR_REV_dead = 8192;
-    public static final double WHEEL_DIAMETER_MM_dead = 96;
-    public static final double WHEEL_DIAMETER_INCHES_dead = WHEEL_DIAMETER_MM_dead * 0.0393701;     // For figuring circumference
-    public static final double COUNTS_PER_INCH_dead = (COUNTS_PER_MOTOR_REV_dead) /
-            (WHEEL_DIAMETER_INCHES_dead * Math.PI);
-    //other variables
-    public boolean slowModeIsOn = false;//declaring the slowModeIsOn variable
-    public boolean reversed = false;//declaring the reversed variable
 
-    //servo variables
-    public double position = 0;//sets servo position to 0-1 multiplier
-    public final double degree_mult = 0.00555555554;//100/180
-    public final int baseClawVal = 30;//declaring the baseClawVal variable
-    public final int magicNumOpen = 60;//declaring the magicNumOpen variable
-    public boolean clawOpen = false;//declaring the clawOpen variable
-
+@TeleOp(name = "limiter", group = "Robot")//declaring the name and group of the opmode
+@Disabled//disabling the opmode
+public class robotCentric extends LinearOpMode {//declaring the class
+    private final ElapsedTime runtime = new ElapsedTime();
     //arm labels
     public final int baseArmPosition = 0;
     public static final int armLimit = 4250;//declaring the armLimit variable
@@ -83,34 +42,23 @@ public class HardwareConfig {
     public static final int midPoleVal = 290;//should be about 2/3 of arm limit
     public static final int fiveTallConeVal = 300;
     public static final int topPoleVal = armLimit;//should be close to armLimit
-    //public boolean limiter = false;//declaring the limiter variable, is on or off
-    //public boolean limiting = false;//declaring the limiting variable
+    public boolean limiter = false;//declaring the limiter variable, is on or off
+    public boolean limiting = false;//declaring the limiting variable
 
-    //rumble
-    public Gamepad.RumbleEffect customRumbleEffect;//declaring the customRumbleEffect variable
-    public final double endgame = 120;//declaring the endgame variable
-    public boolean isEndgame = false;//declaring the isEndgame variable
-    public Gamepad.RumbleEffect customRumbleEffect1;// declaring the customRumbleEffect1 variable
-    public boolean rumble = false;//declaring the rumble variable
-    public final double end = 150;//declaring the end variable
-    public boolean isEnd = false;//declaring the isEnd variable
-
-    //rake
-    public final int baseFlip = -90;//declaring the baseFlip variable
-    public final int magicFlip = baseFlip + 50;//declaring the magicFlip variable
-    public final int baseUnCone = 0;
-    public final int magicUnCone = baseUnCone + 90;
-    //motors
+    //motors/servos
+    public DcMotor deadWheel = null;//declaring the deadWheel motor
+    //public DcMotor deadWheelL = null;//declaring the deadWheelL motor
+    //public DcMotor deadWheelR = null;//declaring the deadWheelR motor
+    public DistanceSensor rDistance;//declaring the rDistance sensor
+    public DistanceSensor lDistance;//declaring the lDistance sensor
+    public DistanceSensor fDistance;//declaring the fDistance sensor
     public DcMotor motorFrontLeft = null;
     public DcMotor motorBackLeft = null;
     public DcMotor motorFrontRight = null;
     public DcMotor motorBackRight = null;
-    public DcMotor deadWheel = null;//declaring the deadWheel motor
-    //servo
     public DcMotor sparkLong = null;
-    public TouchSensor touchSensor;
-    public NormalizedColorSensor colorSensorR;//declaring the colorSensor variable
-    public NormalizedColorSensor colorSensorL;//declaring the colorSensor variable
+    public Servo clawServo = null;
+    //public Servo unConer = null;
     public DigitalChannel red1;
     public DigitalChannel green1;
     public DigitalChannel red2;
@@ -119,58 +67,10 @@ public class HardwareConfig {
     public DigitalChannel green3;
     public DigitalChannel red4;
     public DigitalChannel green4;
-    public DistanceSensor rDistance;//declaring the rDistance sensor
-    public DistanceSensor lDistance;//declaring the lDistance sensor
-    public DistanceSensor fDistance;//declaring the fDistance sensor
-    public RevBlinkinLedDriver lights;
-    public Servo clawServo = null;
-    public BNO055IMU imu;
-    HardwareMap hardwareMap = null;
-    private static final String TFOD_MODEL_ASSET = "custom.tflite";
-    private static final String[] LABELS = {
-            "capacitor",//3
-            "led",//1
-            "resistor"//2
-    };
-    private static final String VUFORIA_KEY =
-            "AXmzBcj/////AAABme5HSJ/H3Ucup73WSIaV87tx/sFHYaWfor9OZVg6afr2Bw7kNolHd+mF5Ps91SlQpgBHulieI0jcd86kqJSwx46BZ8v8DS5S5x//eQWMEGjMDnvco4/oTcDwuSOLIVZG2UtLmJXPS1L3CipjabePFlqAL2JtBlN78p6ZZbRFSHW680hWEMSimZuQy/cMudD7J/MjMjMs7b925b8BkijlnTQYr7CbSlXrpDh5K+9fLlk2OyEZ4w7tm7e4UJDInJ/T3oi8PqqKCqkUaTkJWlQsvoELbDu5L2FgzsuDhBLe2rHtJRqfORd7n+6M30UdFSsxqq5TaZztkWgzRUr1GC3yBSTS6iFqEuL3g06GrfwOJF0F";
-    private VuforiaLocalizer vuforia;
-    private TFObjectDetector tfod;
-    private int spot = 0;
-    //color
-    final float[] hsvValues = new float[3];//gets values for color sensor
-    private final float redVal = 0;//the red value in rgb
-    private final float greenVal = 0;//the green value in rgb
-    private final float blueVal = 0;//the blue value in rgb
-    private final String colorName = "N/A";//gets color name
-    //
-    public String statusVal = "OFFLINE";
-    public double fDistanceVal = 0;
-    public double lDistanceVal = 0;
-    public double rDistanceVal = 0;
-    //isRight side
-    public boolean right = true;//declaring the right variable
-    public final int baseEject = 0;
-    public final int magicEject = baseEject + 90;
 
-    public boolean assisting = false;
-    private final float redValR = 0;//the red value in rgb
-    private final float greenValR = 0;//the green value in rgb
-    private final float blueValR = 0;//the blue value in rgb
-    private final float redValL = 0;//the red value in rgb
-    private final float greenValL = 0;//the green value in rgb
-    private final float blueValL = 0;//the blue value in rgb
-    public double xControl;
-    public double yControl;
-    public double slowMult = 3;
-    public double slowPower;
-    private LinearOpMode myOpMode = null;   // gain access to methods in the calling OpMode.
 
-    public HardwareConfig(LinearOpMode opmode) {
-        myOpMode = opmode;
-    }
-
-    public void init(HardwareMap ahwMap) {
+    @Override
+    public void runOpMode() {//if opmode is started
         ElapsedTime runtime = new ElapsedTime();//declaring the runtime variable
         lights = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
         rDistance = hardwareMap.get(DistanceSensor.class, "rDistance");//getting the rDistance sensor
@@ -193,6 +93,8 @@ public class HardwareConfig {
         motorFrontRight = hardwareMap.get(DcMotor.class, "motorFrontRight");//getting the motorFrontRight motor
         motorBackRight = hardwareMap.get(DcMotor.class, "motorBackRight");//getting the motorBackRight motor
         deadWheel = hardwareMap.get(DcMotor.class, "deadWheel");//getting the deadWheel motor
+        //deadWheelL = hardwareMap.get(DcMotor.class, "deadWheelL");//getting the deadWheelL motor
+        //deadWheelR = hardwareMap.get(DcMotor.class, "deadWheelR");//getting the deadWheelR motor
         clawServo = hardwareMap.get(Servo.class, "clawServo");//getting the clawServo servo
         sparkLong = hardwareMap.get(DcMotor.class, "sparkLong");//getting the sparkLong motor
         touchSensor = hardwareMap.get(TouchSensor.class, ("touchSensor"));
@@ -203,8 +105,10 @@ public class HardwareConfig {
         motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorBackLeft encoder
         motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorFrontRight encoder
         deadWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the deadWheel encoder
+        //deadWheelL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the deadWheelL encoder
+        //deadWheelR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the deadWheelR encoder
 
-        motorBackRight.setDirection(DcMotor.Direction.REVERSE);//setting the motorBackRight direction
+        motorBackLeft.setDirection(DcMotor.Direction.REVERSE);//setting the motorBackRight direction
 
         sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the sparkLong encoder to run using encoder
         motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorFrontLeft encoder to run using encoder
@@ -212,6 +116,8 @@ public class HardwareConfig {
         motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorBackRight encoder to run using encoder
         motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorFrontRight encoder to run using encoder
         deadWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the deadWheel encoder to run using encoder
+        //deadWheelL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the deadWheelL encoder to run using encoder
+        //deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the deadWheelR encoder to run using encoder
 
         motorBackRight.setZeroPowerBehavior(BRAKE);
         motorBackLeft.setZeroPowerBehavior(BRAKE);
@@ -230,6 +136,78 @@ public class HardwareConfig {
         //flipper.setPosition(setServo(magicFlip));//setting the flipper servo to the magicFlip position
         runtime.reset();//resetting the runtime variable
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+        waitForStart();//waiting for the start button to be pressed
+        lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
+
+        //if (isStopRequested()) return;//if the stop button is pressed, stop the program
+
+        while (opModeIsActive()) {//while the op mode is active
+            double armPower = -gamepad2.left_stick_y;
+            if (gamepad2.dpad_down) {
+                sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+                sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            }
+
+            if (sparkLong.getCurrentPosition() >= armLimit - 200 || sparkLong.getCurrentPosition() <= baseArm + 500) {
+                green2.setState(false);
+                red2.setState(true);
+                limiting = true;
+            } else {
+                green2.setState(true);
+                red2.setState(false);
+                limiting = false;
+            }
+            //arm extend controller 2
+            if (sparkLong.getCurrentPosition() <= armLimit) {// && limiter) {
+                sparkLong.setPower(armPower);
+            } else {
+                sparkLong.setPower(0);
+            }
+            //
+            //presets
+            if (gamepad2.y) {//top level
+                if (sparkLong.getCurrentPosition() < topPoleVal) {//go up
+                    sparkLong.setPower(1);
+                } else {
+                    sparkLong.setPower(0);
+                }
+            }
+            if (gamepad2.a) {//base
+                if (sparkLong.getCurrentPosition() > baseArm) {//go down
+                    sparkLong.setPower(-1);
+                } else {
+                    sparkLong.setPower(0);
+                }
+            }
+            if (gamepad2.b) {//middle
+                if (sparkLong.getCurrentPosition() > midPoleVal + 50) {//go down
+                    sparkLong.setPower(-1);
+                }
+                if (sparkLong.getCurrentPosition() < midPoleVal - 50) {//go up
+                    sparkLong.setPower(1);
+                } else {
+                    sparkLong.setPower(0);
+                }
+            }
+            if (gamepad2.x) {//low
+                if (sparkLong.getCurrentPosition() > lowPoleVal + 50) {//go down
+                    sparkLong.setPower(1);
+                }
+                if (sparkLong.getCurrentPosition() < lowPoleVal - 50) {//go up
+                    sparkLong.setPower(-1);
+                } else {
+                    sparkLong.setPower(0);
+                }
+            }
+            //
+            telemetry.addLine("Arm")
+                    .addData("Val", String.valueOf(sparkLong.getCurrentPosition()))
+                    .addData("Max", armLimit)
+                    .addData("Limiter", limiter)
+                    .addData("Is broken", (sparkLong.getCurrentPosition() > armLimit))
+                    .addData("Is Limiting",limiting);
+            telemetry.update();
+        }
     }
 
     public String getColor() {
@@ -276,7 +254,7 @@ public class HardwareConfig {
     //}
 
     public void teleSpace() {
-        myOpMode.telemetry.addLine();
+        telemetry.addLine();
     }
 
     public void updateStatus(String status) {
@@ -302,7 +280,7 @@ public class HardwareConfig {
 
     public void distanceTelemetry() {
         updateDistance();
-        myOpMode.telemetry.addLine("Distance")
+        telemetry.addLine("Distance")
                 .addData("", "")
                 .addData("f", String.valueOf(fDistanceVal))
                 .addData("l", String.valueOf(lDistanceVal))
@@ -354,15 +332,15 @@ public class HardwareConfig {
         motorBackRight.setPower((speed));
         motorFrontRight.setPower((speed));
         motorFrontLeft.setPower((speed));
-        while (myOpMode.opModeIsActive() &&
+        while (opModeIsActive() &&
                 (runtime.seconds() < timeoutS) && sparkLong.isBusy()) {
 
             // Display it for the driver.
-            myOpMode.telemetry.addData(" arm Running to", sparkLong.getCurrentPosition());
-            myOpMode.telemetry.addData("arm Currently at",
+            telemetry.addData(" arm Running to", sparkLong.getCurrentPosition());
+            telemetry.addData("arm Currently at",
                     sparkLong.getCurrentPosition());
             // Display it for the driver.
-            myOpMode.telemetry.update();
+            telemetry.update();
         }
 
         // Stop all motion;
@@ -381,7 +359,7 @@ public class HardwareConfig {
         //deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //deadWheelL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         resetEncoders();
-        myOpMode.telemetry.update();
+        telemetry.update();
     }
 
     public void encoderDrive(double speed,
@@ -391,7 +369,7 @@ public class HardwareConfig {
         int newRightTarget;
         int newDLeftTarget;
         int newDRightTarget;
-        if (myOpMode.opModeIsActive()) {
+        if (opModeIsActive()) {
 
             newLeftTarget = motorBackLeft.getCurrentPosition() + (int) (leftInches * COUNTS_PER_INCH);
             newRightTarget = motorBackRight.getCurrentPosition() + (int) (rightInches * COUNTS_PER_INCH);
@@ -417,7 +395,7 @@ public class HardwareConfig {
             motorFrontRight.setPower((speed));
             motorFrontLeft.setPower((speed));
             motorBackRight.setPower((speed));
-            while (myOpMode.opModeIsActive() &&
+            while (opModeIsActive() &&
                     (runtime.seconds() < timeoutS) &&
                     (motorBackLeft.isBusy())) {
 
@@ -425,8 +403,8 @@ public class HardwareConfig {
                 //telemetry.addData("Running to", "%7d :%7d", -newDLeftTarget, -newDRightTarget);//"%7d :%7d"
                 //telemetry.addData("Currently at", "%7d :%7d",
                 //        deadWheelL.getCurrentPosition(), deadWheelR.getCurrentPosition());
-                myOpMode.telemetry.addData("fr", motorFrontRight.getCurrentPosition());
-                myOpMode.telemetry.update();
+                telemetry.addData("fr", motorFrontRight.getCurrentPosition());
+                telemetry.update();
             }
 
             // Stop all motion;
@@ -455,7 +433,7 @@ public class HardwareConfig {
         int newBLTarget;
         int newDeadTarget;
         inches *= -1;
-        if (myOpMode.opModeIsActive()) {
+        if (opModeIsActive()) {
             if (inches < 0) {
                 newFLTarget = motorFrontLeft.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
                 newBLTarget = motorBackLeft.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
@@ -498,21 +476,21 @@ public class HardwareConfig {
             motorFrontRight.setPower(Math.abs(speed));
             motorFrontLeft.setPower(Math.abs(speed));
             motorBackRight.setPower(Math.abs(speed));
-            while (myOpMode.opModeIsActive() &&
+            while (opModeIsActive() &&
                     (runtime.seconds() < timeoutS) && deadWheel.isBusy()) {
 
                 // Display it for the driver.
-                myOpMode.telemetry.addData("Running to", "%7d:%7d", motorFrontLeft.getCurrentPosition()
+                telemetry.addData("Running to", "%7d:%7d", motorFrontLeft.getCurrentPosition()
                         , motorBackRight.getCurrentPosition());
-                myOpMode.telemetry.addData("Running to", "%7d:%7d", motorBackLeft.getCurrentPosition()
+                telemetry.addData("Running to", "%7d:%7d", motorBackLeft.getCurrentPosition()
                         , motorFrontRight.getCurrentPosition());
-                myOpMode.telemetry.addData("Currently at", "%7d:%7d",
+                telemetry.addData("Currently at", "%7d:%7d",
                         motorFrontLeft.getCurrentPosition()
                         , motorBackRight.getCurrentPosition());
-                myOpMode.telemetry.addData("Currently at", "%7d:%7d",
+                telemetry.addData("Currently at", "%7d:%7d",
                         motorFrontRight.getCurrentPosition()
                         , motorBackLeft.getCurrentPosition());
-                myOpMode.telemetry.update();
+                telemetry.update();
             }
 
             // Stop all motion;
@@ -543,18 +521,18 @@ public class HardwareConfig {
         if (!isUp) {
             sparkLong.setPower(-speed);
         }
-        while (myOpMode.opModeIsActive() &&
+        while (opModeIsActive() &&
                 (runtime.seconds() < timeOut) && sparkLong.isBusy()) {
 
             // Display it for the driver.
-            myOpMode.telemetry.addData("Running to", sparkLong.getCurrentPosition());
-            myOpMode.telemetry.addData("Currently at",
+            telemetry.addData("Running to", sparkLong.getCurrentPosition());
+            telemetry.addData("Currently at",
                     sparkLong.getCurrentPosition());
-            myOpMode.telemetry.update();
+            telemetry.update();
         }
         sparkLong.setPower(0);
         sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        myOpMode.telemetry.update();
+        telemetry.update();
     }
 
     public void resetEncoders() {
@@ -586,8 +564,8 @@ public class HardwareConfig {
                 while (fDistanceVal > dist) {
                     updateDistance();
                     fDistanceVal = (fDistance.getDistance(DistanceUnit.CM) + fOffset);
-                    myOpMode.telemetry.addData("Distance", fDistanceVal);
-                    myOpMode.telemetry.update();
+                    telemetry.addData("Distance", fDistanceVal);
+                    telemetry.update();
                     motorFrontLeft.setPower(-power);
                     motorFrontRight.setPower(-power);
                     motorBackLeft.setPower(-power);
@@ -605,8 +583,8 @@ public class HardwareConfig {
                 while (fDistanceVal < dist) {
                     updateDistance();
                     fDistanceVal = (fDistance.getDistance(DistanceUnit.CM) + fOffset);
-                    myOpMode.telemetry.addData("Distance", fDistanceVal);
-                    myOpMode.telemetry.update();
+                    telemetry.addData("Distance", fDistanceVal);
+                    telemetry.update();
                     motorFrontLeft.setPower(-power);
                     motorFrontRight.setPower(-power);
                     motorBackLeft.setPower(-power);
@@ -624,8 +602,8 @@ public class HardwareConfig {
             if (!closerThanDist) {
                 while (rDistanceVal > dist) {
                     updateDistance();
-                    myOpMode.telemetry.addData("Distance", rDistanceVal);
-                    myOpMode.telemetry.update();
+                    telemetry.addData("Distance", rDistanceVal);
+                    telemetry.update();
                     rDistanceVal = (rDistance.getDistance(DistanceUnit.CM) + rOffset);
                     motorFrontLeft.setPower(-power);
                     motorFrontRight.setPower(power);
@@ -642,8 +620,8 @@ public class HardwareConfig {
             if (closerThanDist) {
                 while (rDistanceVal < dist) {
                     updateDistance();
-                    myOpMode.telemetry.addData("Distance", rDistanceVal);
-                    myOpMode.telemetry.update();
+                    telemetry.addData("Distance", rDistanceVal);
+                    telemetry.update();
                     rDistanceVal = (rDistance.getDistance(DistanceUnit.CM) + rOffset);
                     motorFrontLeft.setPower(power);
                     motorFrontRight.setPower(-power);
@@ -662,8 +640,8 @@ public class HardwareConfig {
             if (!closerThanDist) {
                 while (lDistanceVal > dist) {
                     updateDistance();
-                    myOpMode.telemetry.addData("Distance", lDistanceVal);
-                    myOpMode.telemetry.update();
+                    telemetry.addData("Distance", lDistanceVal);
+                    telemetry.update();
                     lDistanceVal = (lDistance.getDistance(DistanceUnit.CM) + lOffset);
                     motorFrontLeft.setPower(power);
                     motorFrontRight.setPower(-power);
@@ -680,8 +658,8 @@ public class HardwareConfig {
             if (closerThanDist) {
                 while (lDistanceVal < dist) {
                     updateDistance();
-                    myOpMode.telemetry.addData("Distance", lDistanceVal);
-                    myOpMode.telemetry.update();
+                    telemetry.addData("Distance", lDistanceVal);
+                    telemetry.update();
                     lDistanceVal = (lDistance.getDistance(DistanceUnit.CM) + lOffset);
                     motorFrontLeft.setPower(-power);
                     motorFrontRight.setPower(power);
@@ -716,8 +694,8 @@ public class HardwareConfig {
             double fwdInches = (targetY - currY) * yMult;
             fwdInches *= orientationVal;
             sidewaysInches *= orientationVal;
-            myOpMode.telemetry.addData("fwdInches", fwdInches);
-            myOpMode.telemetry.addData("sidewaysInches", sidewaysInches);
+            telemetry.addData("fwdInches", fwdInches);
+            telemetry.addData("sidewaysInches", sidewaysInches);
             if (currX < targetX) {
                 sideWaysEncoderDrive(power, sidewaysInches, 1);
             } else if (currX > targetX) {
@@ -745,8 +723,8 @@ public class HardwareConfig {
             }
             fwdInches *= orientationVal;
             sidewaysInches *= orientationVal;
-            myOpMode.telemetry.addData("fwdInches", fwdInches);
-            myOpMode.telemetry.addData("sidewaysInches", sidewaysInches);
+            telemetry.addData("fwdInches", fwdInches);
+            telemetry.addData("sidewaysInches", sidewaysInches);
             if (currY < targetY) {
                 sideWaysEncoderDrive(power, sidewaysInches, 6);
             } else if (currY > targetY) {
@@ -778,7 +756,7 @@ public class HardwareConfig {
         setOvr(targetX, targetY);
         ovrTurn += turn;
         //telemetry.addData("orientation", orientation);
-        myOpMode.telemetry.update();
+        telemetry.update();
         //sleep(5000);
     }
 
@@ -798,7 +776,7 @@ public class HardwareConfig {
 
     public void runVu(int timeoutS, boolean giveSpot) {
         runtime.reset();
-        while (myOpMode.opModeIsActive() && (spot == 0)) {
+        while (opModeIsActive() && (spot == 0)) {
             if (runtime.seconds() > timeoutS) {
                 spot = 4;
             }
@@ -807,7 +785,7 @@ public class HardwareConfig {
                 // the last time that call was made.
                 List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
                 if (updatedRecognitions != null) {
-                    myOpMode.telemetry.addData("# Objects Detected", updatedRecognitions.size());
+                    telemetry.addData("# Objects Detected", updatedRecognitions.size());
 
                     // step through the list of recognitions and display image position/size information for each one
                     // Note: "Image number" refers to the randomized image orientation/number
@@ -817,10 +795,10 @@ public class HardwareConfig {
                         double width = Math.abs(recognition.getRight() - recognition.getLeft());
                         double height = Math.abs(recognition.getTop() - recognition.getBottom());
 
-                        myOpMode.telemetry.addData("", " ");
-                        myOpMode.telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
-                        myOpMode.telemetry.addData("- Position (Row/Col)", "%.0f / %.0f", row, col);
-                        myOpMode.telemetry.addData("- Size (Width/Height)", "%.0f / %.0f", width, height);
+                        telemetry.addData("", " ");
+                        telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
+                        telemetry.addData("- Position (Row/Col)", "%.0f / %.0f", row, col);
+                        telemetry.addData("- Size (Width/Height)", "%.0f / %.0f", width, height);
                         if (giveSpot && spot == 0) {
                             if (Objects.equals(recognition.getLabel(), "led")) {
                                 spot += 1;
@@ -836,7 +814,7 @@ public class HardwareConfig {
                             }
                         }
                     }
-                    myOpMode.telemetry.update();
+                    telemetry.update();
                 }
             }
         }
@@ -887,7 +865,7 @@ public class HardwareConfig {
         //gives color values
         NormalizedRGBA colorsR = colorSensorR.getNormalizedColors();
         Color.colorToHSV(colorsR.toColor(), hsvValues);
-        myOpMode.telemetry.addLine()
+        telemetry.addLine()
                 .addData("Red", "%.3f", colorsR.red)
                 .addData("Green", "%.3f", colorsR.green)
                 .addData("Blue", "%.3f", colorsR.blue)
@@ -895,7 +873,7 @@ public class HardwareConfig {
                 .addData("Saturation", "%.3f", hsvValues[1])
                 .addData("Value", "%.3f", hsvValues[2])
                 .addData("Alpha", "%.3f", colorsR.alpha);
-        myOpMode.telemetry.addLine()
+        telemetry.addLine()
                 .addData("Color", colorName)
                 .addData("RGB", "(" + redValR + "," + greenValR + "," + blueValR + ")");//shows rgb value
     }
@@ -904,7 +882,7 @@ public class HardwareConfig {
         //gives color values
         NormalizedRGBA colors = colorSensorL.getNormalizedColors();
         Color.colorToHSV(colors.toColor(), hsvValues);
-        myOpMode.telemetry.addLine()
+        telemetry.addLine()
                 .addData("Red", "%.3f", colors.red)
                 .addData("Green", "%.3f", colors.green)
                 .addData("Blue", "%.3f", colors.blue)
@@ -912,7 +890,7 @@ public class HardwareConfig {
                 .addData("Saturation", "%.3f", hsvValues[1])
                 .addData("Value", "%.3f", hsvValues[2])
                 .addData("Alpha", "%.3f", colors.alpha);
-        myOpMode.telemetry.addLine()
+        telemetry.addLine()
                 .addData("Color", colorName)
                 .addData("RGB", "(" + redValL + "," + greenValL + "," + blueValL + ")");//shows rgb value
     }
