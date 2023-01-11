@@ -257,7 +257,7 @@ public class robotCentric extends LinearOpMode {//declaring the class
         //if (isStopRequested()) return;//if the stop button is pressed, stop the program
 
         while (opModeIsActive()) {//while the op mode is active
-            double armPower = -gamepad2.left_stick_y;
+            double armPower = 0;
             if (gamepad1.dpad_up) {
                 assisting = !assisting;
             }
@@ -314,7 +314,6 @@ public class robotCentric extends LinearOpMode {//declaring the class
             double backLeftPower = (yControl - xControl - turn) / slowPower;
             //
             //arm extend controller 2
-            sparkLong.setPower(armPower);
             //
             //claw code
             if (gamepad2.left_bumper) {
@@ -336,11 +335,38 @@ public class robotCentric extends LinearOpMode {//declaring the class
                 red1.setState(false);
             }
             //
+            //presets
+            if (gamepad2.left_stick_y != 0) {
+                armPower = -gamepad2.left_stick_y;
+            } else if (gamepad2.y) {//top level
+                if (sparkLong.getCurrentPosition() < topPoleVal) {//go up
+                    armPower = 1;
+                }
+            } else if (gamepad2.a) {//base
+                if (sparkLong.getCurrentPosition() > baseArm) {//go down
+                    armPower = -1;
+                }
+            } else if (gamepad2.b) {//middle
+                if (sparkLong.getCurrentPosition() > midPoleVal + 50) {//go down
+                    armPower = -1;
+                }
+                if (sparkLong.getCurrentPosition() < midPoleVal - 50) {//go up
+                    armPower = 1;
+                }
+            } else if (gamepad2.x) {//low
+                if (sparkLong.getCurrentPosition() > lowPoleVal + 50) {//go down
+                    armPower = 1;
+                }
+                if (sparkLong.getCurrentPosition() < lowPoleVal - 50) {//go up
+                    armPower = -1;
+                }
+            }
             //
             motorFrontLeft.setPower(frontLeftPower);
             motorBackLeft.setPower(backLeftPower);
             motorFrontRight.setPower(frontRightPower);
             motorBackRight.setPower(backRightPower);
+            sparkLong.setPower(armPower);
             telemetry.addData("Status", statusVal);//shows current status
             //telemetry.addLine("Arm")
             //        .addData("Val", String.valueOf(sparkLong.getCurrentPosition()))
