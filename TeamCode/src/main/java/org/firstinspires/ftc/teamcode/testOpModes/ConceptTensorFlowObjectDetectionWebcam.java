@@ -29,7 +29,6 @@
 
 package org.firstinspires.ftc.teamcode.testOpModes;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -52,7 +51,7 @@ import java.util.List;
  * is explained below.
  */
 @TeleOp(name = "tfod test", group = "Concept")
-@Disabled
+//@Disabled
 public class ConceptTensorFlowObjectDetectionWebcam extends LinearOpMode {
 
     private static final String TFOD_MODEL_ASSET = "custom.tflite";
