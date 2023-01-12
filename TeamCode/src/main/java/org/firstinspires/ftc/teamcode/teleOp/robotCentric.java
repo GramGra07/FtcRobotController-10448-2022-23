@@ -115,6 +115,7 @@ public class robotCentric extends LinearOpMode {//declaring the class
     public DcMotor motorFrontRight = null;
     public DcMotor motorBackRight = null;
     public DcMotor sparkLong = null;
+    public DcMotor tapeMeasure = null;
     public Servo clawServo = null;
     //public Servo unConer = null;
     public DigitalChannel red1;
@@ -125,7 +126,10 @@ public class robotCentric extends LinearOpMode {//declaring the class
     public DigitalChannel green3;
     public DigitalChannel red4;
     public DigitalChannel green4;
-
+    public double tapeMeasureDiameter = 7.5;
+    public int tapeMeasureLength = 15 * 12;
+    public double countsPerInchTape = (28 * 5) / (tapeMeasureDiameter * Math.PI);
+    public double tickPerTapeMeasure = countsPerInchTape * tapeMeasureLength;
     //vuforia
 
     private static final String TFOD_MODEL_ASSET = "custom.tflite";
@@ -207,14 +211,15 @@ public class robotCentric extends LinearOpMode {//declaring the class
         motorBackLeft = hardwareMap.get(DcMotor.class, "motorBackLeft");//getting the motorBackLeft motor
         motorFrontRight = hardwareMap.get(DcMotor.class, "motorFrontRight");//getting the motorFrontRight motor
         motorBackRight = hardwareMap.get(DcMotor.class, "motorBackRight");//getting the motorBackRight motor
+        tapeMeasure = hardwareMap.get(DcMotor.class, "tapeMeasure");
         deadWheel = hardwareMap.get(DcMotor.class, "deadWheel");//getting the deadWheel motor
         //deadWheelL = hardwareMap.get(DcMotor.class, "deadWheelL");//getting the deadWheelL motor
         //deadWheelR = hardwareMap.get(DcMotor.class, "deadWheelR");//getting the deadWheelR motor
         clawServo = hardwareMap.get(Servo.class, "clawServo");//getting the clawServo servo
         sparkLong = hardwareMap.get(DcMotor.class, "sparkLong");//getting the sparkLong motor
         touchSensor = hardwareMap.get(TouchSensor.class, ("touchSensor"));
-
         sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the sparkLong encoder
+        tapeMeasure.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the sparkLong encoder
         motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorFrontLeft encoder
         motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorBackRight encoder
         motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorBackLeft encoder
@@ -224,7 +229,8 @@ public class robotCentric extends LinearOpMode {//declaring the class
         //deadWheelR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the deadWheelR encoder
 
         motorBackLeft.setDirection(DcMotor.Direction.REVERSE);//setting the motorBackRight direction
-
+        //TODO
+        //!tapeMeasure.setDirection(DcMotor.Direction.REVERSE);
         sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the sparkLong encoder to run using encoder
         motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorFrontLeft encoder to run using encoder
         motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorBackLeft encoder to run using encoder
@@ -239,6 +245,7 @@ public class robotCentric extends LinearOpMode {//declaring the class
         motorFrontRight.setZeroPowerBehavior(BRAKE);
         motorFrontLeft.setZeroPowerBehavior(BRAKE);
         sparkLong.setZeroPowerBehavior(BRAKE);
+        tapeMeasure.setZeroPowerBehavior(BRAKE);
         red1.setMode(DigitalChannel.Mode.OUTPUT);//setting the red1 light to output
         green1.setMode(DigitalChannel.Mode.OUTPUT);//setting the green1 light to output
         red2.setMode(DigitalChannel.Mode.OUTPUT);//setting the red2 light to output
@@ -258,6 +265,15 @@ public class robotCentric extends LinearOpMode {//declaring the class
 
         while (opModeIsActive()) {//while the op mode is active
             double armPower = 0;
+            double tapePower = 0;
+            if (gamepad1.dpad_up) {
+                //extend
+                tapePower = 1;
+            }
+            if (gamepad1.dpad_down) {
+                //retract
+                tapePower = -1;
+            }
             if (gamepad1.dpad_up) {
                 assisting = !assisting;
             }
@@ -362,6 +378,7 @@ public class robotCentric extends LinearOpMode {//declaring the class
                 }
             }
             //
+            tapeMeasure.setPower(tapePower);
             motorFrontLeft.setPower(frontLeftPower);
             motorBackLeft.setPower(backLeftPower);
             motorFrontRight.setPower(frontRightPower);
