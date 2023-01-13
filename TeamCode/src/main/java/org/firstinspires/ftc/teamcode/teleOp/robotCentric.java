@@ -126,6 +126,7 @@ public class robotCentric extends LinearOpMode {//declaring the class
     public DigitalChannel green3;
     public DigitalChannel red4;
     public DigitalChannel green4;
+    //tape measure
     public double tapeMeasureDiameter = 7.5;
     public int tapeMeasureLength = 15 * 12;
     public double countsPerInchTape = (28 * 5) / (tapeMeasureDiameter * Math.PI);
@@ -220,7 +221,7 @@ public class robotCentric extends LinearOpMode {//declaring the class
         sparkLong = hardwareMap.get(DcMotor.class, "sparkLong");//getting the sparkLong motor
         touchSensor = hardwareMap.get(TouchSensor.class, ("touchSensor"));
         sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the sparkLong encoder
-        tapeMeasure.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the sparkLong encoder
+        tapeMeasure.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the tape encoder
         motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorFrontLeft encoder
         motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorBackRight encoder
         motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorBackLeft encoder
@@ -267,13 +268,14 @@ public class robotCentric extends LinearOpMode {//declaring the class
         while (opModeIsActive()) {//while the op mode is active
             double armPower = 0;
             double tapePower = 0;
+            double tapeMult = 1;
             if ((gamepad1.dpad_up || gamepad2.dpad_right) && (tapeMeasure.getCurrentPosition() < tapeLimit - tapeLimit / 5)) {
                 //extend
-                tapePower = 1;
+                tapePower = 1 * tapeMult;
             }
             if ((gamepad1.dpad_down || gamepad2.dpad_left && (tapeMeasure.getCurrentPosition() > 0 + tapeLimit / 5))) {
                 //retract
-                tapePower = -1;
+                tapePower = -1 * tapeMult;
             }
             if (gamepad1.dpad_up) {
                 assisting = !assisting;
@@ -395,6 +397,7 @@ public class robotCentric extends LinearOpMode {//declaring the class
             telemetry.addData("reversed", reversed);
             telemetry.addData("slowMode", slowModeIsOn);
             telemetry.addData("dead", deadWheel.getCurrentPosition());
+            telemetry.addData("tape", tapeMeasure.getCurrentPosition());
             //telemetry.addData("deadR", deadWheelR.getCurrentPosition());
             //telemetry.addData("deadL", deadWheelL.getCurrentPosition());
             teleSpace();
@@ -703,6 +706,32 @@ public class robotCentric extends LinearOpMode {//declaring the class
             deadWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             resetEncoders();
         }
+    }
+
+    public void tapeEncoder(double pose, double speed, double timeOut, boolean isOut) {
+        int target;
+        target = (int) pose;
+        tapeMeasure.setTargetPosition(target);
+        tapeMeasure.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        runtime.reset();
+        if (isOut) {
+            tapeMeasure.setPower(-speed);//go in
+        }
+        if (!isOut) {
+            tapeMeasure.setPower(speed);//go out
+        }
+        while (opModeIsActive() &&
+                (runtime.seconds() < timeOut) && tapeMeasure.isBusy()) {
+
+            // Display it for the driver.
+            telemetry.addData("Running to", tapeMeasure.getCurrentPosition());
+            telemetry.addData("Currently at",
+                    tapeMeasure.getCurrentPosition());
+            telemetry.update();
+        }
+        tapeMeasure.setPower(0);
+        tapeMeasure.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        telemetry.update();
     }
 
     public void armEncoder(double pose, double speed, double timeOut, boolean isUp) {

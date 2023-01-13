@@ -52,6 +52,7 @@ public class maintainance extends robotCentric {
     public DigitalChannel green3;
     public DigitalChannel red4;
     public DigitalChannel green4;
+    public DcMotor tapeMeasure = null;
     NormalizedColorSensor colorSensor;//declaring the colorSensor variable
     public TouchSensor touchSensor;
     public TouchSensor touchSensorL;
@@ -59,6 +60,7 @@ public class maintainance extends robotCentric {
     public TouchSensor touchSensorEject;
     public boolean armUp = false;
     public boolean clawOpen = false;
+    public boolean tapeOut = false;
     public final int timeout = 1;
     public final int delay = 1;
     RevBlinkinLedDriver lights;
@@ -82,9 +84,12 @@ public class maintainance extends robotCentric {
         clawServo = hardwareMap.get(Servo.class, "clawServo");
         sparkLong = hardwareMap.get(DcMotor.class, "sparkLong");
         lights = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
+        tapeMeasure = hardwareMap.get(DcMotor.class, "tapeMeasure");
         sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        tapeMeasure.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         sparkLong.setZeroPowerBehavior(BRAKE);
+        tapeMeasure.setZeroPowerBehavior(BRAKE);
         red1.setMode(DigitalChannel.Mode.OUTPUT);//setting the red1 light to output
         green1.setMode(DigitalChannel.Mode.OUTPUT);//setting the green1 light to output
         red2.setMode(DigitalChannel.Mode.OUTPUT);//setting the red2 light to output
@@ -117,13 +122,23 @@ public class maintainance extends robotCentric {
                     runtime.reset();
                 }
                 if (touchSensorEject.isPressed()) {
+                    greenRed();
                     lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
                     runtime.reset();
                 }
                 if (touchSensorL.isPressed()) {
-                    greenRed();
+                    tapeOut = !tapeOut;
                     runtime.reset();
                 }
+            }
+            if (tapeOut) {
+                tapeEncoder(2000, 0.75, 6, false);//go out
+                green3.setState(true);
+                red3.setState(false);
+            } else {
+                tapeEncoder(0, 0.75, 6, true);// come in
+                green3.setState(false);
+                red3.setState(true);
             }
             if (armUp) {
                 armEncoder(robotCentric.midPoleVal, 0.8, 6, false);
