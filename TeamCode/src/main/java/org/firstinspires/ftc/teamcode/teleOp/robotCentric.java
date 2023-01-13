@@ -130,6 +130,7 @@ public class robotCentric extends LinearOpMode {//declaring the class
     public int tapeMeasureLength = 15 * 12;
     public double countsPerInchTape = (28 * 5) / (tapeMeasureDiameter * Math.PI);
     public double tickPerTapeMeasure = countsPerInchTape * tapeMeasureLength;
+    public double tapeLimit = 10000;
     //vuforia
 
     private static final String TFOD_MODEL_ASSET = "custom.tflite";
@@ -266,11 +267,11 @@ public class robotCentric extends LinearOpMode {//declaring the class
         while (opModeIsActive()) {//while the op mode is active
             double armPower = 0;
             double tapePower = 0;
-            if (gamepad1.dpad_up) {
+            if ((gamepad1.dpad_up || gamepad2.dpad_right) && (tapeMeasure.getCurrentPosition() < tapeLimit - tapeLimit / 5)) {
                 //extend
                 tapePower = 1;
             }
-            if (gamepad1.dpad_down) {
+            if ((gamepad1.dpad_down || gamepad2.dpad_left && (tapeMeasure.getCurrentPosition() > 0 + tapeLimit / 5))) {
                 //retract
                 tapePower = -1;
             }
