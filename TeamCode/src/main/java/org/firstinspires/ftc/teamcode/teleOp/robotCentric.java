@@ -269,11 +269,11 @@ public class robotCentric extends LinearOpMode {//declaring the class
             double armPower = 0;
             double tapePower = 0;
             double tapeMult = 1;
-            if ((gamepad1.dpad_up || gamepad2.dpad_right) && (tapeMeasure.getCurrentPosition() < tapeLimit - tapeLimit / 5)) {
+            if ((gamepad1.dpad_up || gamepad2.dpad_right)) {// && (tapeMeasure.getCurrentPosition() < tapeLimit - tapeLimit / 5)) {
                 //extend
                 tapePower = 1 * tapeMult;
             }
-            if ((gamepad1.dpad_down || gamepad2.dpad_left && (tapeMeasure.getCurrentPosition() > 0 + tapeLimit / 5))) {
+            if ((gamepad1.dpad_down || gamepad2.dpad_left)) {// && (tapeMeasure.getCurrentPosition() > 0 + tapeLimit / 5))) {
                 //retract
                 tapePower = -1 * tapeMult;
             }
