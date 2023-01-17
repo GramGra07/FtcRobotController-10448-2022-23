@@ -277,9 +277,9 @@ public class robotCentric extends LinearOpMode {//declaring the class
                 //retract
                 tapePower = -1 * tapeMult;
             }
-            if (gamepad1.dpad_up) {
-                assisting = !assisting;
-            }
+            //if (gamepad1.dpad_up) {
+            //    assisting = !assisting;
+            //}
             while (assisting) {
                 assist();
             }
@@ -397,7 +397,7 @@ public class robotCentric extends LinearOpMode {//declaring the class
             telemetry.addData("reversed", reversed);
             telemetry.addData("slowMode", slowModeIsOn);
             telemetry.addData("dead", deadWheel.getCurrentPosition());
-            telemetry.addData("tape", tapeMeasure.getCurrentPosition());
+            telemetry.addData("tape", tapePower);
             //telemetry.addData("deadR", deadWheelR.getCurrentPosition());
             //telemetry.addData("deadL", deadWheelL.getCurrentPosition());
             teleSpace();
