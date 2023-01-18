@@ -52,7 +52,6 @@ public class maintainance extends robotCentric {
     public DigitalChannel green3;
     public DigitalChannel red4;
     public DigitalChannel green4;
-    public DcMotor tapeMeasure = null;
     NormalizedColorSensor colorSensor;//declaring the colorSensor variable
     public TouchSensor touchSensor;
     public TouchSensor touchSensorL;
@@ -88,6 +87,8 @@ public class maintainance extends robotCentric {
         sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         tapeMeasure.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        tapeMeasure.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        tapeMeasure.setDirection(DcMotor.Direction.REVERSE);
         sparkLong.setZeroPowerBehavior(BRAKE);
         tapeMeasure.setZeroPowerBehavior(BRAKE);
         red1.setMode(DigitalChannel.Mode.OUTPUT);//setting the red1 light to output
@@ -127,21 +128,22 @@ public class maintainance extends robotCentric {
                     runtime.reset();
                 }
                 if (touchSensorL.isPressed()) {
+                    greenRed();
                     tapeOut = !tapeOut;
                     runtime.reset();
                 }
             }
             if (tapeOut) {
-                tapeEncoder(2000, 0.75, 6, false);//go out
+                tapeEncoder((int) (countsPerInchTape * 18), 1, 6, false);//go out
                 green3.setState(true);
                 red3.setState(false);
             } else {
-                tapeEncoder(0, 0.75, 6, true);// come in
+                tapeEncoder(0, 1, 6, true);// come in
                 green3.setState(false);
                 red3.setState(true);
             }
             if (armUp) {
-                armEncoder(robotCentric.midPoleVal, 0.8, 6, false);
+                armEncoder(1800, 1, 6, false);
                 green1.setState(true);
                 red1.setState(false);
             } else {

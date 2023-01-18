@@ -129,9 +129,8 @@ public class robotCentric extends LinearOpMode {//declaring the class
     //tape measure
     public double tapeMeasureDiameter = 7.5;
     public int tapeMeasureLength = 15 * 12;
-    public double countsPerInchTape = (28 * 5) / (tapeMeasureDiameter * Math.PI);
+    public double countsPerInchTape = 25;
     public double tickPerTapeMeasure = countsPerInchTape * tapeMeasureLength;
-    public double tapeLimit = 10000;
     //vuforia
 
     private static final String TFOD_MODEL_ASSET = "custom.tflite";
@@ -232,13 +231,14 @@ public class robotCentric extends LinearOpMode {//declaring the class
 
         motorBackLeft.setDirection(DcMotor.Direction.REVERSE);//setting the motorBackRight direction
         //TODO
-        //!tapeMeasure.setDirection(DcMotor.Direction.REVERSE);
+        tapeMeasure.setDirection(DcMotor.Direction.REVERSE);
         sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the sparkLong encoder to run using encoder
         motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorFrontLeft encoder to run using encoder
         motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorBackLeft encoder to run using encoder
         motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorBackRight encoder to run using encoder
         motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorFrontRight encoder to run using encoder
         deadWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the deadWheel encoder to run using encoder
+        tapeMeasure.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         //deadWheelL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the deadWheelL encoder to run using encoder
         //deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the deadWheelR encoder to run using encoder
 
@@ -268,14 +268,13 @@ public class robotCentric extends LinearOpMode {//declaring the class
         while (opModeIsActive()) {//while the op mode is active
             double armPower = 0;
             double tapePower = 0;
-            double tapeMult = 1;
             if ((gamepad1.dpad_up || gamepad2.dpad_right)) {// && (tapeMeasure.getCurrentPosition() < tapeLimit - tapeLimit / 5)) {
                 //extend
-                tapePower = 1 * tapeMult;
+                tapePower = 1;
             }
             if ((gamepad1.dpad_down || gamepad2.dpad_left)) {// && (tapeMeasure.getCurrentPosition() > 0 + tapeLimit / 5))) {
                 //retract
-                tapePower = -1 * tapeMult;
+                tapePower = -1;
             }
             //if (gamepad1.dpad_up) {
             //    assisting = !assisting;
@@ -388,8 +387,8 @@ public class robotCentric extends LinearOpMode {//declaring the class
             motorBackRight.setPower(backRightPower);
             sparkLong.setPower(armPower);
             telemetry.addData("Status", statusVal);//shows current status
-            //telemetry.addLine("Arm")
-            //        .addData("Val", String.valueOf(sparkLong.getCurrentPosition()))
+            telemetry.addLine("Arm")
+                    .addData("Val", String.valueOf(sparkLong.getCurrentPosition()));
             //        .addData("Max", armLimit)
             //        .addData("Limiter", limiter)
             //        .addData("Is broken", (sparkLong.getCurrentPosition() > armLimit));
@@ -397,7 +396,7 @@ public class robotCentric extends LinearOpMode {//declaring the class
             telemetry.addData("reversed", reversed);
             telemetry.addData("slowMode", slowModeIsOn);
             telemetry.addData("dead", deadWheel.getCurrentPosition());
-            telemetry.addData("tape", tapePower);
+            telemetry.addData("tape", tapeMeasure.getCurrentPosition());
             //telemetry.addData("deadR", deadWheelR.getCurrentPosition());
             //telemetry.addData("deadL", deadWheelL.getCurrentPosition());
             teleSpace();
@@ -708,10 +707,9 @@ public class robotCentric extends LinearOpMode {//declaring the class
         }
     }
 
-    public void tapeEncoder(double pose, double speed, double timeOut, boolean isOut) {
-        int target;
-        target = (int) pose;
-        tapeMeasure.setTargetPosition(target);
+    public void tapeEncoder(int pose, double speed, double timeOut, boolean isOut) {
+        tapeMeasure.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        tapeMeasure.setTargetPosition(pose);
         tapeMeasure.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         runtime.reset();
         if (isOut) {
