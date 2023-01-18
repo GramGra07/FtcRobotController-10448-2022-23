@@ -42,7 +42,7 @@ import java.util.Objects;
 @TeleOp(name = "fieldCentric", group = "Robot")//declaring the name and group of the opmode
 //@Disabled//disabling the opmode
 public class fieldCentric extends LinearOpMode {//declaring the class
-    private ElapsedTime runtime = new ElapsedTime();
+    private final ElapsedTime runtime = new ElapsedTime();
     //encoder var
     public int turn = 77;
     public double yMult = 24;
@@ -151,10 +151,10 @@ public class fieldCentric extends LinearOpMode {//declaring the class
     private int spot = 0;
     //color
     final float[] hsvValues = new float[3];//gets values for color sensor
-    private float redVal = 0;//the red value in rgb
-    private float greenVal = 0;//the green value in rgb
-    private float blueVal = 0;//the blue value in rgb
-    private String colorName = "N/A";//gets color name
+    private final float redVal = 0;//the red value in rgb
+    private final float greenVal = 0;//the green value in rgb
+    private final float blueVal = 0;//the blue value in rgb
+    private final String colorName = "N/A";//gets color name
     NormalizedColorSensor colorSensorR;//declaring the colorSensor variable
     NormalizedColorSensor colorSensorL;//declaring the colorSensor variable
     //
@@ -170,12 +170,12 @@ public class fieldCentric extends LinearOpMode {//declaring the class
     public RevBlinkinLedDriver lights;
 
     public boolean assisting = false;
-    private float redValR = 0;//the red value in rgb
-    private float greenValR = 0;//the green value in rgb
-    private float blueValR = 0;//the blue value in rgb
-    private float redValL = 0;//the red value in rgb
-    private float greenValL = 0;//the green value in rgb
-    private float blueValL = 0;//the blue value in rgb
+    private final float redValR = 0;//the red value in rgb
+    private final float greenValR = 0;//the green value in rgb
+    private final float blueValR = 0;//the blue value in rgb
+    private final float redValL = 0;//the red value in rgb
+    private final float greenValL = 0;//the green value in rgb
+    private final float blueValL = 0;//the blue value in rgb
 
     public BNO055IMU imu;    //imu module inside expansion hub
     public Orientation angles;     //imu uses these to find angles and classify them
@@ -290,7 +290,7 @@ public class fieldCentric extends LinearOpMode {//declaring the class
         //if (isStopRequested()) return;//if the stop button is pressed, stop the program
 
         while (opModeIsActive()) {//while the op mode is active
-            double armPower = gamepad2.left_stick_y;
+            double armPower = -gamepad2.left_stick_y;
             if (gamepad1.dpad_up) {
                 assisting = !assisting;
             }

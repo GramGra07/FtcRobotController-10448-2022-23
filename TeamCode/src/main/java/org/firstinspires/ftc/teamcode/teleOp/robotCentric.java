@@ -373,10 +373,10 @@ public class robotCentric extends LinearOpMode {//declaring the class
                 }
             } else if (gamepad2.x) {//low
                 if (sparkLong.getCurrentPosition() > lowPoleVal + 50) {//go down
-                    armPower = 1;
+                    armPower = -1;
                 }
                 if (sparkLong.getCurrentPosition() < lowPoleVal - 50) {//go up
-                    armPower = -1;
+                    armPower = 1;
                 }
             }
             //
@@ -643,8 +643,7 @@ public class robotCentric extends LinearOpMode {//declaring the class
                 motorBackRight.setTargetPosition(-newBRTarget - 10);
                 motorFrontRight.setTargetPosition(newFRTarget);
                 deadWheel.setTargetPosition(-newDeadTarget);
-            }
-            if (inches > 0) {
+            } else if (inches > 0) {
                 newFLTarget = motorFrontLeft.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
                 newBLTarget = motorBackLeft.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
                 newFRTarget = motorFrontRight.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
@@ -675,7 +674,7 @@ public class robotCentric extends LinearOpMode {//declaring the class
             motorFrontLeft.setPower(Math.abs(speed));
             motorBackRight.setPower(Math.abs(speed));
             while (opModeIsActive() &&
-                    (runtime.seconds() < timeoutS) && deadWheel.isBusy()) {
+                    (runtime.seconds() < timeoutS)) {
 
                 // Display it for the driver.
                 telemetry.addData("Running to", "%7d:%7d", motorFrontLeft.getCurrentPosition()

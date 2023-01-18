@@ -6,6 +6,7 @@ import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 import android.graphics.Color;
 
 import com.qualcomm.hardware.bosch.BNO055IMU;
+import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -18,10 +19,18 @@ import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.util.Range;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
+import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
+import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
+import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
 import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
+import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
+import org.firstinspires.ftc.robotcore.external.navigation.Position;
+import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
@@ -30,9 +39,8 @@ import org.firstinspires.ftc.teamcode.testOpModes.distanceSensorCalibrator;
 import java.util.List;
 import java.util.Objects;
 
-//import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 public class HardwareConfig {
-    public final ElapsedTime runtime = new ElapsedTime();
+    //auto
     public int turn = 77;
     public double yMult = 24;
     public double xMult = 10;
@@ -85,6 +93,7 @@ public class HardwareConfig {
     public static final int topPoleVal = armLimit;//should be close to armLimit
     //public boolean limiter = false;//declaring the limiter variable, is on or off
     //public boolean limiting = false;//declaring the limiting variable
+    public final ElapsedTime runtime = new ElapsedTime();
 
     //rumble
     public Gamepad.RumbleEffect customRumbleEffect;//declaring the customRumbleEffect variable
@@ -100,12 +109,14 @@ public class HardwareConfig {
     public final int magicFlip = baseFlip + 50;//declaring the magicFlip variable
     public final int baseUnCone = 0;
     public final int magicUnCone = baseUnCone + 90;
+    double armPower;
     //motors
     public DcMotor motorFrontLeft = null;
     public DcMotor motorBackLeft = null;
     public DcMotor motorFrontRight = null;
     public DcMotor motorBackRight = null;
     public DcMotor deadWheel = null;//declaring the deadWheel motor
+    public DcMotor tapeMeasure = null;
     //servo
     public DcMotor sparkLong = null;
     public TouchSensor touchSensor;
@@ -124,8 +135,6 @@ public class HardwareConfig {
     public DistanceSensor fDistance;//declaring the fDistance sensor
     public RevBlinkinLedDriver lights;
     public Servo clawServo = null;
-    public BNO055IMU imu;
-    HardwareMap hardwareMap = null;
     private static final String TFOD_MODEL_ASSET = "custom.tflite";
     private static final String[] LABELS = {
             "capacitor",//3
@@ -150,20 +159,50 @@ public class HardwareConfig {
     public double rDistanceVal = 0;
     //isRight side
     public boolean right = true;//declaring the right variable
-    public final int baseEject = 0;
-    public final int magicEject = baseEject + 90;
-
-    public boolean assisting = false;
     private final float redValR = 0;//the red value in rgb
     private final float greenValR = 0;//the green value in rgb
     private final float blueValR = 0;//the blue value in rgb
     private final float redValL = 0;//the red value in rgb
     private final float greenValL = 0;//the green value in rgb
     private final float blueValL = 0;//the blue value in rgb
-    public double xControl;
-    public double yControl;
+    //assistance to driver
+    public boolean assisting = false;
+    //
+    //slow mode
     public double slowMult = 3;
     public double slowPower;
+    //driving
+    public double xControl;
+    public double yControl;
+    public double frontRightPower;
+    public double frontLeftPower;
+    public double backRightPower;
+    public double backLeftPower;
+    //
+    //field centric
+    double gamepadX;
+    double gamepadY;
+    double gamepadHypot;
+    double controllerAngle;
+    double robotDegree;
+    double movementDegree;
+    double offSet = 0;
+    //
+    //tape measure
+    double tapePower;
+    public double tapeMeasureDiameter = 7.5;
+    public int tapeMeasureLength = 15 * 12;
+    public double countsPerInchTape = 25;
+    public double tickPerTapeMeasure = countsPerInchTape * tapeMeasureLength;
+    //
+    //imu
+    public BNO055IMU imu;
+    public Orientation angles;     //imu uses these to find angles and classify them
+    public Acceleration gravity;    //Imu uses to get acceleration
+    //
+    //external
+    HardwareMap hardwareMap = null;
+
     private LinearOpMode myOpMode = null;   // gain access to methods in the calling OpMode.
 
     public HardwareConfig(LinearOpMode opmode) {
@@ -171,31 +210,45 @@ public class HardwareConfig {
     }
 
     public void init(HardwareMap ahwMap) {
+        updateStatus("Initializing");
         ElapsedTime runtime = new ElapsedTime();//declaring the runtime variable
-        lights = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
-        rDistance = hardwareMap.get(DistanceSensor.class, "rDistance");//getting the rDistance sensor
-        lDistance = hardwareMap.get(DistanceSensor.class, "lDistance");//getting the lDistance sensor
-        fDistance = hardwareMap.get(DistanceSensor.class, "fDistance");//getting the fDistance sensor
-        red1 = hardwareMap.get(DigitalChannel.class, "red1");//getting the red1 light
-        green1 = hardwareMap.get(DigitalChannel.class, "green1");//getting the green1 light
-        red2 = hardwareMap.get(DigitalChannel.class, "red2");//getting the red2 light
-        green2 = hardwareMap.get(DigitalChannel.class, "green2");//getting the green2 light
-        red3 = hardwareMap.get(DigitalChannel.class, "red3");//getting the red3 light
-        green3 = hardwareMap.get(DigitalChannel.class, "green3");//getting the green3 light
-        red4 = hardwareMap.get(DigitalChannel.class, "red4");//getting the red4 light
-        green4 = hardwareMap.get(DigitalChannel.class, "green4");//getting the green4 light
-        colorSensorR = hardwareMap.get(NormalizedColorSensor.class, "colorSensorR");
-        colorSensorL = hardwareMap.get(NormalizedColorSensor.class, "colorSensorL");
+        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
+        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
+        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
+        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
+        parameters.loggingEnabled = true;
+        parameters.loggingTag = "IMU";
+        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
+        imu = ahwMap.get(BNO055IMU.class, "imu");
+        imu.initialize(parameters);
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        gravity = imu.getGravity();
+        imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
+        lights = ahwMap.get(RevBlinkinLedDriver.class, "blinkin");
+        rDistance = ahwMap.get(DistanceSensor.class, "rDistance");//getting the rDistance sensor
+        lDistance = ahwMap.get(DistanceSensor.class, "lDistance");//getting the lDistance sensor
+        fDistance = ahwMap.get(DistanceSensor.class, "fDistance");//getting the fDistance sensor
+        red1 = ahwMap.get(DigitalChannel.class, "red1");//getting the red1 light
+        green1 = ahwMap.get(DigitalChannel.class, "green1");//getting the green1 light
+        red2 = ahwMap.get(DigitalChannel.class, "red2");//getting the red2 light
+        green2 = ahwMap.get(DigitalChannel.class, "green2");//getting the green2 light
+        red3 = ahwMap.get(DigitalChannel.class, "red3");//getting the red3 light
+        green3 = ahwMap.get(DigitalChannel.class, "green3");//getting the green3 light
+        red4 = ahwMap.get(DigitalChannel.class, "red4");//getting the red4 light
+        green4 = ahwMap.get(DigitalChannel.class, "green4");//getting the green4 light
+        colorSensorR = ahwMap.get(NormalizedColorSensor.class, "colorSensorR");
+        colorSensorL = ahwMap.get(NormalizedColorSensor.class, "colorSensorL");
         // Declare our motors
         // Make sure your ID's match your configuration
-        motorFrontLeft = hardwareMap.get(DcMotor.class, "motorFrontLeft");//getting the motorFrontLeft motor
-        motorBackLeft = hardwareMap.get(DcMotor.class, "motorBackLeft");//getting the motorBackLeft motor
-        motorFrontRight = hardwareMap.get(DcMotor.class, "motorFrontRight");//getting the motorFrontRight motor
-        motorBackRight = hardwareMap.get(DcMotor.class, "motorBackRight");//getting the motorBackRight motor
-        deadWheel = hardwareMap.get(DcMotor.class, "deadWheel");//getting the deadWheel motor
-        clawServo = hardwareMap.get(Servo.class, "clawServo");//getting the clawServo servo
-        sparkLong = hardwareMap.get(DcMotor.class, "sparkLong");//getting the sparkLong motor
-        touchSensor = hardwareMap.get(TouchSensor.class, ("touchSensor"));
+        motorFrontLeft = ahwMap.get(DcMotor.class, "motorFrontLeft");//getting the motorFrontLeft motor
+        motorBackLeft = ahwMap.get(DcMotor.class, "motorBackLeft");//getting the motorBackLeft motor
+        motorFrontRight = ahwMap.get(DcMotor.class, "motorFrontRight");//getting the motorFrontRight motor
+        motorBackRight = ahwMap.get(DcMotor.class, "motorBackRight");//getting the motorBackRight motor
+        deadWheel = ahwMap.get(DcMotor.class, "deadWheel");//getting the deadWheel motor
+        clawServo = ahwMap.get(Servo.class, "clawServo");//getting the clawServo servo
+        sparkLong = ahwMap.get(DcMotor.class, "sparkLong");//getting the sparkLong motor
+        touchSensor = ahwMap.get(TouchSensor.class, ("touchSensor"));
+        tapeMeasure = ahwMap.get(DcMotor.class, "tapeMeasure");
 
         sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the sparkLong encoder
         motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorFrontLeft encoder
@@ -204,8 +257,8 @@ public class HardwareConfig {
         motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorFrontRight encoder
         deadWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the deadWheel encoder
 
-        motorBackRight.setDirection(DcMotor.Direction.REVERSE);//setting the motorBackRight direction
-
+        motorBackLeft.setDirection(DcMotor.Direction.REVERSE);
+        tapeMeasure.setDirection(DcMotor.Direction.REVERSE);
         sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the sparkLong encoder to run using encoder
         motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorFrontLeft encoder to run using encoder
         motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorBackLeft encoder to run using encoder
@@ -230,6 +283,147 @@ public class HardwareConfig {
         //flipper.setPosition(setServo(magicFlip));//setting the flipper servo to the magicFlip position
         runtime.reset();//resetting the runtime variable
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+        myOpMode.waitForStart();
+        lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
+        if (myOpMode.isStopRequested()) return;
+    }
+
+    public void doBulk(boolean fieldCentric) {
+        switches();
+        if (rumble) {
+            rumble();
+        }
+        doClaw();
+        drive(fieldCentric, slowPower);
+        runArm();
+        tapeMeasure();
+        buildTelemetry();
+    }
+
+    public void setPower() {
+        motorFrontLeft.setPower(frontLeftPower);
+        motorBackLeft.setPower(backLeftPower);
+        motorFrontRight.setPower(frontRightPower);
+        motorBackRight.setPower(backRightPower);
+        tapeMeasure.setPower(tapePower);
+        sparkLong.setPower(armPower);
+    }
+
+    public void tapeMeasure() {
+        tapePower = 0;
+        if ((myOpMode.gamepad1.dpad_up || myOpMode.gamepad2.dpad_right)) {// && (tapeMeasure.getCurrentPosition() < tapeLimit - tapeLimit / 5)) {
+            //extend
+            tapePower = 1;
+        }
+        if ((myOpMode.gamepad1.dpad_down || myOpMode.gamepad2.dpad_left)) {// && (tapeMeasure.getCurrentPosition() > 0 + tapeLimit / 5))) {
+            //retract
+            tapePower = -1;
+        }
+    }
+
+    public void runArm() {
+        armPower = -myOpMode.gamepad2.left_stick_y;
+        if (myOpMode.gamepad2.dpad_down) {
+            sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+            sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        }
+    }
+
+    public void doClaw() {
+        //claw code
+        if (myOpMode.gamepad2.left_bumper) {
+            clawServo.setPosition(setServo(magicNumOpen));
+            clawOpen = true;
+            //open claw
+        } else if (myOpMode.gamepad2.right_bumper) {
+            clawServo.setPosition(setServo(baseClawVal));
+            //close claw
+            clawOpen = false;
+        }
+        if (clawOpen) {
+            green1.setState(false);
+            red1.setState(true);
+        } else {
+            green1.setState(true);
+            red1.setState(false);
+        }
+    }
+
+    public void switches() {
+        //switches
+        if (myOpMode.gamepad1.left_trigger > 0) {
+            slowModeIsOn = false;
+        }
+        if (myOpMode.gamepad1.right_trigger > 0) {
+            slowModeIsOn = true;
+        }
+        if (slowModeIsOn) {
+            slowPower = slowMult;
+        } else {
+            slowPower = 1;
+        }
+        //
+    }
+
+    public void drive(boolean fieldCentric, double slow) {
+        if (fieldCentric) {
+            gamepadX = myOpMode.gamepad1.left_stick_x;//get the x val of left stick and store
+            myOpMode.telemetry.addData("gamepadX", gamepadX);//tell us what gamepadX is
+            gamepadY = -myOpMode.gamepad1.left_stick_y;//get the y val of left stick and store
+            myOpMode.telemetry.addData("gamepadY", gamepadY);//tell us what gamepadY is
+            gamepadHypot = Range.clip(Math.hypot(gamepadX, gamepadY), 0, 1);//get the
+            // hypotenuse of the x and y values,clip it to a max of 1 and store
+            myOpMode.telemetry.addData("gamepadHypot", gamepadHypot);//tell us what gamepadHypot is
+            controllerAngle = Math.toDegrees(Math.atan2(gamepadY, gamepadX));//Get the angle of the controller stick using arc tangent
+            myOpMode.telemetry.addData("controllerAngle", controllerAngle);//tell us what controllerAngle is
+            angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);//get and initialize the IMU
+            robotDegree = angles.firstAngle;//store robot angle in robotDegree
+            myOpMode.telemetry.addData("robotDegree", robotDegree);//tell us what robotDegree is
+            movementDegree = (controllerAngle - robotDegree);//get the movement degree based on the controller vs robot angle
+            myOpMode.telemetry.addData("movementDegree", movementDegree);//tell us what movementDegree is
+            xControl = Math.cos(Math.toRadians(movementDegree)) * gamepadHypot;//get the x value of the movement
+            myOpMode.telemetry.addData("xControl", xControl);//tell us what xControl is
+            yControl = Math.sin(Math.toRadians(movementDegree)) * gamepadHypot;//get the y value of the movement
+            myOpMode.telemetry.addData("yControl", yControl);//tell us what yControl is
+            double turn = -myOpMode.gamepad1.right_stick_x;
+            frontRightPower = (yControl * Math.abs(yControl) - xControl * Math.abs(xControl) + turn) / slowPower;
+            backRightPower = (yControl * Math.abs(yControl) + xControl * Math.abs(xControl) + turn) / slowPower;
+            frontLeftPower = (yControl * Math.abs(yControl) + xControl * Math.abs(xControl) - turn) / slowPower;
+            backLeftPower = (yControl * Math.abs(yControl) - xControl * Math.abs(xControl) - turn) / slowPower;
+        } else {
+            yControl = -myOpMode.gamepad1.left_stick_y;
+            xControl = myOpMode.gamepad1.left_stick_x;
+            double turn = -myOpMode.gamepad1.right_stick_x;
+            frontRightPower = (yControl - xControl + turn) / slow;
+            backRightPower = (yControl + xControl + turn) / slow;
+            frontLeftPower = (yControl + xControl - turn) / slow;
+            backLeftPower = (yControl - xControl - turn) / slow;
+        }
+    }
+
+    public void rumble() {
+        if ((runtime.seconds() > endgame) && !isEndgame) {
+            myOpMode.gamepad1.runRumbleEffect(customRumbleEffect);
+            myOpMode.gamepad2.runRumbleEffect(customRumbleEffect);
+            isEndgame = true;
+        }
+        if ((runtime.seconds() > end) && !isEnd) {
+            myOpMode.gamepad1.runRumbleEffect(customRumbleEffect1);
+            myOpMode.gamepad2.runRumbleEffect(customRumbleEffect1);
+            isEnd = true;
+        }
+    }
+
+    public void buildTelemetry() {
+        myOpMode.telemetry.addData("Status", statusVal);//shows current status
+        myOpMode.telemetry.addLine("Arm")
+                .addData("Val", String.valueOf(sparkLong.getCurrentPosition()));
+        myOpMode.telemetry.addData("reversed", reversed);
+        myOpMode.telemetry.addData("slowMode", slowModeIsOn);
+        myOpMode.telemetry.addData("dead", deadWheel.getCurrentPosition());
+        teleSpace();
+        updateStatus("Running");
+        myOpMode.telemetry.update();
     }
 
     public String getColor() {
@@ -842,7 +1036,7 @@ public class HardwareConfig {
         }
     }
 
-    private void initVuforia() {
+    public void initVuforia() {
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
          */
@@ -855,7 +1049,7 @@ public class HardwareConfig {
         vuforia = ClassFactory.getInstance().createVuforia(parameters);
     }
 
-    private void initTfod() {
+    public void initTfod() {
         int tfodMonitorViewId = hardwareMap.appContext.getResources().getIdentifier(
                 "tfodMonitorViewId", "id", hardwareMap.appContext.getPackageName());
         TFObjectDetector.Parameters tfodParameters = new TFObjectDetector.Parameters(tfodMonitorViewId);

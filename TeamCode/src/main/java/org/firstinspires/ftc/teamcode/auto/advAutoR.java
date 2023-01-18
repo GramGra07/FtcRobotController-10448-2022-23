@@ -152,6 +152,8 @@ public class advAutoR extends robotCentric {
 
         //onInit();
         motorBackRight.setDirection(DcMotor.Direction.REVERSE);
+        motorFrontLeft.setDirection(DcMotor.Direction.REVERSE);
+        motorFrontRight.setDirection(DcMotor.Direction.REVERSE);
 
         resetEncoders();
         sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -217,16 +219,19 @@ public class advAutoR extends robotCentric {
                     , false, 0, 1, 4);
             setOvr(1, 3);
             double targetX = 2.1;
-            simplerGoSpot(ovrCurrX, ovrCurrY, targetX, 3.6, ovrPower, true, topPoleVal,
-                    false, false, -90, 1, 2);
+            sleep(50);
+            resetEncoders();
+            simplerGoSpot(1, ovrCurrY, targetX, 3.6, ovrPower, true, topPoleVal,
+                    false, false, -90, 1, 4);
             turn(-90);
-            encoderDrive(1, 2, 2, 0.5);
+            resetEncoders();
             setOvr(targetX, 3.6);
             openClaw();
             sleep(200);
             closeClaw();
             double targetY1 = 2.9;//lined up with cones
             double targetY2 = 3.6;// at pole
+            resetEncoders();
             simpleGoSpotRight(ovrCurrX, ovrCurrY, 3.5, targetY1, ovrPower, true, midPoleVal + 500,
                     true, false, 0, 1, 1, true);
             setOvr(3.5, targetY1);
@@ -250,11 +255,13 @@ public class advAutoR extends robotCentric {
             armEncoder(midPoleVal + 1000, 1, 2, false);//clear gap
             //vars
             //branch 3 get to stack
+            resetEncoders();
             simpleGoSpotRight(ovrCurrX, ovrCurrY, targetX, targetY2, ovrPower, true, topPoleVal,
                     false, false, 0, 2, 4, false);
             encoderDrive(1, 2, 2, 0.5);
             setOvr(targetX, targetY2);
             openClaw();
+            resetEncoders();
             simpleGoSpotRight(ovrCurrX, ovrCurrY, targetX, targetY1, ovrPower, true, midPoleVal + 500,
                     true, false, 0, 0.2, 1, true);
             setOvr(targetX, targetY1);
@@ -602,6 +609,7 @@ public class advAutoR extends robotCentric {
         double fwdInches = (targetY - currY) * yMult;
         telemetry.addData("fwdInches", fwdInches);
         telemetry.addData("sidewaysInches", sidewaysInches);
+        telemetry.update();
         sideWaysEncoderDrive(power, sidewaysInches, timeOutX);
         if (!combo) {
             encoderDrive(power, fwdInches, fwdInches, timeOutY);
