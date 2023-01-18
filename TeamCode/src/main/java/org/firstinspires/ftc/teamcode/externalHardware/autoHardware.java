@@ -4,12 +4,12 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
 
-public class autoHardwareConfig extends HardwareConfig {
+public class autoHardware extends HardwareConfig {
     HardwareMap hardwareMap = null;
 
     private LinearOpMode myOpMode = null;   // gain access to methods in the calling OpMode.
 
-    public autoHardwareConfig(LinearOpMode opMode) {
+    public autoHardware(LinearOpMode opMode) {
         super(opMode);
         myOpMode = opMode;
     }

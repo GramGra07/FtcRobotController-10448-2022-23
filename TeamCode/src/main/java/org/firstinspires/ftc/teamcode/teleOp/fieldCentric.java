@@ -7,6 +7,7 @@ import android.graphics.Color;
 import com.qualcomm.hardware.bosch.BNO055IMU;
 import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -40,7 +41,7 @@ import java.util.Objects;
 
 
 @TeleOp(name = "fieldCentric", group = "Robot")//declaring the name and group of the opmode
-//@Disabled//disabling the opmode
+@Disabled//disabling the opmode
 public class fieldCentric extends LinearOpMode {//declaring the class
     private final ElapsedTime runtime = new ElapsedTime();
     //encoder var

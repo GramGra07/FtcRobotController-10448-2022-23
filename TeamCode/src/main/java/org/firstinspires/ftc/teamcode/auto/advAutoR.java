@@ -217,15 +217,16 @@ public class advAutoR extends robotCentric {
             double targetX = 2.1;
             sleep(50);
             resetEncoders();
-            simplerGoSpot(1, ovrCurrY, targetX, 3.6, ovrPower, true, topPoleVal,
+            simplerGoSpot(1, 3, targetX, 3.6, ovrPower, true, topPoleVal,
                     false, false, -90, 1, 4);
             turn(-90);
+            encoderDrive(1, -2, -2, 0.5);
             resetEncoders();
             setOvr(targetX, 3.6);
             openClaw();
             sleep(200);
             closeClaw();
-            double targetY1 = 2.9;//lined up with cones
+            double targetY1 = 2.8;//lined up with cones
             double targetY2 = 3.6;// at pole
             resetEncoders();
             simpleGoSpotRight(ovrCurrX, ovrCurrY, 3.5, targetY1, ovrPower, true, midPoleVal + 500,
@@ -280,6 +281,11 @@ public class advAutoR extends robotCentric {
             }
             telemetry.update();
         }
+    }
+
+    public void setOvr(double x, double y) {
+        ovrCurrX = x;
+        ovrCurrY = y;
     }
 
     public void correctByImu(float currentAngle, int targetAngle) {

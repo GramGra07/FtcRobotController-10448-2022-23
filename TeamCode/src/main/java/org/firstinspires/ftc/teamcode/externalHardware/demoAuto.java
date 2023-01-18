@@ -3,10 +3,10 @@ package org.firstinspires.ftc.teamcode.externalHardware;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
-@Autonomous(name = "autoXternalTest", group = "Robot")
+@Autonomous(name = "demoAuto", group = "Robot")
 //@Disabled
-public class autoXternalTest extends LinearOpMode {
-    autoHardwareConfig robot = new autoHardwareConfig(this);
+public class demoAuto extends LinearOpMode {
+    autoHardware robot = new autoHardware(this);
 
     @Override
     public void runOpMode() throws InterruptedException {

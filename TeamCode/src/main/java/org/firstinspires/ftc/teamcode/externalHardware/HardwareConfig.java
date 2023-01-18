@@ -297,10 +297,11 @@ public class HardwareConfig {
         drive(fieldCentric, slowPower);
         runArm();
         tapeMeasure();
+        power();
         buildTelemetry();
     }
 
-    public void setPower() {
+    public void power() {
         motorFrontLeft.setPower(frontLeftPower);
         motorBackLeft.setPower(backLeftPower);
         motorFrontRight.setPower(frontRightPower);

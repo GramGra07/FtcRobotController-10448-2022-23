@@ -5,6 +5,7 @@ import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 import android.graphics.Color;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -30,7 +31,7 @@ import java.util.Objects;
 
 
 @TeleOp(name = "robotCentricV2", group = "Robot")//declaring the name and group of the opmode
-//@Disabled//disabling the opmode
+@Disabled//disabling the opmode
 public class robotCentric extends LinearOpMode {//declaring the class
     private final ElapsedTime runtime = new ElapsedTime();
     //encoder var
@@ -749,7 +750,7 @@ public class robotCentric extends LinearOpMode {//declaring the class
         motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         deadWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        tapeMeasure.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        //tapeMeasure.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //deadWheelL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //deadWheelR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
