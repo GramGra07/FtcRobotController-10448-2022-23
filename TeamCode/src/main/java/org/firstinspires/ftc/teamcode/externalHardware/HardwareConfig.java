@@ -327,6 +327,35 @@ public class HardwareConfig {
             sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
             sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         }
+        presets();
+    }
+
+    public void presets() {
+        if (myOpMode.gamepad2.left_stick_y != 0) {
+            armPower = -myOpMode.gamepad2.left_stick_y;
+        } else if (myOpMode.gamepad2.y) {//top level
+            if (sparkLong.getCurrentPosition() < topPoleVal) {//go up
+                armPower = 1;
+            }
+        } else if (myOpMode.gamepad2.a) {//base
+            if (sparkLong.getCurrentPosition() > baseArm) {//go down
+                armPower = -1;
+            }
+        } else if (myOpMode.gamepad2.b) {//middle
+            if (sparkLong.getCurrentPosition() > midPoleVal + 50) {//go down
+                armPower = -1;
+            }
+            if (sparkLong.getCurrentPosition() < midPoleVal - 50) {//go up
+                armPower = 1;
+            }
+        } else if (myOpMode.gamepad2.x) {//low
+            if (sparkLong.getCurrentPosition() > lowPoleVal + 50) {//go down
+                armPower = -1;
+            }
+            if (sparkLong.getCurrentPosition() < lowPoleVal - 50) {//go up
+                armPower = 1;
+            }
+        }
     }
 
     public void doClaw() {
