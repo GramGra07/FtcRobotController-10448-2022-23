@@ -1,7 +1,6 @@
 package org.firstinspires.ftc.teamcode.auto;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
-import static java.lang.Math.abs;
 
 import android.graphics.Color;
 
@@ -29,13 +28,10 @@ import org.firstinspires.ftc.robotcore.external.navigation.Orientation;
 import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.teleOp.robotCentric;
 
-import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 
 @Autonomous(name = "advAutoL", group = "Robot")
 //@Disabled
@@ -371,21 +367,6 @@ public class advAutoL extends robotCentric {
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
     }
 
-    public boolean colorInRange(float red, double targetR, float green, double targetG, float blue, double targetB, float range) {
-        boolean rCheck = false;
-        boolean gCheck = false;
-        boolean bCheck = false;
-        if (targetR - range < red && red < targetR + range) {
-            rCheck = true;
-        }
-        if (targetG - range < green && green < targetG + range) {
-            gCheck = true;
-        }
-        if (targetB - range < blue && blue < targetB + range) {
-            bCheck = true;
-        }
-        return rCheck && gCheck && bCheck;
-    }
 
     public void getAllColorR() {
         //gives color values
@@ -434,51 +415,6 @@ public class advAutoL extends robotCentric {
         }
     }
 
-    public void runVu(int timeoutS, boolean giveSpot) {
-        runtime.reset();
-        while (opModeIsActive() && (spot == 0)) {
-            if (runtime.seconds() > timeoutS) {
-                spot = 4;
-            }
-            if (tfod != null) {
-                // getUpdatedRecognitions() will return null if no new information is available since
-                // the last time that call was made.
-                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                if (updatedRecognitions != null) {
-                    telemetry.addData("# Objects Detected", updatedRecognitions.size());
-
-                    // step through the list of recognitions and display image position/size information for each one
-                    // Note: "Image number" refers to the randomized image orientation/number
-                    for (Recognition recognition : updatedRecognitions) {
-                        double col = (recognition.getLeft() + recognition.getRight()) / 2;
-                        double row = (recognition.getTop() + recognition.getBottom()) / 2;
-                        double width = abs(recognition.getRight() - recognition.getLeft());
-                        double height = abs(recognition.getTop() - recognition.getBottom());
-
-                        telemetry.addData("", " ");
-                        telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
-                        telemetry.addData("- Position (Row/Col)", "%.0f / %.0f", row, col);
-                        telemetry.addData("- Size (Width/Height)", "%.0f / %.0f", width, height);
-                        if (giveSpot && spot == 0) {
-                            if (Objects.equals(recognition.getLabel(), "led")) {
-                                spot += 1;
-                                break;
-                            }
-                            if (Objects.equals(recognition.getLabel(), "resistor")) {
-                                spot += 2;
-                                break;
-                            }
-                            if (Objects.equals(recognition.getLabel(), "capacitor")) {
-                                spot += 3;
-                                break;
-                            }
-                        }
-                    }
-                    telemetry.update();
-                }
-            }
-        }
-    }
 
     private void initVuforia() {
         /*
@@ -640,10 +576,5 @@ public class advAutoL extends robotCentric {
         }
         setOvr(targetX, targetY);
         telemetry.update();
-    }
-
-    public void setOvr(double x, double y) {
-        ovrCurrX = x;
-        ovrCurrY = y;
     }
 }

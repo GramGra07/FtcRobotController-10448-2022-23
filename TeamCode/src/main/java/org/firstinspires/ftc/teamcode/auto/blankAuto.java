@@ -16,12 +16,8 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.teleOp.robotCentric;
-
-import java.util.List;
-import java.util.Objects;
 
 @Autonomous(name = "blankAuto", group = "Robot")
 @Disabled
@@ -29,7 +25,7 @@ public class blankAuto extends robotCentric {
     public int turn = 77;
 
 
-    private ElapsedTime runtime = new ElapsedTime();
+    private final ElapsedTime runtime = new ElapsedTime();
 
     static final double COUNTS_PER_MOTOR_REV = 28;
     static final double WHEEL_DIAMETER_MM = 96;
@@ -83,10 +79,10 @@ public class blankAuto extends robotCentric {
     public double myMagic = 7;
     //color
     final float[] hsvValues = new float[3];//gets values for color sensor
-    private int redVal = 0;//the red value in rgb
-    private int greenVal = 0;//the green value in rgb
-    private int blueVal = 0;//the blue value in rgb
-    private String colorName = "N/A";//gets color name
+    private final int redVal = 0;//the red value in rgb
+    private final int greenVal = 0;//the green value in rgb
+    private final int blueVal = 0;//the blue value in rgb
+    private final String colorName = "N/A";//gets color name
     NormalizedColorSensor colorSensorR;//declaring the colorSensor variable
     NormalizedColorSensor colorSensorL;//declaring the colorSensor variable
     public TouchSensor touchSensor;
@@ -224,51 +220,6 @@ public class blankAuto extends robotCentric {
         return favColors[(int) Math.floor(Math.random() * (max - min + 1) + min)];
     }
 
-    public void runVu(int timeoutS, boolean giveSpot) {
-        runtime.reset();
-        while (opModeIsActive() && (spot == 0)) {
-            if (runtime.seconds() > timeoutS) {
-                spot = 4;
-            }
-            if (tfod != null) {
-                // getUpdatedRecognitions() will return null if no new information is available since
-                // the last time that call was made.
-                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                if (updatedRecognitions != null) {
-                    telemetry.addData("# Objects Detected", updatedRecognitions.size());
-
-                    // step through the list of recognitions and display image position/size information for each one
-                    // Note: "Image number" refers to the randomized image orientation/number
-                    for (Recognition recognition : updatedRecognitions) {
-                        double col = (recognition.getLeft() + recognition.getRight()) / 2;
-                        double row = (recognition.getTop() + recognition.getBottom()) / 2;
-                        double width = Math.abs(recognition.getRight() - recognition.getLeft());
-                        double height = Math.abs(recognition.getTop() - recognition.getBottom());
-
-                        telemetry.addData("", " ");
-                        telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
-                        telemetry.addData("- Position (Row/Col)", "%.0f / %.0f", row, col);
-                        telemetry.addData("- Size (Width/Height)", "%.0f / %.0f", width, height);
-                        if (giveSpot && spot == 0) {
-                            if (Objects.equals(recognition.getLabel(), "led")) {
-                                spot += 1;
-                                break;
-                            }
-                            if (Objects.equals(recognition.getLabel(), "resistor")) {
-                                spot += 2;
-                                break;
-                            }
-                            if (Objects.equals(recognition.getLabel(), "capacitor")) {
-                                spot += 3;
-                                break;
-                            }
-                        }
-                    }
-                    telemetry.update();
-                }
-            }
-        }
-    }
 
     private void initVuforia() {
         /*

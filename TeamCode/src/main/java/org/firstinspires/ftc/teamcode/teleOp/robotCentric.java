@@ -436,20 +436,6 @@ public class robotCentric extends LinearOpMode {//declaring the class
         motorFrontRight.setPower(power);
         motorBackRight.setPower(power);
     }
-    //public void unConeUp() {
-    //    unConer.setPosition(setServo(magicUnCone));
-    //    unConed = true;
-    //}
-    //public void unConeDown() {
-    //    unConer.setPosition(setServo(baseUnCone));
-    //    unConed = false;
-    //}
-    //public void ejectUp() {
-    //    unConer.setPosition(setServo(magicEject));
-    //}
-    //public void ejectDown() {
-    //    unConer.setPosition(setServo(baseEject));
-    //}
 
     public void teleSpace() {
         telemetry.addLine();
@@ -763,6 +749,7 @@ public class robotCentric extends LinearOpMode {//declaring the class
         motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         deadWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        tapeMeasure.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //deadWheelL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //deadWheelR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);

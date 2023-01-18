@@ -19,20 +19,15 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
-import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
-import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.teleOp.robotCentric;
-
-import java.util.List;
-import java.util.Objects;
 
 
 @TeleOp(name = "driverAssistedTest", group = "Robot")//declaring the name and group of the opmode
 @Disabled//disabling the opmode
 public class driverAssistedTest extends robotCentric {//declaring the class
-    private ElapsedTime runtime = new ElapsedTime();
+    private final ElapsedTime runtime = new ElapsedTime();
     //encoder var
     public int turn = 77;
     public double yMult = 24;
@@ -139,21 +134,21 @@ public class driverAssistedTest extends robotCentric {//declaring the class
             "AXmzBcj/////AAABme5HSJ/H3Ucup73WSIaV87tx/sFHYaWfor9OZVg6afr2Bw7kNolHd+mF5Ps91SlQpgBHulieI0jcd86kqJSwx46BZ8v8DS5S5x//eQWMEGjMDnvco4/oTcDwuSOLIVZG2UtLmJXPS1L3CipjabePFlqAL2JtBlN78p6ZZbRFSHW680hWEMSimZuQy/cMudD7J/MjMjMs7b925b8BkijlnTQYr7CbSlXrpDh5K+9fLlk2OyEZ4w7tm7e4UJDInJ/T3oi8PqqKCqkUaTkJWlQsvoELbDu5L2FgzsuDhBLe2rHtJRqfORd7n+6M30UdFSsxqq5TaZztkWgzRUr1GC3yBSTS6iFqEuL3g06GrfwOJF0F";
     private VuforiaLocalizer vuforia;
     private TFObjectDetector tfod;
-    private int spot = 0;
+    private final int spot = 0;
     //color
     final float[] hsvValues = new float[3];//gets values for color sensor
-    private float redVal = 0;//the red value in rgb
-    private float greenVal = 0;//the green value in rgb
-    private float blueVal = 0;//the blue value in rgb
-    private String colorName = "N/A";//gets color name
+    private final float redVal = 0;//the red value in rgb
+    private final float greenVal = 0;//the green value in rgb
+    private final float blueVal = 0;//the blue value in rgb
+    private final String colorName = "N/A";//gets color name
     NormalizedColorSensor colorSensorR;//declaring the colorSensor variable
     NormalizedColorSensor colorSensorL;//declaring the colorSensor variable
-    private float redValR = 0;//the red value in rgb
-    private float greenValR = 0;//the green value in rgb
-    private float blueValR = 0;//the blue value in rgb
-    private float redValL = 0;//the red value in rgb
-    private float greenValL = 0;//the green value in rgb
-    private float blueValL = 0;//the blue value in rgb
+    private final float redValR = 0;//the red value in rgb
+    private final float greenValR = 0;//the green value in rgb
+    private final float blueValR = 0;//the blue value in rgb
+    private final float redValL = 0;//the red value in rgb
+    private final float greenValL = 0;//the green value in rgb
+    private final float blueValL = 0;//the blue value in rgb
     //
     public String statusVal = "OFFLINE";
     public double fDistanceVal = 0;
@@ -457,197 +452,6 @@ public class driverAssistedTest extends robotCentric {//declaring the class
         return favColors[(int) Math.floor(Math.random() * (max - min + 1) + min)];
     }
 
-    public void setUniPower(double power) {
-        motorFrontLeft.setPower(power);
-        motorBackLeft.setPower(power);
-        motorFrontRight.setPower(power);
-        motorBackRight.setPower(power);
-    }
-    //public void unConeUp() {
-    //    unConer.setPosition(setServo(magicUnCone));
-    //    unConed = true;
-    //}
-    //public void unConeDown() {
-    //    unConer.setPosition(setServo(baseUnCone));
-    //    unConed = false;
-    //}
-    //public void ejectUp() {
-    //    unConer.setPosition(setServo(magicEject));
-    //}
-    //public void ejectDown() {
-    //    unConer.setPosition(setServo(baseEject));
-    //}
-
-    public void teleSpace() {
-        telemetry.addLine();
-    }
-
-    public void updateStatus(String status) {
-        statusVal = status;
-    }//set a new controller/game status
-
-    public int getAverage(double firstVal, double secondVal) {
-        return (int) ((firstVal + secondVal) / 2);
-    }
-
-    public void openClaw() {
-        clawServo.setPosition(setServo(magicNumOpen));
-    }
-
-    public void closeClaw() {
-        clawServo.setPosition(setServo(baseClawVal));
-    }
-
-    public void dropArm(int prevHeight) {
-        armEncoder(prevHeight - 100, 0.5, 2, true);
-    }
-
-
-    public void distanceTelemetry() {
-        updateDistance();
-        telemetry.addLine("Distance")
-                .addData("", "")
-                .addData("f", String.valueOf(fDistanceVal))
-                .addData("l", String.valueOf(lDistanceVal))
-                .addData("r", String.valueOf(rDistanceVal));
-    }
-
-    public void situate() {
-        encoderDrive(1, 4, 4, 1);
-    }
-
-
-    public void encoderComboFwd(double speed, double lInches, double rInches,
-                                double pose, int timeoutS, boolean isUp) {
-        int newLeftTarget;
-        int newRightTarget;
-        int newDLeftTarget;
-        int newDRightTarget;
-        int target;
-        target = (int) pose;
-        sparkLong.setTargetPosition(target);
-        sparkLong.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        newLeftTarget = motorBackLeft.getCurrentPosition() + (int) (lInches * COUNTS_PER_INCH);
-        newRightTarget = motorBackRight.getCurrentPosition() + (int) (rInches * COUNTS_PER_INCH);
-        //newDLeftTarget = deadWheelL.getCurrentPosition() + (int) (lInches * COUNTS_PER_INCH_dead);
-        //newDRightTarget = deadWheelR.getCurrentPosition() + (int) (rInches * COUNTS_PER_INCH_dead);
-        //
-        //deadWheelL.setTargetPosition(-newDLeftTarget);
-        //deadWheelR.setTargetPosition(-newDRightTarget);
-        motorFrontRight.setTargetPosition(-newRightTarget);
-        motorBackRight.setTargetPosition(-newRightTarget);
-        motorFrontLeft.setTargetPosition(-newLeftTarget);
-        motorBackLeft.setTargetPosition(-newLeftTarget);
-
-        motorBackRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motorBackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motorFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motorFrontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //deadWheelL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //deadWheelR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        runtime.reset();
-        if (isUp) {
-            sparkLong.setPower(speed);//go down
-        }
-        if (!isUp) {
-            sparkLong.setPower(-speed);
-        }
-        motorBackLeft.setPower((speed));
-        motorBackRight.setPower((speed));
-        motorFrontRight.setPower((speed));
-        motorFrontLeft.setPower((speed));
-        while (opModeIsActive() &&
-                (runtime.seconds() < timeoutS) && sparkLong.isBusy()) {
-
-            // Display it for the driver.
-            telemetry.addData(" arm Running to", sparkLong.getCurrentPosition());
-            telemetry.addData("arm Currently at",
-                    sparkLong.getCurrentPosition());
-            // Display it for the driver.
-            telemetry.update();
-        }
-
-        // Stop all motion;
-        motorBackLeft.setPower(0);
-        motorFrontRight.setPower(0);
-        motorBackRight.setPower(0);
-        motorFrontLeft.setPower(0);
-
-        sparkLong.setPower(0);
-        sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        // Turn off RUN_TO_POSITION
-        motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        resetEncoders();
-        telemetry.update();
-    }
-
-    public void encoderDrive(double speed,
-                             double leftInches, double rightInches,
-                             double timeoutS) {
-        int newLeftTarget;
-        int newRightTarget;
-        int newDLeftTarget;
-        int newDRightTarget;
-        if (opModeIsActive()) {
-
-            newLeftTarget = motorBackLeft.getCurrentPosition() + (int) (leftInches * COUNTS_PER_INCH);
-            newRightTarget = motorBackRight.getCurrentPosition() + (int) (rightInches * COUNTS_PER_INCH);
-            //newDLeftTarget = deadWheelL.getCurrentPosition() + (int) (leftInches * COUNTS_PER_INCH_dead);
-            //newDRightTarget = deadWheelR.getCurrentPosition() + (int) (rightInches * COUNTS_PER_INCH_dead);
-            //
-            //deadWheelL.setTargetPosition(-newDLeftTarget);
-            //deadWheelR.setTargetPosition(-newDRightTarget);
-            motorFrontRight.setTargetPosition(-newRightTarget);
-            motorBackRight.setTargetPosition(-newRightTarget);
-            motorFrontLeft.setTargetPosition(-newLeftTarget);
-            motorBackLeft.setTargetPosition(-newLeftTarget);
-
-            motorBackRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motorBackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motorFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motorFrontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            //deadWheelL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            //deadWheelR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            runtime.reset();
-            motorBackLeft.setPower((speed));
-            motorFrontRight.setPower((speed));
-            motorFrontLeft.setPower((speed));
-            motorBackRight.setPower((speed));
-            while (opModeIsActive() &&
-                    (runtime.seconds() < timeoutS) &&
-                    (motorBackLeft.isBusy())) {
-
-                // Display it for the driver.
-                //telemetry.addData("Running to", "%7d :%7d", -newDLeftTarget, -newDRightTarget);//"%7d :%7d"
-                //telemetry.addData("Currently at", "%7d :%7d",
-                //        deadWheelL.getCurrentPosition(), deadWheelR.getCurrentPosition());
-                telemetry.update();
-            }
-
-            // Stop all motion;
-            motorBackLeft.setPower(0);
-            motorFrontRight.setPower(0);
-            motorBackRight.setPower(0);
-            motorFrontLeft.setPower(0);
-
-            // Turn off RUN_TO_POSITION
-            motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            //deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            //deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            resetEncoders();
-        }
-    }
 
     public void armEncoder(double pose, double speed, int timeOut, boolean isUp) {
         int target;
@@ -675,290 +479,6 @@ public class driverAssistedTest extends robotCentric {//declaring the class
         telemetry.update();
     }
 
-    public void resetEncoders() {
-        motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        deadWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //deadWheelL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //deadWheelR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        //sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-    }
-
-    public double setServo(int degrees) {
-        position = degree_mult * degrees;
-        return position;
-    }
-
-    public void updateDistance() {
-        fDistanceVal = (fDistance.getDistance(DistanceUnit.CM) + fOffset);
-        lDistanceVal = (lDistance.getDistance(DistanceUnit.CM) + lOffset);
-        rDistanceVal = (rDistance.getDistance(DistanceUnit.CM) + rOffset);
-    }
-
-    public void adjustWDist(String sensor, double dist, double power, boolean closerThanDist) {//less than goes opposite way
-        updateDistance();
-        if (Objects.equals(sensor, "f")) {
-            if (!closerThanDist) {
-                while (fDistanceVal > dist) {
-                    updateDistance();
-                    fDistanceVal = (fDistance.getDistance(DistanceUnit.CM) + fOffset);
-                    telemetry.addData("Distance", fDistanceVal);
-                    telemetry.update();
-                    motorFrontLeft.setPower(-power);
-                    motorFrontRight.setPower(-power);
-                    motorBackLeft.setPower(-power);
-                    motorBackRight.setPower(-power);
-                    if (fDistanceVal <= dist) {
-                        motorFrontLeft.setPower(0);
-                        motorFrontRight.setPower(0);
-                        motorBackLeft.setPower(0);
-                        motorBackRight.setPower(0);
-                    }
-                }
-            }
-            if (closerThanDist) {
-                power = -power;
-                while (fDistanceVal < dist) {
-                    updateDistance();
-                    fDistanceVal = (fDistance.getDistance(DistanceUnit.CM) + fOffset);
-                    telemetry.addData("Distance", fDistanceVal);
-                    telemetry.update();
-                    motorFrontLeft.setPower(-power);
-                    motorFrontRight.setPower(-power);
-                    motorBackLeft.setPower(-power);
-                    motorBackRight.setPower(-power);
-                    if (fDistanceVal >= dist) {
-                        motorFrontLeft.setPower(0);
-                        motorFrontRight.setPower(0);
-                        motorBackLeft.setPower(0);
-                        motorBackRight.setPower(0);
-                    }
-                }
-            }
-        }
-        if (Objects.equals(sensor, "r")) {//shift right
-            if (!closerThanDist) {
-                while (rDistanceVal > dist) {
-                    updateDistance();
-                    telemetry.addData("Distance", rDistanceVal);
-                    telemetry.update();
-                    rDistanceVal = (rDistance.getDistance(DistanceUnit.CM) + rOffset);
-                    motorFrontLeft.setPower(-power);
-                    motorFrontRight.setPower(power);
-                    motorBackLeft.setPower(power);
-                    motorBackRight.setPower(-power);
-                    if (rDistanceVal <= dist) {
-                        motorFrontLeft.setPower(0);
-                        motorFrontRight.setPower(0);
-                        motorBackLeft.setPower(0);
-                        motorBackRight.setPower(0);
-                    }
-                }
-            }
-            if (closerThanDist) {
-                while (rDistanceVal < dist) {
-                    updateDistance();
-                    telemetry.addData("Distance", rDistanceVal);
-                    telemetry.update();
-                    rDistanceVal = (rDistance.getDistance(DistanceUnit.CM) + rOffset);
-                    motorFrontLeft.setPower(power);
-                    motorFrontRight.setPower(-power);
-                    motorBackLeft.setPower(-power);
-                    motorBackRight.setPower(power);
-                    if (rDistanceVal >= dist) {
-                        motorFrontLeft.setPower(0);
-                        motorFrontRight.setPower(0);
-                        motorBackLeft.setPower(0);
-                        motorBackRight.setPower(0);
-                    }
-                }
-            }
-        }
-        if (Objects.equals(sensor, "l")) {//shift left
-            if (!closerThanDist) {
-                while (lDistanceVal > dist) {
-                    updateDistance();
-                    telemetry.addData("Distance", lDistanceVal);
-                    telemetry.update();
-                    lDistanceVal = (lDistance.getDistance(DistanceUnit.CM) + lOffset);
-                    motorFrontLeft.setPower(power);
-                    motorFrontRight.setPower(-power);
-                    motorBackLeft.setPower(-power);
-                    motorBackRight.setPower(power);
-                    if (lDistanceVal <= dist) {
-                        motorFrontLeft.setPower(0);
-                        motorFrontRight.setPower(0);
-                        motorBackLeft.setPower(0);
-                        motorBackRight.setPower(0);
-                    }
-                }
-            }
-            if (closerThanDist) {
-                while (lDistanceVal < dist) {
-                    updateDistance();
-                    telemetry.addData("Distance", lDistanceVal);
-                    telemetry.update();
-                    lDistanceVal = (lDistance.getDistance(DistanceUnit.CM) + lOffset);
-                    motorFrontLeft.setPower(-power);
-                    motorFrontRight.setPower(power);
-                    motorBackLeft.setPower(power);
-                    motorBackRight.setPower(-power);
-                    if (lDistanceVal >= dist) {
-                        motorFrontLeft.setPower(0);
-                        motorFrontRight.setPower(0);
-                        motorBackLeft.setPower(0);
-                        motorBackRight.setPower(0);
-                    }
-                }
-            }
-        }
-    }
-
-    public void setOvr(double x, double y) {
-        ovrCurrX = x;
-        ovrCurrY = y;
-    }
-
-    public void advGoSpot(double currX, double currY, double targetX, double targetY, double power, boolean combo, int pose
-            , boolean isUp, String orientation, double orientationVal, boolean endTurn, int turn,
-                          boolean checkDistanceX, boolean checkDistanceY, String xSensor, double xDist, boolean lessThanX,
-                          String ySensor, double yDist, boolean lessThanY) {
-        if (ovrTurn % 180 == 0) {
-            double mult = ovrTurn / 180;
-            orientationVal *= (Math.pow(-1, mult));
-        }
-        if (Objects.equals(orientation, "|")) {
-            double sidewaysInches = (targetX - currX) * xMult;
-            double fwdInches = (targetY - currY) * yMult;
-            fwdInches *= orientationVal;
-            sidewaysInches *= orientationVal;
-            telemetry.addData("fwdInches", fwdInches);
-            telemetry.addData("sidewaysInches", sidewaysInches);
-            if (currX < targetX) {
-                sideWaysEncoderDrive(power, sidewaysInches, 1);
-            } else if (currX > targetX) {
-                sideWaysEncoderDrive(power, -sidewaysInches, 1);
-            }
-            if (currY < targetY) {
-                if (!combo) {
-                    encoderDrive(power, fwdInches, fwdInches, 6);
-                } else {
-                    encoderComboFwd(power, fwdInches, fwdInches, pose, 6, isUp);
-                }
-            } else if (currY > targetY) {
-                if (!combo) {
-                    encoderDrive(power, -fwdInches, -fwdInches, 6);
-                } else {
-                    encoderComboFwd(power, -fwdInches, -fwdInches, pose, 6, isUp);
-                }
-            }
-        }
-        if (Objects.equals(orientation, "-")) {
-            double sidewaysInches = (targetY - currY) * xMult;
-            double fwdInches = (targetX - currX) * yMult;
-            if (orientationVal == -90 || orientationVal == 90) {
-                orientationVal /= 90;
-            }
-            fwdInches *= orientationVal;
-            sidewaysInches *= orientationVal;
-            telemetry.addData("fwdInches", fwdInches);
-            telemetry.addData("sidewaysInches", sidewaysInches);
-            if (currY < targetY) {
-                sideWaysEncoderDrive(power, sidewaysInches, 6);
-            } else if (currY > targetY) {
-                sideWaysEncoderDrive(power, -sidewaysInches, 6);
-            }
-            if (currX < targetX) {
-                if (!combo) {
-                    encoderDrive(power, fwdInches, fwdInches, 6);
-                } else {
-                    encoderComboFwd(power, fwdInches, fwdInches, pose, 6, isUp);
-                }
-            } else if (currX > targetX) {
-                if (!combo) {
-                    encoderDrive(power, -fwdInches, -fwdInches, 6);
-                } else {
-                    encoderComboFwd(power, -fwdInches, -fwdInches, pose, 6, isUp);
-                }
-            }
-        }
-        if (checkDistanceX) {
-            adjustWDist(xSensor, xDist, power, lessThanX);
-        }
-        if (checkDistanceY) {
-            adjustWDist(ySensor, yDist, power, lessThanY);
-        }
-        if (endTurn) {
-            turn(turn);
-        }
-        setOvr(targetX, targetY);
-        ovrTurn += turn;
-        //telemetry.addData("orientation", orientation);
-        telemetry.update();
-        //sleep(5000);
-    }
-
-    public void turn(int degrees) {
-        if (degrees > 180) {
-            degrees = (360 - degrees) * -1;
-        }
-        if (degrees <= 0) {
-            degrees += 1;
-        }
-        int mult = 360 / (degrees + 1);
-        int inches = (turn / mult);
-        encoderDrive(0.65, -inches, inches, 6);
-        resetEncoders();
-    }
-
-    public void runVu(int timeoutS, boolean giveSpot) {
-        runtime.reset();
-        while (opModeIsActive() && (spot == 0)) {
-            if (runtime.seconds() > timeoutS) {
-                spot = 4;
-            }
-            if (tfod != null) {
-                // getUpdatedRecognitions() will return null if no new information is available since
-                // the last time that call was made.
-                List<Recognition> updatedRecognitions = tfod.getUpdatedRecognitions();
-                if (updatedRecognitions != null) {
-                    telemetry.addData("# Objects Detected", updatedRecognitions.size());
-
-                    // step through the list of recognitions and display image position/size information for each one
-                    // Note: "Image number" refers to the randomized image orientation/number
-                    for (Recognition recognition : updatedRecognitions) {
-                        double col = (recognition.getLeft() + recognition.getRight()) / 2;
-                        double row = (recognition.getTop() + recognition.getBottom()) / 2;
-                        double width = Math.abs(recognition.getRight() - recognition.getLeft());
-                        double height = Math.abs(recognition.getTop() - recognition.getBottom());
-
-                        telemetry.addData("", " ");
-                        telemetry.addData("Image", "%s (%.0f %% Conf.)", recognition.getLabel(), recognition.getConfidence() * 100);
-                        telemetry.addData("- Position (Row/Col)", "%.0f / %.0f", row, col);
-                        telemetry.addData("- Size (Width/Height)", "%.0f / %.0f", width, height);
-                        if (giveSpot && spot == 0) {
-                            if (Objects.equals(recognition.getLabel(), "led")) {
-                                spot += 1;
-                                break;
-                            }
-                            if (Objects.equals(recognition.getLabel(), "resistor")) {
-                                spot += 2;
-                                break;
-                            }
-                            if (Objects.equals(recognition.getLabel(), "capacitor")) {
-                                spot += 3;
-                                break;
-                            }
-                        }
-                    }
-                    telemetry.update();
-                }
-            }
-        }
-    }
-
     private void initVuforia() {
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
@@ -984,21 +504,6 @@ public class driverAssistedTest extends robotCentric {//declaring the class
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
     }
 
-    public boolean colorInRange(float red, double targetR, float green, double targetG, float blue, double targetB, float range) {
-        boolean rCheck = false;
-        boolean gCheck = false;
-        boolean bCheck = false;
-        if (targetR - range < red && red < targetR + range) {
-            rCheck = true;
-        }
-        if (targetG - range < green && green < targetG + range) {
-            gCheck = true;
-        }
-        if (targetB - range < blue && blue < targetB + range) {
-            bCheck = true;
-        }
-        return rCheck && gCheck && bCheck;
-    }
 
     public void getAllColorR() {
         //gives color values
@@ -1114,89 +619,6 @@ public class driverAssistedTest extends robotCentric {//declaring the class
     public void isCanceled() {
         if (gamepad1.dpad_up) {
             assisting = false;
-        }
-    }
-
-    public void sideWaysEncoderDrive(double speed,
-                                     double inches,
-                                     double timeoutS) {//+=right //-=left
-        int newFRTarget;
-        int newFLTarget;
-        int newBRTarget;
-        int newBLTarget;
-        int newDeadTarget;
-        inches *= -1;
-        if (opModeIsActive()) {
-            if (inches < 0) {
-                newFLTarget = motorFrontLeft.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
-                newBLTarget = motorBackLeft.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
-                newFRTarget = motorFrontRight.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
-                newBRTarget = motorBackRight.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
-                newDeadTarget = deadWheel.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side_dead);
-                motorFrontLeft.setTargetPosition(-newFLTarget);
-                motorBackLeft.setTargetPosition(newBLTarget);
-                motorBackRight.setTargetPosition(-newBRTarget - 10);
-                motorFrontRight.setTargetPosition(newFRTarget);
-                deadWheel.setTargetPosition(-newDeadTarget);
-            }
-            if (inches > 0) {
-                newFLTarget = motorFrontLeft.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
-                newBLTarget = motorBackLeft.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
-                newFRTarget = motorFrontRight.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
-                newBRTarget = motorBackRight.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
-                newDeadTarget = deadWheel.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side_dead);
-                motorFrontLeft.setTargetPosition(-newFLTarget);
-                motorBackLeft.setTargetPosition(newBLTarget);
-                motorBackRight.setTargetPosition(-newBRTarget);
-                motorFrontRight.setTargetPosition(newFRTarget);
-                deadWheel.setTargetPosition(newDeadTarget);
-            }
-
-            motorFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motorBackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motorBackRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            motorFrontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            deadWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            runtime.reset();
-            motorBackLeft.setPower(Math.abs(speed));
-            motorFrontRight.setPower(Math.abs(speed));
-            motorFrontLeft.setPower(Math.abs(speed));
-            motorBackRight.setPower(Math.abs(speed));
-            while (opModeIsActive() &&
-                    (runtime.seconds() < timeoutS)) {
-
-                // Display it for the driver.
-                telemetry.addData("Running to", "%7d:%7d", motorFrontLeft.getCurrentPosition()
-                        , motorBackRight.getCurrentPosition());
-                telemetry.addData("Running to", "%7d:%7d", motorBackLeft.getCurrentPosition()
-                        , motorFrontRight.getCurrentPosition());
-                telemetry.addData("Currently at", "%7d:%7d",
-                        motorFrontLeft.getCurrentPosition()
-                        , motorBackRight.getCurrentPosition());
-                telemetry.addData("Currently at", "%7d:%7d",
-                        motorFrontRight.getCurrentPosition()
-                        , motorBackLeft.getCurrentPosition());
-                isCanceled();
-                if (!assisting) {
-                    break;
-                }
-                telemetry.update();
-            }
-
-            // Stop all motion;
-            motorBackLeft.setPower(0);
-            motorFrontRight.setPower(0);
-            motorFrontLeft.setPower(0);
-            motorBackRight.setPower(0);
-
-            // Turn off RUN_TO_POSITION
-            motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            deadWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            resetEncoders();
         }
     }
 }
