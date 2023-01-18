@@ -1,6 +1,7 @@
 //import
 package org.firstinspires.ftc.teamcode.externalHardware;
 
+import static android.os.SystemClock.sleep;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
 import android.graphics.Color;
@@ -200,6 +201,17 @@ public class HardwareConfig {
     public Orientation angles;     //imu uses these to find angles and classify them
     public Acceleration gravity;    //Imu uses to get acceleration
     //
+    //maintenance mode
+    public TouchSensor touchSensorL;
+    public TouchSensor touchSensorClaw;
+    public TouchSensor touchSensorEject;
+    public final int delay = 1;
+    public boolean isSolid = false;
+    public String color = "none";
+    public boolean armUp = false;
+    public boolean tapeOut = false;
+    public final int timeout = 1;
+    //
     //external
     HardwareMap hardwareMap = null;
 
@@ -248,6 +260,9 @@ public class HardwareConfig {
         clawServo = ahwMap.get(Servo.class, "clawServo");//getting the clawServo servo
         sparkLong = ahwMap.get(DcMotor.class, "sparkLong");//getting the sparkLong motor
         touchSensor = ahwMap.get(TouchSensor.class, ("touchSensor"));
+        touchSensorL = ahwMap.get(TouchSensor.class, ("touchSensorL"));
+        touchSensorClaw = ahwMap.get(TouchSensor.class, ("touchSensorClaw"));
+        touchSensorEject = ahwMap.get(TouchSensor.class, ("touchSensorEject"));
         tapeMeasure = ahwMap.get(DcMotor.class, "tapeMeasure");
 
         sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the sparkLong encoder
@@ -301,6 +316,31 @@ public class HardwareConfig {
         buildTelemetry();
     }
 
+    public void tapeEncoder(int pose, double speed, double timeOut, boolean isOut) {
+        tapeMeasure.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        tapeMeasure.setTargetPosition(pose);
+        tapeMeasure.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        runtime.reset();
+        if (isOut) {
+            tapeMeasure.setPower(-speed);//go in
+        }
+        if (!isOut) {
+            tapeMeasure.setPower(speed);//go out
+        }
+        while (myOpMode.opModeIsActive() &&
+                (runtime.seconds() < timeOut) && tapeMeasure.isBusy()) {
+
+            // Display it for the driver.
+            myOpMode.telemetry.addData("Running to", tapeMeasure.getCurrentPosition());
+            myOpMode.telemetry.addData("Currently at",
+                    tapeMeasure.getCurrentPosition());
+            myOpMode.telemetry.update();
+        }
+        tapeMeasure.setPower(0);
+        tapeMeasure.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        myOpMode.telemetry.update();
+    }
+
     public void power() {
         motorFrontLeft.setPower(frontLeftPower);
         motorBackLeft.setPower(backLeftPower);
@@ -320,6 +360,15 @@ public class HardwareConfig {
             //retract
             tapePower = -1;
         }
+    }
+
+    public void greenRed() {
+        lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.RED);
+        color = "RED";
+        sleep(delay * 1000);
+        lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
+        color = "GREEN";
+        isSolid = true;
     }
 
     public void runArm() {
