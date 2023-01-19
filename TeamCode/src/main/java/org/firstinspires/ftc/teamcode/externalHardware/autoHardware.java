@@ -219,7 +219,7 @@ public class autoHardware extends HardwareConfig {
     public void doSetup() {
         runVu(6, true);
         if (spot == 0) {
-            spot = (int) (Math.floor(Math.random() * (3) + 1));
+            spot = 2;
         }
         if (spot == 1) {
             green1.setState(true);

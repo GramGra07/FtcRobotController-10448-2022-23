@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name = "maintenance", group = "Robot")
 //@Disabled
-public class maintenanceXternal extends LinearOpMode {
+public class maintenanceX extends LinearOpMode {
     HardwareConfig robot = new HardwareConfig(this);
 
     @Override
