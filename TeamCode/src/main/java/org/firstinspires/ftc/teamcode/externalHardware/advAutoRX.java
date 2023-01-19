@@ -1,10 +1,11 @@
 package org.firstinspires.ftc.teamcode.externalHardware;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 @Autonomous(name = "advAutoRX", group = "Robot")
-//@Disabled
+@Disabled
 public class advAutoRX extends LinearOpMode {
     autoHardware robot = new autoHardware(this);
 

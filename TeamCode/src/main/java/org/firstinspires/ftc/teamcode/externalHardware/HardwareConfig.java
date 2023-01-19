@@ -470,8 +470,14 @@ public class HardwareConfig {
             frontLeftPower = (yControl * Math.abs(yControl) + xControl * Math.abs(xControl) - turn) / slowPower;
             backLeftPower = (yControl * Math.abs(yControl) - xControl * Math.abs(xControl) - turn) / slowPower;
         } else {
+            boolean reverse;
+            reverse = myOpMode.gamepad1.touchpad_finger_1_x > 0.5;
             yControl = -myOpMode.gamepad1.left_stick_y;
             xControl = myOpMode.gamepad1.left_stick_x;
+            if (reverse) {
+                yControl = -yControl;
+                xControl = -xControl;
+            }
             double turn = -myOpMode.gamepad1.right_stick_x;
             frontRightPower = (yControl - xControl + turn) / slow;
             backRightPower = (yControl + xControl + turn) / slow;
