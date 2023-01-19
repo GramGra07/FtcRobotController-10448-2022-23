@@ -3,7 +3,6 @@ package org.firstinspires.ftc.teamcode.teleOp;
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
@@ -13,7 +12,7 @@ import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name = "maintainanceMode", group = "Robot")
-@Disabled
+//@Disabled
 public class maintainance extends robotCentric {
     public int turn = 77;
     private final ElapsedTime runtime = new ElapsedTime();

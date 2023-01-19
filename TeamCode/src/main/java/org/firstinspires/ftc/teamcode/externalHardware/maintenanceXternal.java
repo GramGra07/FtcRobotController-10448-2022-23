@@ -13,6 +13,7 @@ public class maintenanceXternal extends LinearOpMode {
     public void runOpMode() {
         robot.init(hardwareMap);
         while (opModeIsActive()) {//while the op mode is active
+            if (isStopRequested()) return;
             if (robot.isSolid) {
                 sleep(robot.delay * 1000);
                 robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(robot.getColor()));

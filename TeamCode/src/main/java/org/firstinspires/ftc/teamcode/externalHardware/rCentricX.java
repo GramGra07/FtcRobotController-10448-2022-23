@@ -4,9 +4,9 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 
-@TeleOp(name = "rCentricXternal", group = "Robot")
+@TeleOp(name = "rCentricX", group = "Robot")
 //@Disabled//disabling the opmode
-public class rCentricXternal extends LinearOpMode {//declaring the class
+public class rCentricX extends LinearOpMode {//declaring the class
     HardwareConfig robot = new HardwareConfig(this);
 
     @Override

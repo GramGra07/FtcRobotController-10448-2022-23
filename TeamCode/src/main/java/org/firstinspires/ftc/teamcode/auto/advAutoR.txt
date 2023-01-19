@@ -207,7 +207,7 @@ public class advAutoR extends robotCentric {
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
         waitForStart();
         if (opModeIsActive()) {
-            double ovrPower = 0.65;
+            double ovrPower = 0.5;
             doSetup();
             //branch 1 get to spot
             encoderDrive(1, 1, 1, 0.5);
@@ -215,9 +215,10 @@ public class advAutoR extends robotCentric {
                     , false, 0, 1, 4);
             setOvr(1, 3);
             double targetX = 2.1;
+            double targetY2 = 3.55;// at pole
             sleep(50);
             resetEncoders();
-            simplerGoSpot(1, 3, targetX, 3.6, ovrPower, true, topPoleVal,
+            simplerGoSpot(1, 3, targetX, targetY2, ovrPower, true, topPoleVal,
                     false, false, -90, 1, 4);
             turn(-90);
             encoderDrive(1, -2, -2, 0.5);
@@ -226,8 +227,7 @@ public class advAutoR extends robotCentric {
             openClaw();
             sleep(200);
             closeClaw();
-            double targetY1 = 2.8;//lined up with cones
-            double targetY2 = 3.6;// at pole
+            double targetY1 = 2.7;//lined up with cones
             resetEncoders();
             simpleGoSpotRight(ovrCurrX, ovrCurrY, 3.5, targetY1, ovrPower, true, midPoleVal + 500,
                     true, false, 0, 1, 1, true);
