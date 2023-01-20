@@ -221,24 +221,27 @@ public class autoHardware extends HardwareConfig {
         if (spot == 0) {
             spot = 2;
         }
+        reportSpot(spot);
+        lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
+    }
+
+    public void reportSpot(int spot) {
         if (spot == 1) {
             green1.setState(true);
             red1.setState(false);
         } else if (spot == 2) {
+            green1.setState(true);
+            red1.setState(false);
             green2.setState(true);
             red2.setState(false);
         } else if (spot == 3) {
+            green1.setState(true);
+            red1.setState(false);
+            green2.setState(true);
+            red2.setState(false);
             green3.setState(true);
             red3.setState(false);
-        } else {
-            green1.setState(false);
-            red1.setState(false);
-            green2.setState(false);
-            red2.setState(false);
-            green3.setState(false);
-            red3.setState(false);
         }
-        lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
     }
 
     public void score1() {
