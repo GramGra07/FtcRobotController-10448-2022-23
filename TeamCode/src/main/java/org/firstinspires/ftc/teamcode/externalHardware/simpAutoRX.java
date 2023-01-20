@@ -14,7 +14,7 @@ public class simpAutoRX extends LinearOpMode {
         if (opModeIsActive()) {//while the op mode is active
             robot.score1();
             double stackDist = -15;
-            robot.sideWaysEncoderDrive(robot.ovrPower, -robot.yMult / 3, 2);
+            robot.sideWaysEncoderDrive(robot.ovrPower, -6, 2);
             robot.armEncoder(0, 1, 2, true);
             sleep(50);
             if (robot.spot == 3) {
