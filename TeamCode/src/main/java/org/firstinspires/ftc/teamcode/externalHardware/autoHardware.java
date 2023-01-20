@@ -248,15 +248,16 @@ public class autoHardware extends HardwareConfig {
         simplerGoSpot(ovrCurrX, ovrCurrY, 1, 2, ovrPower, false, 0, false
                 , false, 0, 1, 4);
         setOvr(1, 2);
-        double targetX = -2.3;
+        double targetX = -2.4;
         double targetY2 = 3.55;// at pole
         sleep(50);
         resetEncoders();
         simplerGoSpot(1, 3, targetX, targetY2, ovrPower, true, topPoleVal,
-                false, false, -90, 1, 4);
+                false, false, 0, 1, 4);
         turn(80);
         resetEncoders();
         setOvr(targetX, targetY2);
+        sleep(500);
         openClaw();
         sleep(200);
         closeClaw();
