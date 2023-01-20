@@ -410,7 +410,11 @@ public class HardwareConfig {
 
     public void doClaw() {
         //claw code
+        double armOver = 0;
         if (myOpMode.gamepad2.left_bumper) {
+            //if (sparkLong.getCurrentPosition()>armOver){
+            //    clawServo.setPosition(setServo(magicNumOpen+30));
+            //}else{
             clawServo.setPosition(setServo(magicNumOpen));
             clawOpen = true;
             //open claw
