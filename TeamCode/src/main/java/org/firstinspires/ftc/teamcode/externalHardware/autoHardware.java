@@ -26,7 +26,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.Position;
 import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 public class autoHardware extends HardwareConfig {
-    double ovrPower = 0.5;
+    public double ovrPower = 0.5;
     HardwareMap hardwareMap = null;
 
     private LinearOpMode myOpMode = null;   // gain access to methods in the calling OpMode.
@@ -270,6 +270,25 @@ public class autoHardware extends HardwareConfig {
         encoderDrive(1, -fw, -fw, 1);
     }
 
+    public void parkFrom2_() {
+        double stackDist = -15;
+        sideWaysEncoderDrive(ovrPower, -6, 2);
+        armEncoder(0, 1, 2, true);
+        sleep(50);
+        if (spot == 3) {
+            encoderDrive(1, stackDist, stackDist, 3);//opposite of 3 lines higher
+            //3,3
+        }
+        //should already be here at spot 2
+        if (spot == 2) {
+            //2,3
+        }
+        if (spot == 1) {
+            encoderDrive(1, -stackDist, -stackDist, 3);
+            //1,3
+        }
+    }
+
     public void simpleGoSpotRight(double currX, double currY, double targetX, double targetY, double power,
                                   boolean combo, int pose, boolean isUp, boolean endTurn, int turn, double timeOutX,
                                   double timeOutY, boolean prioritizeY) {
@@ -316,4 +335,5 @@ public class autoHardware extends HardwareConfig {
         setOvr(targetX, targetY);
         myOpMode.telemetry.update();
     }
+
 }

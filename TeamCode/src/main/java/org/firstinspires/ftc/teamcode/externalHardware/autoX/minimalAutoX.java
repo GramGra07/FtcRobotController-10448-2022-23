@@ -1,8 +1,10 @@
-package org.firstinspires.ftc.teamcode.externalHardware;
+package org.firstinspires.ftc.teamcode.externalHardware.autoX;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+
+import org.firstinspires.ftc.teamcode.externalHardware.autoHardware;
 
 @Autonomous(name = "minimalAutoX", group = "Robot")
 //@Disabled
