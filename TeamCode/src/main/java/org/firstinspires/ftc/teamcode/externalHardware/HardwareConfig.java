@@ -316,31 +316,6 @@ public class HardwareConfig {
         buildTelemetry();
     }
 
-    public void tapeEncoder(int pose, double speed, double timeOut, boolean isOut) {
-        tapeMeasure.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        tapeMeasure.setTargetPosition(pose);
-        tapeMeasure.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        runtime.reset();
-        if (isOut) {
-            tapeMeasure.setPower(-speed);//go in
-        }
-        if (!isOut) {
-            tapeMeasure.setPower(speed);//go out
-        }
-        while (myOpMode.opModeIsActive() &&
-                (runtime.seconds() < timeOut) && tapeMeasure.isBusy()) {
-
-            // Display it for the driver.
-            myOpMode.telemetry.addData("Running to", tapeMeasure.getCurrentPosition());
-            myOpMode.telemetry.addData("Currently at",
-                    tapeMeasure.getCurrentPosition());
-            myOpMode.telemetry.update();
-        }
-        tapeMeasure.setPower(0);
-        tapeMeasure.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        myOpMode.telemetry.update();
-    }
-
     public void power() {
         motorFrontLeft.setPower(frontLeftPower);
         motorBackLeft.setPower(backLeftPower);
@@ -410,12 +385,13 @@ public class HardwareConfig {
 
     public void doClaw() {
         //claw code
-        double armOver = 0;
+        double armOver = 2200;
         if (myOpMode.gamepad2.left_bumper) {
-            //if (sparkLong.getCurrentPosition()>armOver){
-            //    clawServo.setPosition(setServo(magicNumOpen+30));
-            //}else{
-            clawServo.setPosition(setServo(magicNumOpen));
+            if (sparkLong.getCurrentPosition() > armOver) {
+                clawServo.setPosition(setServo(magicNumOpen + 30));
+            } else {
+                clawServo.setPosition(setServo(magicNumOpen));
+            }
             clawOpen = true;
             //open claw
         } else if (myOpMode.gamepad2.right_bumper) {
@@ -604,13 +580,7 @@ public class HardwareConfig {
         }
     }
 
-    public void setUniPower(double power) {
-        motorFrontLeft.setPower(power);
-        motorBackLeft.setPower(power);
-        motorFrontRight.setPower(power);
-        motorBackRight.setPower(power);
-    }
-
+    //random
     public void teleSpace() {
         myOpMode.telemetry.addLine();
     }
@@ -623,6 +593,17 @@ public class HardwareConfig {
         return (int) ((firstVal + secondVal) / 2);
     }
 
+    public void dropArm(int prevHeight) {
+        armEncoder(prevHeight - 100, 0.5, 2, true);
+    }
+
+    //
+//claw
+    public double setServo(int degrees) {
+        position = degree_mult * degrees;
+        return position;
+    }
+
     public void openClaw() {
         clawServo.setPosition(setServo(magicNumOpen));
     }
@@ -631,23 +612,33 @@ public class HardwareConfig {
         clawServo.setPosition(setServo(baseClawVal));
     }
 
-    public void dropArm(int prevHeight) {
-        armEncoder(prevHeight - 100, 0.5, 2, true);
+    //
+//encoder
+    public void tapeEncoder(int pose, double speed, double timeOut, boolean isOut) {
+        tapeMeasure.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        tapeMeasure.setTargetPosition(pose);
+        tapeMeasure.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        runtime.reset();
+        if (isOut) {
+            tapeMeasure.setPower(-speed);//go in
+        }
+        if (!isOut) {
+            tapeMeasure.setPower(speed);//go out
+        }
+        while (myOpMode.opModeIsActive() &&
+                (runtime.seconds() < timeOut) && tapeMeasure.isBusy()) {
+
+            // Display it for the driver.
+            myOpMode.telemetry.addData("Running to", tapeMeasure.getCurrentPosition());
+            myOpMode.telemetry.addData("Currently at",
+                    tapeMeasure.getCurrentPosition());
+            myOpMode.telemetry.update();
+        }
+        tapeMeasure.setPower(0);
+        tapeMeasure.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        myOpMode.telemetry.update();
     }
 
-
-    public void distanceTelemetry() {
-        updateDistance();
-        myOpMode.telemetry.addLine("Distance")
-                .addData("", "")
-                .addData("f", String.valueOf(fDistanceVal))
-                .addData("l", String.valueOf(lDistanceVal))
-                .addData("r", String.valueOf(rDistanceVal));
-    }
-
-    public void situate() {
-        encoderDrive(1, 4, 4, 1);
-    }
 
     public void encoderComboFwd(double speed, double lInches, double rInches,
                                 double pose, double timeoutS, boolean isUp) {
@@ -903,11 +894,8 @@ public class HardwareConfig {
         //sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
     }
 
-    public double setServo(int degrees) {
-        position = degree_mult * degrees;
-        return position;
-    }
-
+    //
+//distance
     public void updateDistance() {
         fDistanceVal = (fDistance.getDistance(DistanceUnit.CM) + fOffset);
         lDistanceVal = (lDistance.getDistance(DistanceUnit.CM) + lOffset);
@@ -1033,6 +1021,22 @@ public class HardwareConfig {
         }
     }
 
+    //
+//walmart odo
+    public void turn(int degrees) {
+        resetEncoders();
+        if (degrees > 180) {
+            degrees = (360 - degrees) * -1;
+        }
+        if (degrees <= 0) {
+            degrees += 1;
+        }
+        int mult = 360 / (degrees + 1);
+        int inches = (turn / mult);
+        encoderDrive(0.65, -inches, inches, 3);
+        resetEncoders();
+    }
+
     public void setOvr(double x, double y) {
         ovrCurrX = x;
         ovrCurrY = y;
@@ -1117,20 +1121,8 @@ public class HardwareConfig {
         //sleep(5000);
     }
 
-    public void turn(int degrees) {
-        resetEncoders();
-        if (degrees > 180) {
-            degrees = (360 - degrees) * -1;
-        }
-        if (degrees <= 0) {
-            degrees += 1;
-        }
-        int mult = 360 / (degrees + 1);
-        int inches = (turn / mult);
-        encoderDrive(0.65, -inches, inches, 3);
-        resetEncoders();
-    }
-
+    //
+//vu
     public void runVu(int timeoutS, boolean giveSpot) {
         runtime.reset();
         while (myOpMode.opModeIsActive() && (spot == 0)) {
@@ -1202,6 +1194,8 @@ public class HardwareConfig {
         tfod.loadModelFromAsset(TFOD_MODEL_ASSET, LABELS);
     }
 
+    //
+//color
     public boolean colorInRange(float red, double targetR, float green, double targetG, float blue, double targetB, float range) {
         boolean rCheck = false;
         boolean gCheck = false;
@@ -1251,81 +1245,5 @@ public class HardwareConfig {
                 .addData("Color", colorName)
                 .addData("RGB", "(" + redValL + "," + greenValL + "," + blueValL + ")");//shows rgb value
     }
-
-    public void assist() {
-        lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
-        getAllColorR();
-        getAllColorL();
-        NormalizedRGBA colorsR = colorSensorR.getNormalizedColors();
-        Color.colorToHSV(colorsR.toColor(), hsvValues);
-        NormalizedRGBA colors = colorSensorL.getNormalizedColors();
-        Color.colorToHSV(colors.toColor(), hsvValues);
-        float redValR = colorsR.red;//the red value in rgb
-        float greenValR = colorsR.green;//the green value in rgb
-        float blueValR = colorsR.blue;//the blue value in rgb
-        float redValL = colors.red;//the red value in rgb
-        float greenValL = colors.green;//the green value in rgb
-        float blueValL = colors.blue;//the blue value in rgb
-        //right
-        double redTargetRR = 0.003;//the red value in rgb
-        double redTargetGR = 0.004;//the green value in rgb
-        double redTargetBR = 0.003;//the blue value in rgb
-        //left
-        double redTargetRL = 0.003;//the red value in rgb
-        double redTargetGL = 0.003;//the green value in rgb
-        double redTargetBL = 0.002;//the blue value in rgb
-        //right
-        double blueTargetRR = 0.002;//the red value in rgb
-        double blueTargetGR = 0.004;//the green value in rgb
-        double blueTargetBR = 0.005;//the blue value in rgb
-        //left
-        double blueTargetRL = 0.001;//the red value in rgb
-        double blueTargetGL = 0.003;//the green value in rgb
-        double blueTargetBL = 0.0038;//the blue value in rgb
-        double range = 0.0005;
-        double speed = -0.2;
-        //left
-        while (colorInRange(redValL, redTargetRL, greenValL, redTargetGL, blueValL, redTargetBL, (float) range)
-                || colorInRange(redValL, blueTargetRL, greenValL, blueTargetGL, blueValL, blueTargetBL, (float) range)
-                || colorInRange(redValR, redTargetRR, greenValR, redTargetGR, blueValR, redTargetBR, (float) range)
-                || colorInRange(redValR, blueTargetRR, greenValR, blueTargetGR, blueValR, blueTargetBR, (float) range)) {
-            if ((colorInRange(redValR, redTargetRR, greenValR, redTargetGR, blueValR, redTargetBR, (float) range)
-                    || colorInRange(redValR, blueTargetRR, greenValR, blueTargetGR, blueValR, blueTargetBR, (float) range))) {
-                getAllColorR();
-                motorFrontLeft.setPower(-speed);
-                motorFrontRight.setPower(speed);
-                motorBackLeft.setPower(speed);
-                motorBackRight.setPower(-speed);
-                //right side has seen red or blue
-            }
-            if (colorInRange(redValL, redTargetRL, greenValL, redTargetGL, blueValL, redTargetBL, (float) range)
-                    || colorInRange(redValL, blueTargetRL, greenValL, blueTargetGL, blueValL, blueTargetBL, (float) range)) {
-                getAllColorL();
-                motorFrontLeft.setPower(speed);
-                motorFrontRight.setPower(-speed);
-                motorBackLeft.setPower(-speed);
-                motorBackRight.setPower(speed);
-            }
-            if (!colorInRange(redValL, redTargetRL, greenValL, redTargetGL, blueValL, redTargetBL, (float) range)
-                    || !colorInRange(redValL, blueTargetRL, greenValL, blueTargetGL, blueValL, blueTargetBL, (float) range)
-                    || !colorInRange(redValR, redTargetRR, greenValR, redTargetGR, blueValR, redTargetBR, (float) range)
-                    || !colorInRange(redValR, blueTargetRR, greenValR, blueTargetGR, blueValR, blueTargetBR, (float) range)) {
-                break;
-            }
-        }
-        lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
-        boolean pressed = touchSensor.isPressed();
-        while (!pressed) {
-            pressed = touchSensor.isPressed();
-            if (pressed) {
-                break;
-            }
-            double speed1 = 0.5;
-            motorBackLeft.setPower(speed1);
-            motorBackRight.setPower(speed1);
-            motorFrontLeft.setPower(speed1);
-            motorFrontRight.setPower(speed1);
-        }
-        assisting = false;
-    }
+//
 }
