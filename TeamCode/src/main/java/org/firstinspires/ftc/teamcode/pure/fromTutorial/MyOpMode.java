@@ -18,7 +18,10 @@ public class MyOpMode extends LinearOpMode {
         bR = new Motor(hardwareMap, "motorBackRight");
         if (opModeIsActive()) {
             ArrayList<CurvePoint> allPoints = new ArrayList<>();
-            allPoints.add(new CurvePoint(0, 0, 1, 0.8, 50, 50, 0, 0));
+            //358 is full length
+            //30 per tile
+            //follow distance = lookahead distance
+            allPoints.add(new CurvePoint(0, 30, 1, 0.8, 50, 50, 0, 0));
             //add more of ^^^
             followCurve(allPoints, 90);
         }

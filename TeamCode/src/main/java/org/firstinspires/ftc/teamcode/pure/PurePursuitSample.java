@@ -8,6 +8,7 @@ import com.arcrobotics.ftclib.hardware.motors.Motor;
 import com.arcrobotics.ftclib.hardware.motors.MotorEx;
 import com.arcrobotics.ftclib.kinematics.HolonomicOdometry;
 import com.arcrobotics.ftclib.purepursuit.waypoints.EndWaypoint;
+import com.arcrobotics.ftclib.purepursuit.waypoints.GeneralWaypoint;
 import com.arcrobotics.ftclib.purepursuit.waypoints.StartWaypoint;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 
@@ -52,7 +53,7 @@ public class PurePursuitSample extends CommandOpMode {
         // create our odometry object and subsystem
         m_robotOdometry = new HolonomicOdometry(
                 () -> fL.getCurrentPosition() * TICKS_TO_INCHES_POWERED,
-                () -> bR.getCurrentPosition() * TICKS_TO_INCHES_POWERED,
+                () -> fR.getCurrentPosition() * TICKS_TO_INCHES_POWERED,
                 () -> centerEncoder.getCurrentPosition() * TICKS_TO_INCHES,
                 TRACKWIDTH, CENTER_WHEEL_OFFSET
         );
@@ -62,7 +63,7 @@ public class PurePursuitSample extends CommandOpMode {
         ppCommand = new PurePursuitCommand(
                 m_robotDrive, m_odometry,
                 new StartWaypoint(0, 0),
-                //new GeneralWaypoint(2, 0, 0.8, 0.8, 30),
+                new GeneralWaypoint(25, 25, 0.8, 0.8, 30),
                 new EndWaypoint(
                         0, 50, 0, 0.5,
                         0, 0, 0.8, 1
