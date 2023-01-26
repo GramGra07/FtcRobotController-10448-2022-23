@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.externalHardware.teleOpX;
+package org.firstinspires.ftc.teamcode.ggsamples.testOpModes;
 
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
@@ -8,7 +8,7 @@ import org.firstinspires.ftc.teamcode.externalHardware.HardwareConfig;
 
 @TeleOp(name = "testEncoderTicks", group = "Robot")
 //@Disabled//disabling the opmode
-public class test extends LinearOpMode {//declaring the class
+public class testEncoderTicks extends LinearOpMode {//declaring the class
     HardwareConfig robot = new HardwareConfig(this);
 
     @Override

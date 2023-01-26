@@ -24,7 +24,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
-import org.firstinspires.ftc.teamcode.testOpModes.distanceSensorCalibrator;
+import org.firstinspires.ftc.teamcode.ggsamples.testOpModes.distanceSensorCalibrator;
 
 import java.util.List;
 import java.util.Objects;

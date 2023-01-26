@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode.testOpModes;
+package org.firstinspires.ftc.teamcode.ggsamples.testOpModes;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 

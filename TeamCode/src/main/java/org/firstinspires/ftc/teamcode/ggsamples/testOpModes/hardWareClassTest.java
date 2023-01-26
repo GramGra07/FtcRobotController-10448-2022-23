@@ -1,17 +1,14 @@
-package org.firstinspires.ftc.teamcode.testOpModes;
+package org.firstinspires.ftc.teamcode.ggsamples.testOpModes;
 
 import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
-import android.graphics.Color;
-
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DigitalChannel;
 import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
-import com.qualcomm.robotcore.hardware.NormalizedRGBA;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -22,11 +19,11 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaLocalizer;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
 import org.firstinspires.ftc.teamcode.teleOp.robotCentric;
 
-@TeleOp(name = "colorTest", group = "Robot")
+@Autonomous(name = "hardWareClassTest", group = "Robot")
 @Disabled
-public class colorTest extends robotCentric {
+public class hardWareClassTest extends robotCentric {
     public int turn = 77;
-
+    hardWareClassTest robot = new hardWareClassTest();
 
     private final ElapsedTime runtime = new ElapsedTime();
 
@@ -86,8 +83,8 @@ public class colorTest extends robotCentric {
     private final int greenVal = 0;//the green value in rgb
     private final int blueVal = 0;//the blue value in rgb
     private final String colorName = "N/A";//gets color name
-    public NormalizedColorSensor colorSensorR;//declaring the colorSensor variable
-    public NormalizedColorSensor colorSensorL;//declaring the colorSensor variable
+    NormalizedColorSensor colorSensorR;//declaring the colorSensor variable
+    NormalizedColorSensor colorSensorL;//declaring the colorSensor variable
     public TouchSensor touchSensor;
     public RevBlinkinLedDriver lights;
     private DigitalChannel red1;
@@ -98,12 +95,6 @@ public class colorTest extends robotCentric {
     private DigitalChannel green3;
     private DigitalChannel red4;
     private DigitalChannel green4;
-    private final float redValR = 0;//the red value in rgb
-    private final float greenValR = 0;//the green value in rgb
-    private final float blueValR = 0;//the blue value in rgb
-    private final float redValL = 0;//the red value in rgb
-    private final float greenValL = 0;//the green value in rgb
-    private final float blueValL = 0;//the blue value in rgb
 
     @Override
     public void runOpMode() {
@@ -167,129 +158,26 @@ public class colorTest extends robotCentric {
                 motorBackLeft.getCurrentPosition(),
                 motorFrontLeft.getCurrentPosition());
         closeClaw();
+        initVuforia();
+        initTfod();
+
+        if (tfod != null) {
+            tfod.activate();
+            tfod.setZoom(1.0, 16.0 / 9.0);
+        }
+        runVu(6, false);
         telemetry.update();
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
         closeClaw();
         // Wait for the game to start (driver presses PLAY)
         waitForStart();
-        while (opModeIsActive()) {
-            correctByColor();
+        if (opModeIsActive()) {
+            lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
+            runVu(6, true);
             telemetry.update();
         }
     }
 
-    public void correctByColor() {
-        lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.BLACK);
-        getAllColorR();
-        getAllColorL();
-        NormalizedRGBA colorsR = colorSensorR.getNormalizedColors();
-        Color.colorToHSV(colorsR.toColor(), hsvValues);
-        NormalizedRGBA colors = colorSensorL.getNormalizedColors();
-        Color.colorToHSV(colors.toColor(), hsvValues);
-        float redValR = colorsR.red;//the red value in rgb
-        float greenValR = colorsR.green;//the green value in rgb
-        float blueValR = colorsR.blue;//the blue value in rgb
-        float redValL = colors.red;//the red value in rgb
-        float greenValL = colors.green;//the green value in rgb
-        float blueValL = colors.blue;//the blue value in rgb
-        //right
-        double redTargetRR = 0.003;//the red value in rgb
-        double redTargetGR = 0.004;//the green value in rgb
-        double redTargetBR = 0.003;//the blue value in rgb
-        //left
-        double redTargetRL = 0.003;//the red value in rgb
-        double redTargetGL = 0.003;//the green value in rgb
-        double redTargetBL = 0.002;//the blue value in rgb
-        //right
-        double blueTargetRR = 0.002;//the red value in rgb
-        double blueTargetGR = 0.004;//the green value in rgb
-        double blueTargetBR = 0.005;//the blue value in rgb
-        //left
-        double blueTargetRL = 0.001;//the red value in rgb
-        double blueTargetGL = 0.003;//the green value in rgb
-        double blueTargetBL = 0.0038;//the blue value in rgb
-        double range = 0.0005;
-        //left
-        while (colorInRange(redValL, redTargetRL, greenValL, redTargetGL, blueValL, redTargetBL, (float) range)
-                || colorInRange(redValL, blueTargetRL, greenValL, blueTargetGL, blueValL, blueTargetBL, (float) range)
-                || colorInRange(redValR, redTargetRR, greenValR, redTargetGR, blueValR, redTargetBR, (float) range)
-                || colorInRange(redValR, blueTargetRR, greenValR, blueTargetGR, blueValR, blueTargetBR, (float) range)) {
-            if ((colorInRange(redValR, redTargetRR, greenValR, redTargetGR, blueValR, redTargetBR, (float) range)
-                    || colorInRange(redValR, blueTargetRR, greenValR, blueTargetGR, blueValR, blueTargetBR, (float) range))) {
-                getAllColorR();
-                sideWaysEncoderDrive(1, 0.25, 0.4);//go left
-                //right side has seen red or blue
-            }
-            if (colorInRange(redValL, redTargetRL, greenValL, redTargetGL, blueValL, redTargetBL, (float) range)
-                    || colorInRange(redValL, blueTargetRL, greenValL, blueTargetGL, blueValL, blueTargetBL, (float) range)) {
-                getAllColorL();
-                sideWaysEncoderDrive(1, -0.25, 0.4);//go right
-            }
-            if (!colorInRange(redValL, redTargetRL, greenValL, redTargetGL, blueValL, redTargetBL, (float) range)
-                    || !colorInRange(redValL, blueTargetRL, greenValL, blueTargetGL, blueValL, blueTargetBL, (float) range)
-                    || !colorInRange(redValR, redTargetRR, greenValR, redTargetGR, blueValR, redTargetBR, (float) range)
-                    || !colorInRange(redValR, blueTargetRR, greenValR, blueTargetGR, blueValR, blueTargetBR, (float) range)) {
-                break;
-            }
-        }
-        lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
-    }
-
-
-    public void getAllColorR() {
-        //gives color values
-        NormalizedRGBA colorsR = colorSensorR.getNormalizedColors();
-        Color.colorToHSV(colorsR.toColor(), hsvValues);
-        telemetry.addLine()
-                .addData("Red", "%.3f", colorsR.red)
-                .addData("Green", "%.3f", colorsR.green)
-                .addData("Blue", "%.3f", colorsR.blue)
-                .addData("Hue", "%.3f", hsvValues[0])
-                .addData("Saturation", "%.3f", hsvValues[1])
-                .addData("Value", "%.3f", hsvValues[2])
-                .addData("Alpha", "%.3f", colorsR.alpha);
-        telemetry.addLine()
-                .addData("Color", colorName)
-                .addData("RGB", "(" + redValR + "," + greenValR + "," + blueValR + ")");//shows rgb value
-    }
-
-    public void getAllColorL() {
-        //gives color values
-        NormalizedRGBA colors = colorSensorL.getNormalizedColors();
-        Color.colorToHSV(colors.toColor(), hsvValues);
-        telemetry.addLine()
-                .addData("Red", "%.3f", colors.red)
-                .addData("Green", "%.3f", colors.green)
-                .addData("Blue", "%.3f", colors.blue)
-                .addData("Hue", "%.3f", hsvValues[0])
-                .addData("Saturation", "%.3f", hsvValues[1])
-                .addData("Value", "%.3f", hsvValues[2])
-                .addData("Alpha", "%.3f", colors.alpha);
-        telemetry.addLine()
-                .addData("Color", colorName)
-                .addData("RGB", "(" + redValL + "," + greenValL + "," + blueValL + ")");//shows rgb value
-    }
-
-    //precise if exact 180, if not, then use the following
-    //final int actualF=50;
-    //final int actualR=100;
-    //final int actualL=44;
-    //double myMagic2;
-    //if ( fDistance.getDistance(DistanceUnit.INCH)<actualF){
-    //    myMagic2=actualF-fDistance.getDistance(DistanceUnit.INCH);
-    //    encoderDrive(0.75,-myMagic2,-myMagic2,3);
-    //}
-    //the following
-    //while(fDistance.getDistance(DistanceUnit.INCH)<actualF){
-    //    telemetry.addData("is working",fDistance.getDistance(DistanceUnit.INCH)<actualF);
-    //    telemetry.addData("inches",fDistance.getDistance(DistanceUnit.INCH));
-    //    telemetry.addData("actualF",actualF);
-    //    telemetry.update();
-    //    motorBackLeft.setPower(-0.8);
-    //    motorBackRight.setPower(-0.8);
-    //    motorFrontLeft.setPower(-0.8);
-    //    motorFrontRight.setPower(-0.8);
-    //}
     public String getColor() {
         final String[] favColors = {
                 "RAINBOW_RAINBOW_PALETTE",
@@ -311,7 +199,6 @@ public class colorTest extends robotCentric {
         final int max = favColors.length - 1;
         return favColors[(int) Math.floor(Math.random() * (max - min + 1) + min)];
     }
-
 
     private void initVuforia() {
         /*

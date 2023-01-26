@@ -27,7 +27,7 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF
  * THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-package org.firstinspires.ftc.teamcode.testOpModes;
+package org.firstinspires.ftc.teamcode.ggsamples.testOpModes;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
@@ -44,7 +44,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
  *
  * Displays the first pattern upon init.
  */
-@TeleOp(name="BlinkinTest")
+@TeleOp(name = "BlinkinTest")
 @Disabled
 public class BlinkinTest extends OpMode {
 
@@ -53,8 +53,7 @@ public class BlinkinTest extends OpMode {
 
 
     @Override
-    public void init()
-    {
+    public void init() {
         lights = hardwareMap.get(RevBlinkinLedDriver.class, "blinkin");
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
         //for random
@@ -62,13 +61,13 @@ public class BlinkinTest extends OpMode {
     }
 
     @Override
-    public void loop()
-    {
-        if (gamepad1.a){
+    public void loop() {
+        if (gamepad1.a) {
             lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
         }
     }
-    public String getColor(){
+
+    public String getColor() {
         final String[] favColors = {
                 "RAINBOW_RAINBOW_PALETTE",
                 "RAINBOW_PARTY_PALETTE",
@@ -85,8 +84,8 @@ public class BlinkinTest extends OpMode {
                 "GOLD",
                 "VIOLET"
         };
-        final int min=0;
-        final int max= favColors.length-1;
+        final int min = 0;
+        final int max = favColors.length - 1;
         return favColors[(int) Math.floor(Math.random() * (max - min + 1) + min)];
     }
 }
