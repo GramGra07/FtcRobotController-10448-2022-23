@@ -47,7 +47,7 @@ public class PurePursuitSample extends CommandOpMode {
 
         // calculate multiplier
         TICKS_TO_INCHES = WHEEL_DIAMETER * Math.PI / centerEncoder.getCPR();
-        double TICKS_TO_INCHES_POWERED = 423;//WHEEL_DIAMETER * Math.PI / fL.getCPR();
+        double TICKS_TO_INCHES_POWERED = WHEEL_DIAMETER * Math.PI / fL.getCPR();
 
         // create our odometry object and subsystem
         m_robotOdometry = new HolonomicOdometry(
@@ -64,7 +64,7 @@ public class PurePursuitSample extends CommandOpMode {
                 new StartWaypoint(0, 0),
                 //new GeneralWaypoint(2, 0, 0.8, 0.8, 30),
                 new EndWaypoint(
-                        0, 10, 0, 0.5,
+                        0, 50, 0, 0.5,
                         0, 0, 0.8, 1
                 )
 

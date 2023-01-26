@@ -14,7 +14,7 @@ import org.firstinspires.ftc.teamcode.pure.fromTutorial.org.opencv.core.Point;
 
 import java.util.ArrayList;
 
-public class RobotMovement {
+public class RobotMovement extends MyOpMode {
 
     public static void followCurve(ArrayList<CurvePoint> allPoints, double followAngle) {
         CurvePoint followMe = getFollowPointPath(allPoints, new Point(worldXPosition, worldYPosition), allPoints.get(0).followDistance);
@@ -57,5 +57,13 @@ public class RobotMovement {
         if (distanceToTarget < 10) {
             movement_turn = 0;
         }
+        double yControl = movement_y;
+        double xControl = movement_x;
+        double turn = movement_turn;
+        double frontRightPower = (yControl * Math.abs(yControl) - xControl * Math.abs(xControl) + turn);
+        double backRightPower = (yControl * Math.abs(yControl) + xControl * Math.abs(xControl) + turn);
+        double frontLeftPower = (yControl * Math.abs(yControl) + xControl * Math.abs(xControl) - turn);
+        double backLeftPower = (yControl * Math.abs(yControl) - xControl * Math.abs(xControl) - turn);
+        applyPower(frontRightPower, backRightPower, frontLeftPower, backLeftPower);
     }
 }

@@ -2,21 +2,32 @@ package org.firstinspires.ftc.teamcode.pure.fromTutorial;
 
 import static org.firstinspires.ftc.teamcode.pure.fromTutorial.RobotMovement.followCurve;
 
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import java.util.ArrayList;
 
-public class MyOpMode extends OpMode {
-    @Override
-    public void init() {
+public class MyOpMode extends LinearOpMode {
+    private static Motor fL, fR, bL, bR;
 
+    @Override
+    public void runOpMode() throws InterruptedException {
+        fL = new Motor(hardwareMap, "motorFrontLeft");
+        fR = new Motor(hardwareMap, "motorFrontRight");
+        bL = new Motor(hardwareMap, "motorBackLeft");
+        bR = new Motor(hardwareMap, "motorBackRight");
+        if (opModeIsActive()) {
+            ArrayList<CurvePoint> allPoints = new ArrayList<>();
+            allPoints.add(new CurvePoint(0, 0, 1, 0.8, 50, 50, 0, 0));
+            //add more of ^^^
+            followCurve(allPoints, 90);
+        }
     }
 
-    @Override
-    public void loop() {
-        ArrayList<CurvePoint> allPoints = new ArrayList<>();
-        allPoints.add(new CurvePoint(0, 0, 1, 0.8, 50, 50, 0, 0));
-        //add more of ^^^
-        followCurve(allPoints, 90);
+    public static void applyPower(double frontRightPower, double backRightPower, double frontLeftPower, double backLeftPower) {
+        fR.set(frontRightPower);
+        bR.set(backRightPower);
+        fL.set(frontLeftPower);
+        bL.set(backLeftPower);
     }
 }
