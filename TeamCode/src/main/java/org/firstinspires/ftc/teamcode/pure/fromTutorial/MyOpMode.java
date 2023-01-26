@@ -3,10 +3,12 @@ package org.firstinspires.ftc.teamcode.pure.fromTutorial;
 import static org.firstinspires.ftc.teamcode.pure.fromTutorial.RobotMovement.followCurve;
 
 import com.arcrobotics.ftclib.hardware.motors.Motor;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import java.util.ArrayList;
 
+@Autonomous(name = "PurePursuit", group = "Robot")
 public class MyOpMode extends LinearOpMode {
     private static Motor fL, fR, bL, bR;
 
