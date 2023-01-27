@@ -1,29 +1,13 @@
 package org.firstinspires.ftc.teamcode.externalHardware;
 
 import static android.os.SystemClock.sleep;
-import static com.qualcomm.robotcore.hardware.DcMotor.ZeroPowerBehavior.BRAKE;
 
 import android.graphics.Color;
 
-import com.qualcomm.hardware.bosch.BNO055IMU;
-import com.qualcomm.hardware.bosch.JustLoggingAccelerationIntegrator;
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.hardware.DcMotor;
-import com.qualcomm.robotcore.hardware.DigitalChannel;
-import com.qualcomm.robotcore.hardware.DistanceSensor;
 import com.qualcomm.robotcore.hardware.HardwareMap;
-import com.qualcomm.robotcore.hardware.NormalizedColorSensor;
 import com.qualcomm.robotcore.hardware.NormalizedRGBA;
-import com.qualcomm.robotcore.hardware.Servo;
-import com.qualcomm.robotcore.hardware.TouchSensor;
-import com.qualcomm.robotcore.util.ElapsedTime;
-
-import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
-import org.firstinspires.ftc.robotcore.external.navigation.AxesReference;
-import org.firstinspires.ftc.robotcore.external.navigation.Position;
-import org.firstinspires.ftc.robotcore.external.navigation.Velocity;
 
 public class autoHardware extends HardwareConfig {
     public double ovrPower = 0.5;
@@ -38,82 +22,8 @@ public class autoHardware extends HardwareConfig {
 
     public void initAuto(HardwareMap ahwMap) {
         hardwareMap = ahwMap;
-        updateStatus("Initializing");
-        ElapsedTime runtime = new ElapsedTime();//declaring the runtime variable
-        BNO055IMU.Parameters parameters = new BNO055IMU.Parameters();
-        parameters.angleUnit = BNO055IMU.AngleUnit.DEGREES;
-        parameters.accelUnit = BNO055IMU.AccelUnit.METERS_PERSEC_PERSEC;
-        parameters.calibrationDataFile = "BNO055IMUCalibration.json"; // see the calibration sample opmode
-        parameters.loggingEnabled = true;
-        parameters.loggingTag = "IMU";
-        parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
-        imu = ahwMap.get(BNO055IMU.class, "imu");
-        imu.initialize(parameters);
-        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
-        gravity = imu.getGravity();
-        imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
-        lights = ahwMap.get(RevBlinkinLedDriver.class, "blinkin");
-        rDistance = ahwMap.get(DistanceSensor.class, "rDistance");//getting the rDistance sensor
-        lDistance = ahwMap.get(DistanceSensor.class, "lDistance");//getting the lDistance sensor
-        fDistance = ahwMap.get(DistanceSensor.class, "fDistance");//getting the fDistance sensor
-        red1 = ahwMap.get(DigitalChannel.class, "red1");//getting the red1 light
-        green1 = ahwMap.get(DigitalChannel.class, "green1");//getting the green1 light
-        red2 = ahwMap.get(DigitalChannel.class, "red2");//getting the red2 light
-        green2 = ahwMap.get(DigitalChannel.class, "green2");//getting the green2 light
-        red3 = ahwMap.get(DigitalChannel.class, "red3");//getting the red3 light
-        green3 = ahwMap.get(DigitalChannel.class, "green3");//getting the green3 light
-        red4 = ahwMap.get(DigitalChannel.class, "red4");//getting the red4 light
-        green4 = ahwMap.get(DigitalChannel.class, "green4");//getting the green4 light
-        colorSensorR = ahwMap.get(NormalizedColorSensor.class, "colorSensorR");
-        colorSensorL = ahwMap.get(NormalizedColorSensor.class, "colorSensorL");
-        // Declare our motors
-        // Make sure your ID's match your configuration
-        motorFrontLeft = ahwMap.get(DcMotor.class, "motorFrontLeft");//getting the motorFrontLeft motor
-        motorBackLeft = ahwMap.get(DcMotor.class, "motorBackLeft");//getting the motorBackLeft motor
-        motorFrontRight = ahwMap.get(DcMotor.class, "motorFrontRight");//getting the motorFrontRight motor
-        motorBackRight = ahwMap.get(DcMotor.class, "motorBackRight");//getting the motorBackRight motor
-        deadWheel = ahwMap.get(DcMotor.class, "deadWheel");//getting the deadWheel motor
-        clawServo = ahwMap.get(Servo.class, "clawServo");//getting the clawServo servo
-        sparkLong = ahwMap.get(DcMotor.class, "sparkLong");//getting the sparkLong motor
-        touchSensor = ahwMap.get(TouchSensor.class, ("touchSensor"));
-        touchSensorL = ahwMap.get(TouchSensor.class, ("touchSensorL"));
-        touchSensorClaw = ahwMap.get(TouchSensor.class, ("touchSensorClaw"));
-        touchSensorEject = ahwMap.get(TouchSensor.class, ("touchSensorEject"));
-        tapeMeasure = ahwMap.get(DcMotor.class, "tapeMeasure");
-
-        sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the sparkLong encoder
-        motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorFrontLeft encoder
-        motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorBackRight encoder
-        motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorBackLeft encoder
-        motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorFrontRight encoder
-        deadWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the deadWheel encoder
-
-        motorBackLeft.setDirection(DcMotor.Direction.REVERSE);
-        tapeMeasure.setDirection(DcMotor.Direction.REVERSE);
-        sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the sparkLong encoder to run using encoder
-        motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorFrontLeft encoder to run using encoder
-        motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorBackLeft encoder to run using encoder
-        motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorBackRight encoder to run using encoder
-        motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorFrontRight encoder to run using encoder
-        deadWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the deadWheel encoder to run using encoder
-
-        motorBackRight.setZeroPowerBehavior(BRAKE);
-        motorBackLeft.setZeroPowerBehavior(BRAKE);
-        motorFrontRight.setZeroPowerBehavior(BRAKE);
-        motorFrontLeft.setZeroPowerBehavior(BRAKE);
-        sparkLong.setZeroPowerBehavior(BRAKE);
-        red1.setMode(DigitalChannel.Mode.OUTPUT);//setting the red1 light to output
-        green1.setMode(DigitalChannel.Mode.OUTPUT);//setting the green1 light to output
-        red2.setMode(DigitalChannel.Mode.OUTPUT);//setting the red2 light to output
-        green2.setMode(DigitalChannel.Mode.OUTPUT);//setting the green2 light to output
-        red3.setMode(DigitalChannel.Mode.OUTPUT);//setting the red3 light to output
-        green3.setMode(DigitalChannel.Mode.OUTPUT);//setting the green3 light to output
-        red4.setMode(DigitalChannel.Mode.OUTPUT);//setting the red4 light to output
-        green4.setMode(DigitalChannel.Mode.OUTPUT);//setting the green4 light to output
-
-        //flipper.setPosition(setServo(magicFlip));//setting the flipper servo to the magicFlip position
-        runtime.reset();//resetting the runtime variable
-        if (myOpMode.isStopRequested()) return;
+        init(ahwMap);
+        //not same
         myOpMode.telemetry.addData("Starting at", "%7d :%7d",
                 motorBackRight.getCurrentPosition(),
                 motorBackLeft.getCurrentPosition(),

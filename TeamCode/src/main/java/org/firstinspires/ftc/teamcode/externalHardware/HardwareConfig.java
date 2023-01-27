@@ -298,7 +298,6 @@ public class HardwareConfig {
         //flipper.setPosition(setServo(magicFlip));//setting the flipper servo to the magicFlip position
         runtime.reset();//resetting the runtime variable
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
-        myOpMode.waitForStart();
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
         if (myOpMode.isStopRequested()) return;
     }

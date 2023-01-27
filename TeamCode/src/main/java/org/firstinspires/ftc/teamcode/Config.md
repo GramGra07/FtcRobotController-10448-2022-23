@@ -29,8 +29,8 @@ Expansion Hub Motors
 - REV UltraPlanetary HD Hex Motor sparkLong
 - Unspecified deadWheel
 - None
-- None Servos
-- Servo unConer Digital Device
+- None
+- Digital Device
 - None
 - Touch Sensor touchSensor
 - None

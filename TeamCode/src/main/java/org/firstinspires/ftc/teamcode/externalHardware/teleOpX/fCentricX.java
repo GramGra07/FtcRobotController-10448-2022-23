@@ -14,6 +14,7 @@ public class fCentricX extends LinearOpMode {//declaring the class
     @Override
     public void runOpMode() {//if opmode is started
         robot.init(hardwareMap);
+        waitForStart();
         while (opModeIsActive()) {//while the op mode is active
             robot.doBulk(true);
         }

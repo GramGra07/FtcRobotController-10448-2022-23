@@ -14,6 +14,7 @@ public class maintenanceX extends LinearOpMode {
     @Override
     public void runOpMode() {
         robot.init(hardwareMap);
+        waitForStart();
         while (opModeIsActive()) {//while the op mode is active
             if (isStopRequested()) return;
             if (robot.isSolid) {
