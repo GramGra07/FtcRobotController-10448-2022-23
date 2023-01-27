@@ -315,6 +315,29 @@ public class HardwareConfig {
         buildTelemetry();
     }
 
+    public void antiTip() {
+        double roll = angles.secondAngle;
+        double maxRoll = 10;
+        double minRoll = -10;
+        if (roll > maxRoll) {
+            //tipped to right
+            sideWaysEncoderDrive(1, Math.toRadians(roll), 1);
+        } else if (roll < minRoll) {
+            //tipped to left
+            sideWaysEncoderDrive(1, Math.toRadians(roll), 1);
+        }
+        double pitch = angles.thirdAngle;
+        double maxPitch = 10;
+        double minPitch = -10;
+        if (pitch > maxPitch) {
+            //tipped to front
+            encoderDrive(1, Math.toRadians(pitch), Math.toRadians(pitch), 1);
+        } else if (pitch < minPitch) {
+            //tipped to back
+            encoderDrive(1, Math.toRadians(pitch), Math.toRadians(pitch), 1);
+        }
+    }
+
     public void power() {
         motorFrontLeft.setPower(frontLeftPower);
         motorBackLeft.setPower(backLeftPower);
