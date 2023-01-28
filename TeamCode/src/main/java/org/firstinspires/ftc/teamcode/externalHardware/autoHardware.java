@@ -213,7 +213,12 @@ public class autoHardware extends HardwareConfig {
         if (!combo) {
             encoderDrive(power, fwdInches, fwdInches, timeOutX);
         } else {
-            encoderComboFwd(power, fwdInches, fwdInches, pose, timeOutX, isUp);
+            encoderDrive(power, fwdInches, fwdInches, timeOutX);
+            if (isUp) {
+                armEncoder(pose, 1, 2, true);
+            } else {
+                armEncoder(pose, 1, 2, false);
+            }
         }
         if (!prioritizeY) {
             sleep(100);
@@ -237,7 +242,12 @@ public class autoHardware extends HardwareConfig {
         if (!combo) {
             encoderDrive(power, -fwdInches, -fwdInches, timeOutY);
         } else {
-            encoderComboFwd(power, -fwdInches, -fwdInches, pose, timeOutY, isUp);
+            encoderDrive(power, -fwdInches, -fwdInches, timeOutY);
+            if (isUp) {
+                armEncoder(pose, 1, 2, true);
+            } else {
+                armEncoder(pose, 1, 2, false);
+            }
         }
         if (endTurn) {
             turn(turn);

@@ -34,9 +34,9 @@ public class lambadaTest extends LinearOpMode {
         while (opModeIsActive()) {//while the op mode is active
             r.drive(false, r.slowPower);
             slo.toggleWhenPressed(new InstantCommand(this::slo));
-            sPre.whenPressed(new InstantCommand(this::sPre));
-            mPre.whenPressed(new InstantCommand(this::mPre));
-            tPre.whenPressed(new InstantCommand(this::tPre));
+            //sPre.whenPressed(new InstantCommand(this::sPre));
+            //mPre.whenPressed(new InstantCommand(this::mPre));
+            //tPre.whenPressed(new InstantCommand(this::tPre));
             r.power();
         }
     }
@@ -49,27 +49,27 @@ public class lambadaTest extends LinearOpMode {
         }
     }
 
-    public void sPre() {
-        if (r.sparkLong.getCurrentPosition() > HardwareConfig.lowPoleVal + 50) {//go down
-            r.armPower = -1;
-        }
-        if (r.sparkLong.getCurrentPosition() < HardwareConfig.lowPoleVal - 50) {//go up
-            r.armPower = 1;
-        }
-    }
-
-    public void mPre() {
-        if (r.sparkLong.getCurrentPosition() > HardwareConfig.midPoleVal + 50) {//go down
-            r.armPower = -1;
-        }
-        if (r.sparkLong.getCurrentPosition() < HardwareConfig.midPoleVal - 50) {//go up
-            r.armPower = 1;
-        }
-    }
-
-    public void tPre() {
-        if (r.sparkLong.getCurrentPosition() < HardwareConfig.topPoleVal) {//go up
-            r.armPower = 1;
-        }
-    }
+    //public void sPre() {
+    //    if (r.sparkLong.getCurrentPosition() > HardwareConfig.lowPoleVal + 50) {//go down
+    //        r.armPower = -1;
+    //    }
+    //    if (r.sparkLong.getCurrentPosition() < HardwareConfig.lowPoleVal - 50) {//go up
+    //        r.armPower = 1;
+    //    }
+    //}
+    //
+    //public void mPre() {
+    //    if (r.sparkLong.getCurrentPosition() > HardwareConfig.midPoleVal + 50) {//go down
+    //        r.armPower = -1;
+    //    }
+    //    if (r.sparkLong.getCurrentPosition() < HardwareConfig.midPoleVal - 50) {//go up
+    //        r.armPower = 1;
+    //    }
+    //}
+    //
+    //public void tPre() {
+    //    if (r.sparkLong.getCurrentPosition() < HardwareConfig.topPoleVal) {//go up
+    //        r.armPower = 1;
+    //    }
+    //}
 }

@@ -118,8 +118,8 @@ public class HardwareConfig {
     public DcMotor motorBackRight = null;
     public DcMotor deadWheel = null;//declaring the deadWheel motor
     public DcMotor tapeMeasure = null;
-    //servo
-    public DcMotor sparkLong = null;
+    public DcMotor yArmMotor = null;
+    public DcMotor zArmMotor = null;
     public TouchSensor touchSensor;
     public NormalizedColorSensor colorSensorR;//declaring the colorSensor variable
     public NormalizedColorSensor colorSensorL;//declaring the colorSensor variable
@@ -269,14 +269,16 @@ public class HardwareConfig {
         clawServo = ahwMap.get(Servo.class, "clawServo");//getting the clawServo servo
         pitchServo = ahwMap.get(Servo.class, "pitchServo");//getting the pitchServo servo
         tmServo = ahwMap.get(Servo.class, "tmServo");//getting the tmServo servo
-        sparkLong = ahwMap.get(DcMotor.class, "sparkLong");//getting the sparkLong motor
+        yArmMotor = ahwMap.get(DcMotor.class, "yArm");
+        zArmMotor = ahwMap.get(DcMotor.class, "zArm");//getting the zArm motor
         touchSensor = ahwMap.get(TouchSensor.class, ("touchSensor"));
         touchSensorL = ahwMap.get(TouchSensor.class, ("touchSensorL"));
         touchSensorClaw = ahwMap.get(TouchSensor.class, ("touchSensorClaw"));
         touchSensorEject = ahwMap.get(TouchSensor.class, ("touchSensorEject"));
         tapeMeasure = ahwMap.get(DcMotor.class, "tapeMeasure");
 
-        sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the sparkLong encoder
+        yArmMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the sparkLong encoder
+        zArmMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the sparkShort encoder
         motorFrontLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorFrontLeft encoder
         motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorBackRight encoder
         motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorBackLeft encoder
@@ -285,7 +287,8 @@ public class HardwareConfig {
 
         motorBackLeft.setDirection(DcMotor.Direction.REVERSE);
         tapeMeasure.setDirection(DcMotor.Direction.REVERSE);
-        sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the sparkLong encoder to run using encoder
+        yArmMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the sparkLong encoder to run using encoder
+        zArmMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the sparkShort encoder to run using encoder
         motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorFrontLeft encoder to run using encoder
         motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorBackLeft encoder to run using encoder
         motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorBackRight encoder to run using encoder
@@ -296,7 +299,8 @@ public class HardwareConfig {
         motorBackLeft.setZeroPowerBehavior(BRAKE);
         motorFrontRight.setZeroPowerBehavior(BRAKE);
         motorFrontLeft.setZeroPowerBehavior(BRAKE);
-        sparkLong.setZeroPowerBehavior(BRAKE);
+        yArmMotor.setZeroPowerBehavior(BRAKE);
+        zArmMotor.setZeroPowerBehavior(BRAKE);
         red1.setMode(DigitalChannel.Mode.OUTPUT);//setting the red1 light to output
         green1.setMode(DigitalChannel.Mode.OUTPUT);//setting the green1 light to output
         red2.setMode(DigitalChannel.Mode.OUTPUT);//setting the red2 light to output
@@ -352,7 +356,8 @@ public class HardwareConfig {
         motorFrontRight.setPower(frontRightPower);
         motorBackRight.setPower(backRightPower);
         tapeMeasure.setPower(tapePower);
-        sparkLong.setPower(armPower);
+        yArmMotor.setPower(armPower);
+        zArmMotor.setPower(armPower);
         tmServo.setPosition(setServo(tmPose));
     }
 
@@ -382,54 +387,54 @@ public class HardwareConfig {
         isSolid = true;
     }
 
-    public void runOldArm() {
-        armPower = -myOpMode.gamepad2.left_stick_y;
-        oldPresets();
-    }
-
-    public void oldPresets() {
-        if (myOpMode.gamepad2.left_stick_y != 0) {
-            armPower = -myOpMode.gamepad2.left_stick_y;
-        } else if (myOpMode.gamepad2.y) {//top level
-            if (sparkLong.getCurrentPosition() < topPoleVal) {//go up
-                armPower = 1;
-            }
-        } else if (myOpMode.gamepad2.a) {//base
-            if (sparkLong.getCurrentPosition() > baseArm) {//go down
-                armPower = -1;
-            }
-        } else if (myOpMode.gamepad2.b) {//middle
-            if (sparkLong.getCurrentPosition() > midPoleVal + 50) {//go down
-                armPower = -1;
-            }
-            if (sparkLong.getCurrentPosition() < midPoleVal - 50) {//go up
-                armPower = 1;
-            }
-        } else if (myOpMode.gamepad2.x) {//low
-            if (sparkLong.getCurrentPosition() > lowPoleVal + 50) {//go down
-                armPower = -1;
-            }
-            if (sparkLong.getCurrentPosition() < lowPoleVal - 50) {//go up
-                armPower = 1;
-            }
-        }
-    }
+    //public void runOldArm() {
+    //    armPower = -myOpMode.gamepad2.left_stick_y;
+    //    oldPresets();
+    //}
+    //
+    //public void oldPresets() {
+    //    if (myOpMode.gamepad2.left_stick_y != 0) {
+    //        armPower = -myOpMode.gamepad2.left_stick_y;
+    //    } else if (myOpMode.gamepad2.y) {//top level
+    //        if (sparkLong.getCurrentPosition() < topPoleVal) {//go up
+    //            armPower = 1;
+    //        }
+    //    } else if (myOpMode.gamepad2.a) {//base
+    //        if (sparkLong.getCurrentPosition() > baseArm) {//go down
+    //            armPower = -1;
+    //        }
+    //    } else if (myOpMode.gamepad2.b) {//middle
+    //        if (sparkLong.getCurrentPosition() > midPoleVal + 50) {//go down
+    //            armPower = -1;
+    //        }
+    //        if (sparkLong.getCurrentPosition() < midPoleVal - 50) {//go up
+    //            armPower = 1;
+    //        }
+    //    } else if (myOpMode.gamepad2.x) {//low
+    //        if (sparkLong.getCurrentPosition() > lowPoleVal + 50) {//go down
+    //            armPower = -1;
+    //        }
+    //        if (sparkLong.getCurrentPosition() < lowPoleVal - 50) {//go up
+    //            armPower = 1;
+    //        }
+    //    }
+    //}
 
     public void doClaw(boolean expandIfOver, int armOver) {
         //claw code
-        if (myOpMode.gamepad2.left_bumper && expandIfOver) {
-            if (sparkLong.getCurrentPosition() > armOver) {
-                clawServo.setPosition(setServo(magicNumOpen + 30));
-            } else {
-                clawServo.setPosition(setServo(magicNumOpen));
-            }
-            clawOpen = true;
-            //open claw
-        } else if (myOpMode.gamepad2.right_bumper) {
-            clawServo.setPosition(setServo(baseClawVal));
-            //close claw
-            clawOpen = false;
-        }
+        //if (myOpMode.gamepad2.left_bumper && expandIfOver) {
+        //    if (sparkLong.getCurrentPosition() > armOver) {
+        //        clawServo.setPosition(setServo(magicNumOpen + 30));
+        //    } else {
+        //        clawServo.setPosition(setServo(magicNumOpen));
+        //    }
+        //    clawOpen = true;
+        //    //open claw
+        //} else if (myOpMode.gamepad2.right_bumper) {
+        //    clawServo.setPosition(setServo(baseClawVal));
+        //    //close claw
+        //    clawOpen = false;
+        //}
         if (myOpMode.gamepad2.left_bumper) {
             clawServo.setPosition(setServo(magicNumOpen));
             clawOpen = true;
@@ -522,7 +527,8 @@ public class HardwareConfig {
     public void buildTelemetry() {
         myOpMode.telemetry.addData("Status", statusVal);//shows current status
         myOpMode.telemetry.addLine("Arm")
-                .addData("Val", String.valueOf(sparkLong.getCurrentPosition()));
+                .addData("y", String.valueOf(yArmMotor.getCurrentPosition()))
+                .addData("y", String.valueOf(zArmMotor.getCurrentPosition()));
         myOpMode.telemetry.addData("reversed", reversed);
         myOpMode.telemetry.addData("slowMode", slowModeIsOn);
         myOpMode.telemetry.addData("dead", deadWheel.getCurrentPosition());
@@ -636,9 +642,6 @@ public class HardwareConfig {
         return (int) ((firstVal + secondVal) / 2);
     }
 
-    public void dropArm(int prevHeight) {
-        armEncoder(prevHeight - 100, 0.5, 2, true);
-    }
 
     //
 //claw
@@ -683,76 +686,76 @@ public class HardwareConfig {
     }
 
 
-    public void encoderComboFwd(double speed, double lInches, double rInches,
-                                double pose, double timeoutS, boolean isUp) {
-        int newLeftTarget;
-        int newRightTarget;
-        int newDLeftTarget;
-        int newDRightTarget;
-        int target;
-        target = (int) pose;
-        sparkLong.setTargetPosition(target);
-        sparkLong.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        newLeftTarget = motorBackLeft.getCurrentPosition() + (int) (lInches * COUNTS_PER_INCH);
-        newRightTarget = motorBackRight.getCurrentPosition() + (int) (rInches * COUNTS_PER_INCH);
-        //newDLeftTarget = deadWheelL.getCurrentPosition() + (int) (lInches * COUNTS_PER_INCH_dead);
-        //newDRightTarget = deadWheelR.getCurrentPosition() + (int) (rInches * COUNTS_PER_INCH_dead);
-
-        //deadWheelL.setTargetPosition(-newDLeftTarget);
-        //deadWheelR.setTargetPosition(-newDRightTarget);
-        motorFrontRight.setTargetPosition(-newRightTarget);
-        motorBackRight.setTargetPosition(-newRightTarget);
-        motorFrontLeft.setTargetPosition(-newLeftTarget);
-        motorBackLeft.setTargetPosition(-newLeftTarget);
-
-        motorBackRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motorBackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motorFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        motorFrontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //deadWheelL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-        //deadWheelR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-        runtime.reset();
-        if (isUp) {
-            sparkLong.setPower(speed);//go down
-        }
-        if (!isUp) {
-            sparkLong.setPower(-speed);
-        }
-        motorBackLeft.setPower((speed));
-        motorBackRight.setPower((speed));
-        motorFrontRight.setPower((speed));
-        motorFrontLeft.setPower((speed));
-        while (myOpMode.opModeIsActive() &&
-                (runtime.seconds() < timeoutS) && sparkLong.isBusy()) {
-
-            // Display it for the driver.
-            myOpMode.telemetry.addData(" arm Running to", sparkLong.getCurrentPosition());
-            myOpMode.telemetry.addData("arm Currently at",
-                    sparkLong.getCurrentPosition());
-            // Display it for the driver.
-            myOpMode.telemetry.update();
-        }
-
-        // Stop all motion;
-        motorBackLeft.setPower(0);
-        motorFrontRight.setPower(0);
-        motorBackRight.setPower(0);
-        motorFrontLeft.setPower(0);
-
-        sparkLong.setPower(0);
-        sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        // Turn off RUN_TO_POSITION
-        motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        //deadWheelL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        resetEncoders();
-        myOpMode.telemetry.update();
-    }
+    //public void encoderComboFwd(double speed, double lInches, double rInches,
+    //                            double pose, double timeoutS, boolean isUp) {
+    //    int newLeftTarget;
+    //    int newRightTarget;
+    //    int newDLeftTarget;
+    //    int newDRightTarget;
+    //    int target;
+    //    target = (int) pose;
+    //    zArmMotor.setTargetPosition(target);
+    //    zArmMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    //
+    //    newLeftTarget = motorBackLeft.getCurrentPosition() + (int) (lInches * COUNTS_PER_INCH);
+    //    newRightTarget = motorBackRight.getCurrentPosition() + (int) (rInches * COUNTS_PER_INCH);
+    //    //newDLeftTarget = deadWheelL.getCurrentPosition() + (int) (lInches * COUNTS_PER_INCH_dead);
+    //    //newDRightTarget = deadWheelR.getCurrentPosition() + (int) (rInches * COUNTS_PER_INCH_dead);
+    //
+    //    //deadWheelL.setTargetPosition(-newDLeftTarget);
+    //    //deadWheelR.setTargetPosition(-newDRightTarget);
+    //    motorFrontRight.setTargetPosition(-newRightTarget);
+    //    motorBackRight.setTargetPosition(-newRightTarget);
+    //    motorFrontLeft.setTargetPosition(-newLeftTarget);
+    //    motorBackLeft.setTargetPosition(-newLeftTarget);
+    //
+    //    motorBackRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    //    motorBackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    //    motorFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    //    motorFrontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    //    //deadWheelL.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    //    //deadWheelR.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+    //
+    //    runtime.reset();
+    //    if (isUp) {
+    //        sparkLong.setPower(speed);//go down
+    //    }
+    //    if (!isUp) {
+    //        sparkLong.setPower(-speed);
+    //    }
+    //    motorBackLeft.setPower((speed));
+    //    motorBackRight.setPower((speed));
+    //    motorFrontRight.setPower((speed));
+    //    motorFrontLeft.setPower((speed));
+    //    while (myOpMode.opModeIsActive() &&
+    //            (runtime.seconds() < timeoutS) && sparkLong.isBusy()) {
+    //
+    //        // Display it for the driver.
+    //        myOpMode.telemetry.addData(" arm Running to", sparkLong.getCurrentPosition());
+    //        myOpMode.telemetry.addData("arm Currently at",
+    //                sparkLong.getCurrentPosition());
+    //        // Display it for the driver.
+    //        myOpMode.telemetry.update();
+    //    }
+    //
+    //    // Stop all motion;
+    //    motorBackLeft.setPower(0);
+    //    motorFrontRight.setPower(0);
+    //    motorBackRight.setPower(0);
+    //    motorFrontLeft.setPower(0);
+    //
+    //    sparkLong.setPower(0);
+    //    sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    //    // Turn off RUN_TO_POSITION
+    //    motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    //    motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    //    motorFrontLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    //    motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    //    //deadWheelR.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    //    //deadWheelL.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    //    resetEncoders();
+    //    myOpMode.telemetry.update();
+    //}
 
     public void encoderDrive(double speed,
                              double leftInches, double rightInches,
@@ -900,29 +903,55 @@ public class HardwareConfig {
         }
     }
 
-    public void armEncoder(double pose, double speed, double timeOut, boolean isUp) {
+    public void yArmEncoder(double pose, double speed, double timeOut, boolean isUp) {
         int target;
         target = (int) pose;
-        sparkLong.setTargetPosition(target);
-        sparkLong.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        yArmMotor.setTargetPosition(target);
+        yArmMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
         runtime.reset();
         if (isUp) {
-            sparkLong.setPower(speed);//go down
+            yArmMotor.setPower(speed);//go down
         }
         if (!isUp) {
-            sparkLong.setPower(-speed);
+            yArmMotor.setPower(-speed);
         }
         while (myOpMode.opModeIsActive() &&
-                (runtime.seconds() < timeOut) && sparkLong.isBusy()) {
+                (runtime.seconds() < timeOut) && yArmMotor.isBusy()) {
 
             // Display it for the driver.
-            myOpMode.telemetry.addData("Running to", sparkLong.getCurrentPosition());
+            myOpMode.telemetry.addData("Running to", yArmMotor.getCurrentPosition());
             myOpMode.telemetry.addData("Currently at",
-                    sparkLong.getCurrentPosition());
+                    yArmMotor.getCurrentPosition());
             myOpMode.telemetry.update();
         }
-        sparkLong.setPower(0);
-        sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        yArmMotor.setPower(0);
+        yArmMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        myOpMode.telemetry.update();
+    }
+
+    public void zArmEncoder(double pose, double speed, double timeOut, boolean isUp) {
+        int target;
+        target = (int) pose;
+        zArmMotor.setTargetPosition(target);
+        zArmMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        runtime.reset();
+        if (isUp) {
+            zArmMotor.setPower(speed);//go down
+        }
+        if (!isUp) {
+            zArmMotor.setPower(-speed);
+        }
+        while (myOpMode.opModeIsActive() &&
+                (runtime.seconds() < timeOut) && zArmMotor.isBusy()) {
+
+            // Display it for the driver.
+            myOpMode.telemetry.addData("Running to", zArmMotor.getCurrentPosition());
+            myOpMode.telemetry.addData("Currently at",
+                    zArmMotor.getCurrentPosition());
+            myOpMode.telemetry.update();
+        }
+        zArmMotor.setPower(0);
+        zArmMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         myOpMode.telemetry.update();
     }
 
@@ -1109,45 +1138,19 @@ public class HardwareConfig {
                 if (!combo) {
                     encoderDrive(power, fwdInches, fwdInches, 6);
                 } else {
-                    encoderComboFwd(power, fwdInches, fwdInches, pose, 6, isUp);
-                }
-            } else if (currY > targetY) {
-                if (!combo) {
-                    encoderDrive(power, -fwdInches, -fwdInches, 6);
-                } else {
-                    encoderComboFwd(power, -fwdInches, -fwdInches, pose, 6, isUp);
-                }
-            }
-        }
-        if (Objects.equals(orientation, "-")) {
-            double sidewaysInches = (targetY - currY) * xMult;
-            double fwdInches = (targetX - currX) * yMult;
-            if (orientationVal == -90 || orientationVal == 90) {
-                orientationVal /= 90;
-            }
-            fwdInches *= orientationVal;
-            sidewaysInches *= orientationVal;
-            myOpMode.telemetry.addData("fwdInches", fwdInches);
-            myOpMode.telemetry.addData("sidewaysInches", sidewaysInches);
-            if (currY < targetY) {
-                sideWaysEncoderDrive(power, sidewaysInches, 6);
-            } else if (currY > targetY) {
-                sideWaysEncoderDrive(power, -sidewaysInches, 6);
-            }
-            if (currX < targetX) {
-                if (!combo) {
                     encoderDrive(power, fwdInches, fwdInches, 6);
-                } else {
-                    encoderComboFwd(power, fwdInches, fwdInches, pose, 6, isUp);
+                    yArmEncoder(pose, power, 6, isUp);
                 }
-            } else if (currX > targetX) {
+            } else if (currY > targetY) {
                 if (!combo) {
                     encoderDrive(power, -fwdInches, -fwdInches, 6);
                 } else {
-                    encoderComboFwd(power, -fwdInches, -fwdInches, pose, 6, isUp);
+                    encoderDrive(power, -fwdInches, -fwdInches, 6);
+                    yArmEncoder(pose, power, 1, isUp);
                 }
             }
         }
+
         if (checkDistanceX) {
             adjustWDist(xSensor, xDist, power, lessThanX);
         }
