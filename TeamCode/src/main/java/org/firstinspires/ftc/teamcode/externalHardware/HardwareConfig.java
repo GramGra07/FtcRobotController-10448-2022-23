@@ -136,6 +136,8 @@ public class HardwareConfig {
     public DistanceSensor fDistance;//declaring the fDistance sensor
     public RevBlinkinLedDriver lights;
     public Servo clawServo = null;
+    public Servo pitchServo = null;
+    public Servo tmServo = null;
     public static final String TFOD_MODEL_ASSET = "custom.tflite";
     public static final String[] LABELS = {
             "capacitor",//3
@@ -211,7 +213,14 @@ public class HardwareConfig {
     public boolean armUp = false;
     public boolean tapeOut = false;
     public final int timeout = 1;
+
     //
+    //pitch servo
+    public int pitchBase = 0;
+    public int pitchMagic = pitchBase + 90;
+    //
+    //tmServo
+    public int tmPose = 0;
     //external
     HardwareMap hardwareMap = null;
 
@@ -258,6 +267,8 @@ public class HardwareConfig {
         motorBackRight = ahwMap.get(DcMotor.class, "motorBackRight");//getting the motorBackRight motor
         deadWheel = ahwMap.get(DcMotor.class, "deadWheel");//getting the deadWheel motor
         clawServo = ahwMap.get(Servo.class, "clawServo");//getting the clawServo servo
+        pitchServo = ahwMap.get(Servo.class, "pitchServo");//getting the pitchServo servo
+        tmServo = ahwMap.get(Servo.class, "tmServo");//getting the tmServo servo
         sparkLong = ahwMap.get(DcMotor.class, "sparkLong");//getting the sparkLong motor
         touchSensor = ahwMap.get(TouchSensor.class, ("touchSensor"));
         touchSensorL = ahwMap.get(TouchSensor.class, ("touchSensorL"));
@@ -304,12 +315,9 @@ public class HardwareConfig {
 
     public void doBulk(boolean fieldCentric) {
         switches();
-        if (rumble) {
-            rumble();
-        }
-        doClaw();
+        doClaw(false, 0);
         drive(fieldCentric, slowPower);
-        runArm();
+        //runArm();
         tapeMeasure();
         power();
         buildTelemetry();
@@ -345,9 +353,15 @@ public class HardwareConfig {
         motorBackRight.setPower(backRightPower);
         tapeMeasure.setPower(tapePower);
         sparkLong.setPower(armPower);
+        tmServo.setPosition(setServo(tmPose));
     }
 
     public void tapeMeasure() {
+        if (myOpMode.gamepad2.dpad_up) {
+            tmPose++;
+        } else if (myOpMode.gamepad2.dpad_down) {
+            tmPose--;
+        }
         tapePower = 0;
         if ((myOpMode.gamepad1.dpad_up || myOpMode.gamepad2.dpad_right)) {// && (tapeMeasure.getCurrentPosition() < tapeLimit - tapeLimit / 5)) {
             //extend
@@ -368,16 +382,12 @@ public class HardwareConfig {
         isSolid = true;
     }
 
-    public void runArm() {
+    public void runOldArm() {
         armPower = -myOpMode.gamepad2.left_stick_y;
-        if (myOpMode.gamepad2.dpad_down) {
-            sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-            sparkLong.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-        }
-        presets();
+        oldPresets();
     }
 
-    public void presets() {
+    public void oldPresets() {
         if (myOpMode.gamepad2.left_stick_y != 0) {
             armPower = -myOpMode.gamepad2.left_stick_y;
         } else if (myOpMode.gamepad2.y) {//top level
@@ -405,15 +415,23 @@ public class HardwareConfig {
         }
     }
 
-    public void doClaw() {
+    public void doClaw(boolean expandIfOver, int armOver) {
         //claw code
-        double armOver = 2200;
-        if (myOpMode.gamepad2.left_bumper) {
+        if (myOpMode.gamepad2.left_bumper && expandIfOver) {
             if (sparkLong.getCurrentPosition() > armOver) {
                 clawServo.setPosition(setServo(magicNumOpen + 30));
             } else {
                 clawServo.setPosition(setServo(magicNumOpen));
             }
+            clawOpen = true;
+            //open claw
+        } else if (myOpMode.gamepad2.right_bumper) {
+            clawServo.setPosition(setServo(baseClawVal));
+            //close claw
+            clawOpen = false;
+        }
+        if (myOpMode.gamepad2.left_bumper) {
+            clawServo.setPosition(setServo(magicNumOpen));
             clawOpen = true;
             //open claw
         } else if (myOpMode.gamepad2.right_bumper) {
@@ -450,7 +468,7 @@ public class HardwareConfig {
         if (fieldCentric) {
             gamepadX = myOpMode.gamepad1.left_stick_x;//get the x val of left stick and store
             myOpMode.telemetry.addData("gamepadX", gamepadX);//tell us what gamepadX is
-            gamepadY = -myOpMode.gamepad1.left_stick_y;//get the y val of left stick and store
+            gamepadY = myOpMode.gamepad1.left_stick_y;//get the y val of left stick and store
             myOpMode.telemetry.addData("gamepadY", gamepadY);//tell us what gamepadY is
             gamepadHypot = Range.clip(Math.hypot(gamepadX, gamepadY), 0, 1);//get the
             // hypotenuse of the x and y values,clip it to a max of 1 and store
@@ -508,6 +526,9 @@ public class HardwareConfig {
         myOpMode.telemetry.addData("reversed", reversed);
         myOpMode.telemetry.addData("slowMode", slowModeIsOn);
         myOpMode.telemetry.addData("dead", deadWheel.getCurrentPosition());
+        myOpMode.telemetry.addData("tmPose", tmPose);
+        myOpMode.telemetry.addData("heading", angles.firstAngle);
+        myOpMode.telemetry.addData("pitchServo", pitchServo.getPosition());
         teleSpace();
         updateStatus("Running");
         myOpMode.telemetry.update();
