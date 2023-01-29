@@ -183,7 +183,7 @@ public class autoHardware extends HardwareConfig {
     public void parkFrom2_() {
         double stackDist = -15;
         sideWaysEncoderDrive(ovrPower, -6, 2);
-        armEncoder(0, 1, 2, true);
+        yArmEncoder(0, 1, 2, true);
         sleep(50);
         if (spot == 3) {
             encoderDrive(1, stackDist, stackDist, 3);//opposite of 3 lines higher
@@ -214,11 +214,7 @@ public class autoHardware extends HardwareConfig {
             encoderDrive(power, fwdInches, fwdInches, timeOutX);
         } else {
             encoderDrive(power, fwdInches, fwdInches, timeOutX);
-            if (isUp) {
-                armEncoder(pose, 1, 2, true);
-            } else {
-                armEncoder(pose, 1, 2, false);
-            }
+            yArmEncoder(pose, 1, 2, isUp);
         }
         if (!prioritizeY) {
             sleep(100);
@@ -243,11 +239,7 @@ public class autoHardware extends HardwareConfig {
             encoderDrive(power, -fwdInches, -fwdInches, timeOutY);
         } else {
             encoderDrive(power, -fwdInches, -fwdInches, timeOutY);
-            if (isUp) {
-                armEncoder(pose, 1, 2, true);
-            } else {
-                armEncoder(pose, 1, 2, false);
-            }
+            yArmEncoder(pose, 1, 2, isUp);
         }
         if (endTurn) {
             turn(turn);

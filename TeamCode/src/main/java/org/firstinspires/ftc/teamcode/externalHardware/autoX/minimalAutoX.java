@@ -21,7 +21,7 @@ public class minimalAutoX extends LinearOpMode {
             double sdw = 10;
             resetRuntime();
             robot.encoderDrive(1, -1, -1, 0.5);
-            robot.armEncoder(500, 1, 2, false);
+            robot.yArmEncoder(500, 1, 2, false);
             if (robot.spot == 1) {
                 robot.green1.setState(true);
                 robot.red1.setState(false);
@@ -47,7 +47,7 @@ public class minimalAutoX extends LinearOpMode {
             } else if (robot.spot == 4) {
                 robot.sideWaysEncoderDrive(0.5, -sdw - 3, 3);
             }
-            robot.armEncoder(0, 1, 2, true);
+            robot.yArmEncoder(0, 1, 2, true);
             telemetry.update();
         }
     }

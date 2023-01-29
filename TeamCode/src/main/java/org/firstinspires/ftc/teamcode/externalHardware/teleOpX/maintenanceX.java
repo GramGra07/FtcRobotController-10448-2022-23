@@ -53,11 +53,11 @@ public class maintenanceX extends LinearOpMode {
                 robot.red3.setState(true);
             }
             if (robot.armUp) {
-                robot.armEncoder(1800, 1, 6, false);
+                robot.yArmEncoder(1800, 1, 6, false);
                 robot.green1.setState(true);
                 robot.red1.setState(false);
             } else {
-                robot.armEncoder(0, 0.8, 6, true);
+                robot.yArmEncoder(0, 0.8, 6, true);
                 robot.green1.setState(false);
                 robot.red1.setState(true);
             }

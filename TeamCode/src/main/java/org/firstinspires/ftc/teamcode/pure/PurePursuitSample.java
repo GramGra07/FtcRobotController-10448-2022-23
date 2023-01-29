@@ -99,12 +99,12 @@ public class PurePursuitSample extends CommandOpMode {
         // create our pure pursuit command
         PurePursuitCommand ppCommand = new PurePursuitCommand(
                 m_robotDrive, m_odometry,
-                p1, p2, p3, p4, p5, p6, p7, p8
+                p1, p2, p3, p4, p5, p6, p8
         );
         ppCommand.schedule();
     }
 
     public void runArmTop() {
-        robot.armEncoder(HardwareConfig.topPoleVal, 1, 2, false);
+        robot.yArmEncoder(HardwareConfig.topPoleVal, 1, 2, false);
     }
 }

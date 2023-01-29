@@ -31,9 +31,9 @@ public class advAutoRX extends LinearOpMode {
             robot.motorBackRight.setPower(speed);
             robot.motorFrontLeft.setPower(speed);
             robot.motorFrontRight.setPower(speed);
-            robot.armEncoder(HardwareConfig.fiveTallConeVal + 500, 1, 2, true);
+            robot.yArmEncoder(HardwareConfig.fiveTallConeVal + 500, 1, 2, true);
             robot.openClaw();
-            robot.armEncoder(HardwareConfig.fiveTallConeVal, 1.0, 0.5, true);
+            robot.yArmEncoder(HardwareConfig.fiveTallConeVal, 1.0, 0.5, true);
             sleep(500);
             robot.closeClaw();
             speed = 0;
@@ -41,7 +41,7 @@ public class advAutoRX extends LinearOpMode {
             robot.motorBackRight.setPower(speed);
             robot.motorFrontLeft.setPower(speed);
             robot.motorFrontRight.setPower(speed);
-            robot.armEncoder(HardwareConfig.midPoleVal + 1000, 1, 2, false);//clear gap
+            robot.yArmEncoder(HardwareConfig.midPoleVal + 1000, 1, 2, false);//clear gap
             //vars
             //branch 3 get to stack
             robot.resetEncoders();
@@ -57,7 +57,7 @@ public class advAutoRX extends LinearOpMode {
             robot.closeClaw();
             //2,3
             double stackDist = 19;
-            robot.armEncoder(0, 1, 2, true);
+            robot.yArmEncoder(0, 1, 2, true);
             sleep(50);
             if (robot.spot == 3) {
                 robot.encoderDrive(1, stackDist, stackDist, 3);//opposite of 3 lines higher
