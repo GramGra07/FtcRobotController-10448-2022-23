@@ -424,7 +424,7 @@ public class HardwareConfig {
         drive(fieldCentric, slowPower);
         //runArm();
         tapeMeasure();
-        //test
+        //
         power();// check all the trackable targets to see which one (if any) is visible.
         targetVisible = false;
         for (VuforiaTrackable trackable : allTrackables) {
