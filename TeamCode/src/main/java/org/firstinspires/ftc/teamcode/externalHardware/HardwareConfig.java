@@ -50,6 +50,62 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+//  |------
+//  |
+//  |------
+//  |
+//  |------
+//
+// \     /
+//  \   /
+//   \ /
+//    *
+//   / \
+//  /   \
+// /     \
+//
+//  |-------
+//  |
+//  |
+//  |
+//  |
+//  |-------
+//
+//  |------
+//  |
+//  |------
+//  |
+//  |------
+//
+//  |
+//  |
+//  |
+//  |
+//  |______
+//
+//  |-----
+//  |
+//  |-----|
+//        |
+//   _____|
+//
+//      *
+//      |
+//      |
+//      |
+//      |
+//
+//  |------|
+//  |      |
+//  |      |
+//  |      |
+//  |------|
+//
+//  |-------|
+//  |       |
+//  |-------/
+//  |      \
+//  |       \
 public class HardwareConfig {
     //auto
     public int turn = 77;
@@ -255,6 +311,7 @@ public class HardwareConfig {
         myOpMode = opmode;
     }
 
+
     public void init(HardwareMap ahwMap) {
         updateStatus("Initializing");
         ElapsedTime runtime = new ElapsedTime();//declaring the runtime variable
@@ -410,6 +467,12 @@ public class HardwareConfig {
 
         targets.activate();
     }
+//  |---------
+//  |
+//  |
+//  |
+//  |
+//  |---------
 
     void identifyTarget(int targetIndex, String targetName, float dx, float dy, float dz, float rx, float ry, float rz) {
         VuforiaTrackable aTarget = targets.get(targetIndex);
