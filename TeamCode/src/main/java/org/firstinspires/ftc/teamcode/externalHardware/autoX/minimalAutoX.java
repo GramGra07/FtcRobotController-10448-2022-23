@@ -27,12 +27,14 @@ public class minimalAutoX extends LinearOpMode {
                 robot.red1.setState(false);
                 robot.sideWaysEncoderDrive(0.5, sdw, 3);
                 sleep(50);
+                robot.resetEncoders();
                 robot.encoderDrive(0.5, fwd, fwd, 3);
             } else if (robot.spot == 2) {
                 robot.green1.setState(true);
                 robot.red1.setState(false);
                 robot.green2.setState(true);
                 robot.red2.setState(false);
+                robot.resetEncoders();
                 robot.encoderDrive(0.5, fwd, fwd, 3);
             } else if (robot.spot == 3) {
                 robot.green1.setState(true);
@@ -43,6 +45,7 @@ public class minimalAutoX extends LinearOpMode {
                 robot.red3.setState(false);
                 robot.sideWaysEncoderDrive(0.5, -sdw, 3);
                 sleep(50);
+                robot.resetEncoders();
                 robot.encoderDrive(0.5, fwd, fwd, 3);
             } else if (robot.spot == 4) {
                 robot.sideWaysEncoderDrive(0.5, -sdw - 3, 3);

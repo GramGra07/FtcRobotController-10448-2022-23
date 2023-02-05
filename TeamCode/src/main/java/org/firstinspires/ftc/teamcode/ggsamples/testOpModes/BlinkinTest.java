@@ -30,7 +30,6 @@
 package org.firstinspires.ftc.teamcode.ggsamples.testOpModes;
 
 import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -45,7 +44,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
  * Displays the first pattern upon init.
  */
 @TeleOp(name = "BlinkinTest")
-@Disabled
+//@Disabled
 public class BlinkinTest extends OpMode {
 
     RevBlinkinLedDriver lights;

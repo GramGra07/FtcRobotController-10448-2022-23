@@ -263,7 +263,7 @@ public class HardwareConfig {
     double tapePower;
     public double tapeMeasureDiameter = 7.5;
     public int tapeMeasureLength = 15 * 12;
-    public double countsPerInchTape = 25;
+    public double countsPerInchTape = 10;
     public double tickPerTapeMeasure = countsPerInchTape * tapeMeasureLength;
     //
     //imu
@@ -402,6 +402,14 @@ public class HardwareConfig {
             log(String.valueOf(myOpMode.getClass()), "stopped");
             return;
         }
+
+        log("Init ", "Done");
+        if (myOpMode.isStarted()) {
+            log(String.valueOf(myOpMode.getClass()), "started");
+        }
+    }
+
+    public void initCamera(HardwareMap ahwMap) {
         webcamName = ahwMap.get(WebcamName.class, "Webcam");
 
         /*
@@ -471,10 +479,6 @@ public class HardwareConfig {
         }
 
         targets.activate();
-        log("Init ", "Done");
-        if (myOpMode.isStarted()) {
-            log(String.valueOf(myOpMode.getClass()), "started");
-        }
     }
 
     void identifyTarget(int targetIndex, String targetName, float dx, float dy, float dz, float rx, float ry, float rz) {
@@ -1437,7 +1441,7 @@ public class HardwareConfig {
         VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
         parameters.vuforiaLicenseKey = VUFORIA_KEY;
-        parameters.cameraName = myOpMode.hardwareMap.get(WebcamName.class, "Webcam 1");
+        parameters.cameraName = myOpMode.hardwareMap.get(WebcamName.class, "Webcam");
 
         //  Instantiate the Vuforia engine
         vuforia = ClassFactory.getInstance().createVuforia(parameters);

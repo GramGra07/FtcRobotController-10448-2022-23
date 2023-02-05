@@ -78,21 +78,22 @@ public class PurePursuitSample extends CommandOpMode {
         double turnSpeed = 0.8;
         double moveSpeed = 0.8;
         double rotationBuffer = 10;
+        double followRadius = 10;
         Waypoint p1 = new StartWaypoint(pose2d);
         Waypoint p2 = new GeneralWaypoint(1, 0, moveSpeed, turnSpeed, 10);
         Waypoint p3 = new GeneralWaypoint(1, 3);
         Waypoint p4 = new GeneralWaypoint(2, 3);
-        Waypoint p5 = new GeneralWaypoint(2, 3.6, Math.toRadians(robot.angles.firstAngle),
-                moveSpeed, turnSpeed, 90);
+        Waypoint p5 = new GeneralWaypoint(2, 3.6, 90,
+                moveSpeed, turnSpeed, followRadius);
         Waypoint p6 = new PointTurnWaypoint(
-                3, 3, Math.toRadians(robot.angles.firstAngle), moveSpeed,
-                turnSpeed, 90, 2, rotationBuffer);
+                3, 3, 90, moveSpeed,
+                turnSpeed, followRadius, 2, rotationBuffer);
         Waypoint p7 = new InterruptWaypoint(
                 3, 2, moveSpeed,
-                turnSpeed, 90, 2, rotationBuffer, this::runArmTop);//, robot.armEncoder(robot.topPoleVal,1,2,false));
+                turnSpeed, followRadius, 2, rotationBuffer, this::runArmTop);//, robot.armEncoder(robot.topPoleVal,1,2,false));
         Waypoint p8 = new PointTurnWaypoint(
-                3, 2, Math.toRadians(robot.angles.firstAngle), moveSpeed,
-                turnSpeed, 90,
+                3, 2, -90, moveSpeed,
+                turnSpeed, followRadius,
                 2, rotationBuffer
         );
         Waypoint p9 = new EndWaypoint();
