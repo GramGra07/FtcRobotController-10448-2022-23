@@ -398,7 +398,10 @@ public class HardwareConfig {
         runtime.reset();//resetting the runtime variable
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
-        if (myOpMode.isStopRequested()) return;
+        if (myOpMode.isStopRequested()) {
+            log(String.valueOf(myOpMode.getClass()), "stopped");
+            return;
+        }
         webcamName = ahwMap.get(WebcamName.class, "Webcam");
 
         /*
@@ -468,6 +471,10 @@ public class HardwareConfig {
         }
 
         targets.activate();
+        log("Init ", "Done");
+        if (myOpMode.isStarted()) {
+            log(String.valueOf(myOpMode.getClass()), "started");
+        }
     }
 
     void identifyTarget(int targetIndex, String targetName, float dx, float dy, float dz, float rx, float ry, float rz) {
@@ -508,8 +515,8 @@ public class HardwareConfig {
             myOpMode.telemetry.addData("Pos (inches)", "{X, Y, Z} = %.1f, %.1f, %.1f",
                     translation.get(0) / mmPerInch, translation.get(1) / mmPerInch, translation.get(2) / mmPerInch);
 
-            RobotLog.d("x", String.valueOf(translation.get(0) / mmPerInch));
-            RobotLog.d("y", String.valueOf(translation.get(1) / mmPerInch));
+            log("x", String.valueOf(translation.get(0) / mmPerInch));
+            log("y", String.valueOf(translation.get(1) / mmPerInch));
 
             // express the rotation of the robot in degrees.
             Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
@@ -518,6 +525,10 @@ public class HardwareConfig {
             myOpMode.telemetry.addData("Visible Target", "none");
         }
         buildTelemetry();
+    }
+
+    public void log(String tag, String message) {
+        RobotLog.d(tag, message);
     }
 
     public void runArm() {
