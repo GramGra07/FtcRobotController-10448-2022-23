@@ -25,6 +25,7 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
+import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -507,6 +508,9 @@ public class HardwareConfig {
             myOpMode.telemetry.addData("Pos (inches)", "{X, Y, Z} = %.1f, %.1f, %.1f",
                     translation.get(0) / mmPerInch, translation.get(1) / mmPerInch, translation.get(2) / mmPerInch);
 
+            RobotLog.d("x", String.valueOf(translation.get(0) / mmPerInch));
+            RobotLog.d("y", String.valueOf(translation.get(1) / mmPerInch));
+
             // express the rotation of the robot in degrees.
             Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
             myOpMode.telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
@@ -528,12 +532,12 @@ public class HardwareConfig {
         double minRoll = -10;
         if (roll > maxRoll) {
             //tipped to right
-            sideWaysEncoderDrive(1, Math.toRadians(roll), 1);
+            sideWaysEncoderDrive(1, -Math.toRadians(roll), 1);
         } else if (roll < minRoll) {
             //tipped to left
             sideWaysEncoderDrive(1, Math.toRadians(roll), 1);
         }
-        double pitch = angles.thirdAngle;
+        double pitch = angles.thirdAngle + 180;
         double maxPitch = 10;
         double minPitch = -10;
         if (pitch > maxPitch) {
@@ -541,7 +545,7 @@ public class HardwareConfig {
             encoderDrive(1, Math.toRadians(pitch), Math.toRadians(pitch), 1);
         } else if (pitch < minPitch) {
             //tipped to back
-            encoderDrive(1, Math.toRadians(pitch), Math.toRadians(pitch), 1);
+            encoderDrive(1, -Math.toRadians(pitch), -Math.toRadians(pitch), 1);
         }
     }
 
@@ -721,7 +725,7 @@ public class HardwareConfig {
 
     public void buildTelemetry() {
         myOpMode.telemetry.addData("Status", statusVal);//shows current status
-        myOpMode.telemetry.addLine("Arm")
+        myOpMode.telemetry.addLine("Arm: ")
                 .addData("y", String.valueOf(yArmMotor.getCurrentPosition()))
                 .addData("z", String.valueOf(zArmMotor.getCurrentPosition()));
         myOpMode.telemetry.addData("reversed", reversed);
@@ -732,6 +736,11 @@ public class HardwareConfig {
         myOpMode.telemetry.addData("heading", angles.firstAngle);
         myOpMode.telemetry.addData("pitchServo", pitchServo.getPosition());
         myOpMode.telemetry.addData("tape power", tapePower);
+        myOpMode.telemetry.addLine("motors: ")
+                .addData("front left", motorFrontLeft.getCurrentPosition())
+                .addData("front right", motorFrontRight.getCurrentPosition())
+                .addData("back left", motorBackLeft.getCurrentPosition())
+                .addData("back right", motorBackRight.getCurrentPosition());
         teleSpace();
         updateStatus("Running");
         myOpMode.telemetry.update();

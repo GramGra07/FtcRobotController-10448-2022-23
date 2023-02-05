@@ -20,7 +20,7 @@ public class antiTipTest extends LinearOpMode {
             robot.antiTip();
             telemetry.addData("heading", robot.angles.firstAngle);
             telemetry.addData("roll", robot.angles.secondAngle);
-            telemetry.addData("pitch", robot.angles.thirdAngle);
+            telemetry.addData("pitch", robot.angles.thirdAngle + 180);
             telemetry.update();
         }
     }
