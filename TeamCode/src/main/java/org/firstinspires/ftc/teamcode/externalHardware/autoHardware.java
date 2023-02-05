@@ -38,7 +38,7 @@ public class autoHardware extends HardwareConfig {
         runVu(6, false);
         myOpMode.telemetry.update();
         closeClaw();
-        tmServo.setPosition(setServo(50));
+        tmServo.setPosition(setServo(tmPose));
         // Wait for the game to start (driver presses PLAY)
         sleep(300);
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);

@@ -14,7 +14,6 @@ public class rCentricX extends LinearOpMode {//declaring the class
     @Override
     public void runOpMode() {//if opmode is started
         robot.init(hardwareMap);
-        robot.initCamera(hardwareMap);
         waitForStart();
         while (opModeIsActive()) {//while the op mode is active
             robot.doBulk(false);

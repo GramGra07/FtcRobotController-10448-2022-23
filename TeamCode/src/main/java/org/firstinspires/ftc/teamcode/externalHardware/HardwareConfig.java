@@ -288,7 +288,7 @@ public class HardwareConfig {
     public int pitchMagic = pitchBase + 90;
     //
     //tmServo
-    public int tmPose = 50;
+    public int tmPose = 68;
     //
     private static final float mmPerInch = 25.4f;
     private static final float mmTargetHeight = 6 * mmPerInch;          // the height of the center of the target image above the floor
@@ -368,6 +368,7 @@ public class HardwareConfig {
         motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorBackLeft encoder
         motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorFrontRight encoder
         deadWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the deadWheel encoder
+        tapeMeasure.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the deadWheel encoder
 
         motorBackLeft.setDirection(DcMotor.Direction.REVERSE);
         tapeMeasure.setDirection(DcMotor.Direction.REVERSE);
@@ -378,6 +379,7 @@ public class HardwareConfig {
         motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorBackRight encoder to run using encoder
         motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorFrontRight encoder to run using encoder
         deadWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the deadWheel encoder to run using encoder
+        tapeMeasure.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the deadWheel encoder to run using encoder
 
         motorBackRight.setZeroPowerBehavior(BRAKE);
         motorBackLeft.setZeroPowerBehavior(BRAKE);
@@ -385,6 +387,7 @@ public class HardwareConfig {
         motorFrontLeft.setZeroPowerBehavior(BRAKE);
         yArmMotor.setZeroPowerBehavior(BRAKE);
         zArmMotor.setZeroPowerBehavior(BRAKE);
+        tapeMeasure.setZeroPowerBehavior(BRAKE);
         red1.setMode(DigitalChannel.Mode.OUTPUT);//setting the red1 light to output
         green1.setMode(DigitalChannel.Mode.OUTPUT);//setting the green1 light to output
         red2.setMode(DigitalChannel.Mode.OUTPUT);//setting the red2 light to output
@@ -398,18 +401,6 @@ public class HardwareConfig {
         runtime.reset();//resetting the runtime variable
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
-        if (myOpMode.isStopRequested()) {
-            log(String.valueOf(myOpMode.getClass()), "stopped");
-            return;
-        }
-
-        log("Init ", "Done");
-        if (myOpMode.isStarted()) {
-            log(String.valueOf(myOpMode.getClass()), "started");
-        }
-    }
-
-    public void initCamera(HardwareMap ahwMap) {
         webcamName = ahwMap.get(WebcamName.class, "Webcam");
 
         /*
@@ -479,6 +470,17 @@ public class HardwareConfig {
         }
 
         targets.activate();
+        if (myOpMode.isStopRequested()) {
+            log(String.valueOf(myOpMode.getClass()), "stopped");
+            return;
+        }
+
+
+        log("Init ", "Done");
+        if (myOpMode.isStarted()) {
+            log(String.valueOf(myOpMode.getClass()), "started");
+        }
+
     }
 
     void identifyTarget(int targetIndex, String targetName, float dx, float dy, float dz, float rx, float ry, float rz) {
@@ -495,7 +497,7 @@ public class HardwareConfig {
         runArm();
         tapeMeasure();
         //
-        power();// check all the trackable targets to see which one (if any) is visible.
+        // check all the trackable targets to see which one (if any) is visible.
         targetVisible = false;
         for (VuforiaTrackable trackable : allTrackables) {
             if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible()) {
@@ -528,7 +530,19 @@ public class HardwareConfig {
         } else {
             myOpMode.telemetry.addData("Visible Target", "none");
         }
+        power();
         buildTelemetry();
+    }
+
+    public void power() {
+        motorFrontLeft.setPower(frontLeftPower);
+        motorBackLeft.setPower(backLeftPower);
+        motorFrontRight.setPower(frontRightPower);
+        motorBackRight.setPower(backRightPower);
+        tapeMeasure.setPower(tapePower);
+        yArmMotor.setPower(yAxisPower);
+        zArmMotor.setPower(zAxisPower);
+        tmServo.setPosition(setServo(tmPose));
     }
 
     public void log(String tag, String message) {
@@ -562,17 +576,6 @@ public class HardwareConfig {
             //tipped to back
             encoderDrive(1, -Math.toRadians(pitch), -Math.toRadians(pitch), 1);
         }
-    }
-
-    public void power() {
-        motorFrontLeft.setPower(frontLeftPower);
-        motorBackLeft.setPower(backLeftPower);
-        motorFrontRight.setPower(frontRightPower);
-        motorBackRight.setPower(backRightPower);
-        tapeMeasure.setPower(tapePower);
-        yArmMotor.setPower(yAxisPower);
-        zArmMotor.setPower(zAxisPower);
-        tmServo.setPosition(setServo(tmPose));
     }
 
     public void tapeMeasure() {
@@ -722,6 +725,7 @@ public class HardwareConfig {
             backRightPower = (yControl + xControl + turn) / slow;
             frontLeftPower = (yControl + xControl - turn) / slow;
             backLeftPower = (yControl - xControl - turn) / slow;
+
         }
     }
 
@@ -756,6 +760,11 @@ public class HardwareConfig {
                 .addData("front right", motorFrontRight.getCurrentPosition())
                 .addData("back left", motorBackLeft.getCurrentPosition())
                 .addData("back right", motorBackRight.getCurrentPosition());
+        myOpMode.telemetry.addLine("power: ")
+                .addData("front left", frontLeftPower)
+                .addData("front right", frontRightPower)
+                .addData("back left", backLeftPower)
+                .addData("back right", backRightPower);
         teleSpace();
         updateStatus("Running");
         myOpMode.telemetry.update();

@@ -6,7 +6,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 import org.firstinspires.ftc.teamcode.externalHardware.HardwareConfig;
 
-@TeleOp(name = "maintenance2", group = "Robot")
+@TeleOp(name = "maintenance", group = "Robot")
 //@Disabled
 public class maintenanceV2 extends LinearOpMode {
     HardwareConfig robot = new HardwareConfig(this);
@@ -40,7 +40,7 @@ public class maintenanceV2 extends LinearOpMode {
             }
 
             if (robot.tapeOut) {
-                robot.tapeEncoder((int) (robot.countsPerInchTape * 18), 1, 6, false);//go out
+                robot.tapeEncoder((int) (robot.countsPerInchTape * 10 * 18), 1, 6, false);//go out
                 robot.green3.setState(true);
                 robot.red3.setState(false);
             } else {
@@ -60,6 +60,7 @@ public class maintenanceV2 extends LinearOpMode {
             telemetry.addData("color", robot.color);
             telemetry.addData("tapeOut", robot.tapeOut);
             telemetry.addData("tmPose", robot.tmPose);
+            telemetry.addData("tmEncoder", robot.tapeMeasure.getCurrentPosition());
             telemetry.update();
         }
     }
