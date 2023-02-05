@@ -176,7 +176,8 @@ public class HardwareConfig {
     public final int magicFlip = baseFlip + 50;//declaring the magicFlip variable
     public final int baseUnCone = 0;
     public final int magicUnCone = baseUnCone + 90;
-    double armPower;
+    double yAxisPower;
+    double zAxisPower;
     //motors
     public DcMotor motorFrontLeft = null;
     public DcMotor motorBackLeft = null;
@@ -286,7 +287,7 @@ public class HardwareConfig {
     public int pitchMagic = pitchBase + 90;
     //
     //tmServo
-    public int tmPose = 0;
+    public int tmPose = 50;
     //
     private static final float mmPerInch = 25.4f;
     private static final float mmTargetHeight = 6 * mmPerInch;          // the height of the center of the target image above the floor
@@ -324,7 +325,7 @@ public class HardwareConfig {
         parameters.accelerationIntegrationAlgorithm = new JustLoggingAccelerationIntegrator();
         imu = ahwMap.get(BNO055IMU.class, "imu");
         imu.initialize(parameters);
-        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.YZX, AngleUnit.DEGREES);
         gravity = imu.getGravity();
         imu.startAccelerationIntegration(new Position(), new Velocity(), 1000);
         lights = ahwMap.get(RevBlinkinLedDriver.class, "blinkin");
@@ -397,7 +398,7 @@ public class HardwareConfig {
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
         if (myOpMode.isStopRequested()) return;
-        webcamName = hardwareMap.get(WebcamName.class, "Webcam 1");
+        webcamName = ahwMap.get(WebcamName.class, "Webcam");
 
         /*
          * Configure Vuforia by creating a Parameter object, and passing it to the Vuforia engine.
@@ -405,7 +406,7 @@ public class HardwareConfig {
          * If no camera-preview is desired, use the parameter-less constructor instead (commented out below).
          * Note: A preview window is required if you want to view the camera stream on the Driver Station Phone.
          */
-        int cameraMonitorViewId = hardwareMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", hardwareMap.appContext.getPackageName());
+        int cameraMonitorViewId = ahwMap.appContext.getResources().getIdentifier("cameraMonitorViewId", "id", ahwMap.appContext.getPackageName());
         VuforiaLocalizer.Parameters camParameters = new VuforiaLocalizer.Parameters(cameraMonitorViewId);
         // VuforiaLocalizer.Parameters parameters = new VuforiaLocalizer.Parameters();
 
@@ -467,12 +468,6 @@ public class HardwareConfig {
 
         targets.activate();
     }
-//  |---------
-//  |
-//  |
-//  |
-//  |
-//  |---------
 
     void identifyTarget(int targetIndex, String targetName, float dx, float dy, float dz, float rx, float ry, float rz) {
         VuforiaTrackable aTarget = targets.get(targetIndex);
@@ -485,7 +480,7 @@ public class HardwareConfig {
         switches();
         doClaw(false, 0);
         drive(fieldCentric, slowPower);
-        //runArm();
+        runArm();
         tapeMeasure();
         //
         power();// check all the trackable targets to see which one (if any) is visible.
@@ -521,7 +516,13 @@ public class HardwareConfig {
         buildTelemetry();
     }
 
+    public void runArm() {
+        yAxisPower = myOpMode.gamepad2.left_stick_y;
+        zAxisPower = myOpMode.gamepad2.right_stick_y;
+    }
+
     public void antiTip() {
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.ZYX, AngleUnit.DEGREES);//get and initialize the IMU
         double roll = angles.secondAngle;
         double maxRoll = 10;
         double minRoll = -10;
@@ -550,16 +551,16 @@ public class HardwareConfig {
         motorFrontRight.setPower(frontRightPower);
         motorBackRight.setPower(backRightPower);
         tapeMeasure.setPower(tapePower);
-        yArmMotor.setPower(armPower);
-        zArmMotor.setPower(armPower);
+        yArmMotor.setPower(yAxisPower);
+        zArmMotor.setPower(zAxisPower);
         tmServo.setPosition(setServo(tmPose));
     }
 
     public void tapeMeasure() {
-        if (myOpMode.gamepad2.dpad_up) {
-            tmPose++;
-        } else if (myOpMode.gamepad2.dpad_down) {
+        if (myOpMode.gamepad2.dpad_up && (tmPose > 1)) {
             tmPose--;
+        } else if (myOpMode.gamepad2.dpad_down) {
+            tmPose++;
         }
         tapePower = 0;
         if ((myOpMode.gamepad1.dpad_up || myOpMode.gamepad2.dpad_right)) {// && (tapeMeasure.getCurrentPosition() < tapeLimit - tapeLimit / 5)) {
@@ -722,13 +723,15 @@ public class HardwareConfig {
         myOpMode.telemetry.addData("Status", statusVal);//shows current status
         myOpMode.telemetry.addLine("Arm")
                 .addData("y", String.valueOf(yArmMotor.getCurrentPosition()))
-                .addData("y", String.valueOf(zArmMotor.getCurrentPosition()));
+                .addData("z", String.valueOf(zArmMotor.getCurrentPosition()));
         myOpMode.telemetry.addData("reversed", reversed);
         myOpMode.telemetry.addData("slowMode", slowModeIsOn);
         myOpMode.telemetry.addData("dead", deadWheel.getCurrentPosition());
         myOpMode.telemetry.addData("tmPose", tmPose);
+        myOpMode.telemetry.addData("tm", tapeMeasure.getCurrentPosition());
         myOpMode.telemetry.addData("heading", angles.firstAngle);
         myOpMode.telemetry.addData("pitchServo", pitchServo.getPosition());
+        myOpMode.telemetry.addData("tape power", tapePower);
         teleSpace();
         updateStatus("Running");
         myOpMode.telemetry.update();
@@ -869,7 +872,7 @@ public class HardwareConfig {
                 (runtime.seconds() < timeOut) && tapeMeasure.isBusy()) {
 
             // Display it for the driver.
-            myOpMode.telemetry.addData("Running to", tapeMeasure.getCurrentPosition());
+            myOpMode.telemetry.addData("Running to", pose);
             myOpMode.telemetry.addData("Currently at",
                     tapeMeasure.getCurrentPosition());
             myOpMode.telemetry.update();
@@ -993,7 +996,6 @@ public class HardwareConfig {
                 //telemetry.addData("Currently at", "%7d :%7d",
                 //        deadWheelL.getCurrentPosition(), deadWheelR.getCurrentPosition());
                 myOpMode.telemetry.addData("fr", motorFrontRight.getCurrentPosition());
-                myOpMode.telemetry.update();
             }
 
             // Stop all motion;
@@ -1078,7 +1080,6 @@ public class HardwareConfig {
                 myOpMode.telemetry.addData("Currently at", "%7d:%7d",
                         motorFrontRight.getCurrentPosition()
                         , motorBackLeft.getCurrentPosition());
-                myOpMode.telemetry.update();
             }
 
             // Stop all motion;

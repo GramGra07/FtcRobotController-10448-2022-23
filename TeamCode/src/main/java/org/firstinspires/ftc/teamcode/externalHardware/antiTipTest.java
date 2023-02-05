@@ -11,6 +11,11 @@ public class antiTipTest extends LinearOpMode {
     @Override
     public void runOpMode() throws InterruptedException {
         robot.init(hardwareMap);
+        telemetry.addData("heading", robot.angles.firstAngle);
+        telemetry.addData("roll", robot.angles.secondAngle);
+        telemetry.addData("pitch", robot.angles.thirdAngle);
+        telemetry.update();
+        waitForStart();
         while (opModeIsActive()) {//while the op mode is active
             robot.antiTip();
             telemetry.addData("heading", robot.angles.firstAngle);
