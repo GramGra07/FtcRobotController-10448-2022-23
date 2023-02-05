@@ -25,7 +25,6 @@ import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.TouchSensor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
-import com.qualcomm.robotcore.util.RobotLog;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
@@ -45,6 +44,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackableDefau
 import org.firstinspires.ftc.robotcore.external.navigation.VuforiaTrackables;
 import org.firstinspires.ftc.robotcore.external.tfod.Recognition;
 import org.firstinspires.ftc.robotcore.external.tfod.TFObjectDetector;
+import org.firstinspires.ftc.teamcode.RobotLog;
 import org.firstinspires.ftc.teamcode.ggsamples.testOpModes.distanceSensorCalibrator;
 
 import java.util.ArrayList;
@@ -471,14 +471,14 @@ public class HardwareConfig {
 
         targets.activate();
         if (myOpMode.isStopRequested()) {
-            log(String.valueOf(myOpMode.getClass()), "stopped");
+            log((myOpMode.getClass()) + "stopped");
             return;
         }
 
 
-        log("Init ", "Done");
+        log("Init Done");
         if (myOpMode.isStarted()) {
-            log(String.valueOf(myOpMode.getClass()), "started");
+            log((myOpMode.getClass()) + "started");
         }
 
     }
@@ -521,8 +521,8 @@ public class HardwareConfig {
             myOpMode.telemetry.addData("Pos (inches)", "{X, Y, Z} = %.1f, %.1f, %.1f",
                     translation.get(0) / mmPerInch, translation.get(1) / mmPerInch, translation.get(2) / mmPerInch);
 
-            log("x", String.valueOf(translation.get(0) / mmPerInch));
-            log("y", String.valueOf(translation.get(1) / mmPerInch));
+            log("x" + (translation.get(0) / mmPerInch));
+            log("y" + (translation.get(1) / mmPerInch));
 
             // express the rotation of the robot in degrees.
             Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
@@ -545,8 +545,8 @@ public class HardwareConfig {
         tmServo.setPosition(setServo(tmPose));
     }
 
-    public void log(String tag, String message) {
-        RobotLog.d(tag, message);
+    public void log(String message) {
+        RobotLog.d("logging", message);
     }
 
     public void runArm() {
