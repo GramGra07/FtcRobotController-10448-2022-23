@@ -204,7 +204,7 @@ public class HardwareConfig {
     public DistanceSensor fDistance;//declaring the fDistance sensor
     public RevBlinkinLedDriver lights;
     public Servo clawServo = null;
-    public Servo pitchServo = null;
+    public DcMotor pitchMotor = null;
     public Servo tmServo = null;
     public static final String TFOD_MODEL_ASSET = "custom.tflite";
     public static final String[] LABELS = {
@@ -249,6 +249,7 @@ public class HardwareConfig {
     public double frontLeftPower;
     public double backRightPower;
     public double backLeftPower;
+    double pitchPower;
     //
     //field centric
     double gamepadX;
@@ -349,9 +350,9 @@ public class HardwareConfig {
         motorBackLeft = ahwMap.get(DcMotor.class, "motorBackLeft");//getting the motorBackLeft motor
         motorFrontRight = ahwMap.get(DcMotor.class, "motorFrontRight");//getting the motorFrontRight motor
         motorBackRight = ahwMap.get(DcMotor.class, "motorBackRight");//getting the motorBackRight motor
-        deadWheel = ahwMap.get(DcMotor.class, "deadWheel");//getting the deadWheel motor
+        //deadWheel = ahwMap.get(DcMotor.class, "deadWheel");//getting the deadWheel motor
         clawServo = ahwMap.get(Servo.class, "clawServo");//getting the clawServo servo
-        pitchServo = ahwMap.get(Servo.class, "pitchServo");//getting the pitchServo servo
+        pitchMotor = ahwMap.get(DcMotor.class, "pitchMotor");
         tmServo = ahwMap.get(Servo.class, "tmServo");//getting the tmServo servo
         yArmMotor = ahwMap.get(DcMotor.class, "yArm");
         zArmMotor = ahwMap.get(DcMotor.class, "zArm");//getting the zArm motor
@@ -542,6 +543,7 @@ public class HardwareConfig {
         tapeMeasure.setPower(tapePower);
         yArmMotor.setPower(yAxisPower);
         zArmMotor.setPower(zAxisPower);
+        pitchMotor.setPower(pitchPower);
         tmServo.setPosition(setServo(tmPose));
     }
 
@@ -552,6 +554,13 @@ public class HardwareConfig {
     public void runArm() {
         yAxisPower = myOpMode.gamepad2.left_stick_y;
         zAxisPower = myOpMode.gamepad2.right_stick_y;
+        if (myOpMode.gamepad2.y) {
+            pitchPower = 1;
+        } else if (myOpMode.gamepad2.a) {
+            pitchPower = -1;
+        } else {
+            pitchPower = 0;
+        }
     }
 
     public void antiTip() {
@@ -753,7 +762,7 @@ public class HardwareConfig {
         myOpMode.telemetry.addData("tmPose", tmPose);
         myOpMode.telemetry.addData("tm", tapeMeasure.getCurrentPosition());
         myOpMode.telemetry.addData("heading", angles.firstAngle);
-        myOpMode.telemetry.addData("pitchServo", pitchServo.getPosition());
+        myOpMode.telemetry.addData("pitchMotor", pitchMotor.getCurrentPosition());
         myOpMode.telemetry.addData("tape power", tapePower);
         myOpMode.telemetry.addLine("motors: ")
                 .addData("front left", motorFrontLeft.getCurrentPosition())
