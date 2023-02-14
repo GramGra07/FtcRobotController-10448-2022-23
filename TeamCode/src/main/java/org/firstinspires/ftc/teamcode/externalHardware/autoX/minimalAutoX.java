@@ -16,12 +16,13 @@ public class minimalAutoX extends LinearOpMode {
         robot.initAuto(hardwareMap);
         if (opModeIsActive()) {//while the op mode is active
             robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(robot.getColor()));
-            robot.runVu(6, true);
-            double fwd = -30;
-            double sdw = 10;
+            //robot.runVu(6, true);
+            robot.spot = 3;//TODO, delete this line and uncomment ^
+            double fwd = 30;
+            double sdw = -10;
             resetRuntime();
-            robot.encoderDrive(1, -1, -1, 0.5);
-            robot.yArmEncoder(500, 1, 2, false);
+            robot.encoderDrive(1, 1, 1, 0.5);
+            //robot.yArmEncoder(500, 1, 2, false);
             if (robot.spot == 1) {
                 robot.green1.setState(true);
                 robot.red1.setState(false);
@@ -49,8 +50,14 @@ public class minimalAutoX extends LinearOpMode {
                 robot.encoderDrive(0.5, fwd, fwd, 3);
             } else if (robot.spot == 4) {
                 robot.sideWaysEncoderDrive(0.5, -sdw - 3, 3);
+                robot.green1.setState(true);
+                robot.red1.setState(false);
+                robot.green2.setState(true);
+                robot.red2.setState(false);
+                robot.resetEncoders();
+                robot.encoderDrive(0.5, fwd, fwd, 3);
             }
-            robot.yArmEncoder(0, 1, 2, true);
+            //robot.yArmEncoder(0, 1, 2, true);
             telemetry.update();
         }
     }

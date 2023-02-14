@@ -29,7 +29,6 @@ import com.qualcomm.robotcore.util.Range;
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.matrices.OpenGLMatrix;
-import org.firstinspires.ftc.robotcore.external.matrices.VectorF;
 import org.firstinspires.ftc.robotcore.external.navigation.Acceleration;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AxesOrder;
@@ -184,7 +183,7 @@ public class HardwareConfig {
     public DcMotor motorBackLeft = null;
     public DcMotor motorFrontRight = null;
     public DcMotor motorBackRight = null;
-    public DcMotor deadWheel = null;//declaring the deadWheel motor
+    //public DcMotor deadWheel = null;//declaring the deadWheel motor
     public DcMotor tapeMeasure = null;
     public DcMotor yArmMotor = null;
     public DcMotor zArmMotor = null;
@@ -298,11 +297,11 @@ public class HardwareConfig {
     private static final float oneAndHalfTile = 36 * mmPerInch;
 
     // Class Members
-    private OpenGLMatrix lastLocation = null;
+    private final OpenGLMatrix lastLocation = null;
     private VuforiaTrackables targets = null;
     private WebcamName webcamName = null;
 
-    private boolean targetVisible = false;
+    private final boolean targetVisible = false;
     public List<VuforiaTrackable> allTrackables;
 
     //external
@@ -368,7 +367,8 @@ public class HardwareConfig {
         motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorBackRight encoder
         motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorBackLeft encoder
         motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the motorFrontRight encoder
-        deadWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the deadWheel encoder
+        //deadWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the deadWheel encoder
+        pitchMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         tapeMeasure.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);//resetting the deadWheel encoder
 
         motorBackLeft.setDirection(DcMotor.Direction.REVERSE);
@@ -379,7 +379,8 @@ public class HardwareConfig {
         motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorBackLeft encoder to run using encoder
         motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorBackRight encoder to run using encoder
         motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the motorFrontRight encoder to run using encoder
-        deadWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the deadWheel encoder to run using encoder
+        //deadWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the deadWheel encoder to run using encoder
+        pitchMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
         tapeMeasure.setMode(DcMotor.RunMode.RUN_USING_ENCODER);//setting the deadWheel encoder to run using encoder
 
         motorBackRight.setZeroPowerBehavior(BRAKE);
@@ -389,6 +390,7 @@ public class HardwareConfig {
         yArmMotor.setZeroPowerBehavior(BRAKE);
         zArmMotor.setZeroPowerBehavior(BRAKE);
         tapeMeasure.setZeroPowerBehavior(BRAKE);
+        pitchMotor.setZeroPowerBehavior(BRAKE);
         red1.setMode(DigitalChannel.Mode.OUTPUT);//setting the red1 light to output
         green1.setMode(DigitalChannel.Mode.OUTPUT);//setting the green1 light to output
         red2.setMode(DigitalChannel.Mode.OUTPUT);//setting the red2 light to output
@@ -402,6 +404,20 @@ public class HardwareConfig {
         runtime.reset();//resetting the runtime variable
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.GREEN);
         lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(getColor()));
+        if (myOpMode.isStopRequested()) {
+            log((myOpMode.getClass()) + "stopped");
+            return;
+        }
+
+
+        log("Init Done");
+        if (myOpMode.isStarted()) {
+            log((myOpMode.getClass()) + "started");
+        }
+
+    }
+
+    void initTrackables(HardwareMap ahwMap) {
         webcamName = ahwMap.get(WebcamName.class, "Webcam");
 
         /*
@@ -471,17 +487,6 @@ public class HardwareConfig {
         }
 
         targets.activate();
-        if (myOpMode.isStopRequested()) {
-            log((myOpMode.getClass()) + "stopped");
-            return;
-        }
-
-
-        log("Init Done");
-        if (myOpMode.isStarted()) {
-            log((myOpMode.getClass()) + "started");
-        }
-
     }
 
     void identifyTarget(int targetIndex, String targetName, float dx, float dy, float dz, float rx, float ry, float rz) {
@@ -496,41 +501,42 @@ public class HardwareConfig {
         doClaw(false, 0);
         drive(fieldCentric, slowPower);
         runArm();
+        //assistArm();
         tapeMeasure();
         //
         // check all the trackable targets to see which one (if any) is visible.
-        targetVisible = false;
-        for (VuforiaTrackable trackable : allTrackables) {
-            if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible()) {
-                myOpMode.telemetry.addData("Visible Target", trackable.getName());
-                targetVisible = true;
-
-                // getUpdatedRobotLocation() will return null if no new information is available since
-                // the last time that call was made, or if the trackable is not currently visible.
-                OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
-                if (robotLocationTransform != null) {
-                    lastLocation = robotLocationTransform;
-                }
-                break;
-            }
-        }
-
-        // Provide feedback as to where the robot is located (if we know).
-        if (targetVisible) {
-            // express position (translation) of robot in inches.
-            VectorF translation = lastLocation.getTranslation();
-            myOpMode.telemetry.addData("Pos (inches)", "{X, Y, Z} = %.1f, %.1f, %.1f",
-                    translation.get(0) / mmPerInch, translation.get(1) / mmPerInch, translation.get(2) / mmPerInch);
-
-            log("x" + (translation.get(0) / mmPerInch));
-            log("y" + (translation.get(1) / mmPerInch));
-
-            // express the rotation of the robot in degrees.
-            Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
-            myOpMode.telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
-        } else {
-            myOpMode.telemetry.addData("Visible Target", "none");
-        }
+        //targetVisible = false;
+        //for (VuforiaTrackable trackable : allTrackables) {
+        //    if (((VuforiaTrackableDefaultListener) trackable.getListener()).isVisible()) {
+        //        myOpMode.telemetry.addData("Visible Target", trackable.getName());
+        //        targetVisible = true;
+        //
+        //        // getUpdatedRobotLocation() will return null if no new information is available since
+        //        // the last time that call was made, or if the trackable is not currently visible.
+        //        OpenGLMatrix robotLocationTransform = ((VuforiaTrackableDefaultListener) trackable.getListener()).getUpdatedRobotLocation();
+        //        if (robotLocationTransform != null) {
+        //            lastLocation = robotLocationTransform;
+        //        }
+        //        break;
+        //    }
+        //}
+        //
+        //// Provide feedback as to where the robot is located (if we know).
+        //if (targetVisible) {
+        //    // express position (translation) of robot in inches.
+        //    VectorF translation = lastLocation.getTranslation();
+        //    myOpMode.telemetry.addData("Pos (inches)", "{X, Y, Z} = %.1f, %.1f, %.1f",
+        //            translation.get(0) / mmPerInch, translation.get(1) / mmPerInch, translation.get(2) / mmPerInch);
+        //
+        //    log("x" + (translation.get(0) / mmPerInch));
+        //    log("y" + (translation.get(1) / mmPerInch));
+        //
+        //    // express the rotation of the robot in degrees.
+        //    Orientation rotation = Orientation.getOrientation(lastLocation, EXTRINSIC, XYZ, DEGREES);
+        //    myOpMode.telemetry.addData("Rot (deg)", "{Roll, Pitch, Heading} = %.0f, %.0f, %.0f", rotation.firstAngle, rotation.secondAngle, rotation.thirdAngle);
+        //} else {
+        //    myOpMode.telemetry.addData("Visible Target", "none");
+        //}
         power();
         buildTelemetry();
     }
@@ -695,6 +701,21 @@ public class HardwareConfig {
         //
     }
 
+    public void assistArm() {
+        boolean assisted = false;
+        if (myOpMode.gamepad2.b && !assisted) {
+            //put y in
+            yArmEncoder(0, 0.75, 2, true);
+            //put pitch back
+            pitchEncoder(0, 0.75, 2, true);
+            //let go
+            openClaw();
+            //put pitch out
+            pitchEncoder(100, 0.75, 2, false);
+            //done
+        }
+    }
+
     public void drive(boolean fieldCentric, double slow) {
         if (fieldCentric) {
             gamepadX = myOpMode.gamepad1.left_stick_x;//get the x val of left stick and store
@@ -758,9 +779,10 @@ public class HardwareConfig {
                 .addData("z", String.valueOf(zArmMotor.getCurrentPosition()));
         myOpMode.telemetry.addData("reversed", reversed);
         myOpMode.telemetry.addData("slowMode", slowModeIsOn);
-        myOpMode.telemetry.addData("dead", deadWheel.getCurrentPosition());
+        //myOpMode.telemetry.addData("dead", deadWheel.getCurrentPosition());
         myOpMode.telemetry.addData("tmPose", tmPose);
         myOpMode.telemetry.addData("tm", tapeMeasure.getCurrentPosition());
+        angles = imu.getAngularOrientation(AxesReference.INTRINSIC, AxesOrder.YZX, AngleUnit.DEGREES);
         myOpMode.telemetry.addData("heading", angles.firstAngle);
         myOpMode.telemetry.addData("pitchMotor", pitchMotor.getCurrentPosition());
         myOpMode.telemetry.addData("tape power", tapePower);
@@ -1072,36 +1094,36 @@ public class HardwareConfig {
                 newBLTarget = motorBackLeft.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
                 newFRTarget = motorFrontRight.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
                 newBRTarget = motorBackRight.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
-                newDeadTarget = deadWheel.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side_dead);
+                //newDeadTarget = deadWheel.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side_dead);
                 motorFrontLeft.setTargetPosition(-newFLTarget);
                 motorBackLeft.setTargetPosition(newBLTarget);
-                motorBackRight.setTargetPosition(-newBRTarget - 10);
+                motorBackRight.setTargetPosition(-newBRTarget);
                 motorFrontRight.setTargetPosition(newFRTarget);
-                deadWheel.setTargetPosition(-newDeadTarget);
+                //deadWheel.setTargetPosition(-newDeadTarget);
             } else if (inches > 0) {
                 newFLTarget = motorFrontLeft.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
                 newBLTarget = motorBackLeft.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
                 newFRTarget = motorFrontRight.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
                 newBRTarget = motorBackRight.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side);
-                newDeadTarget = deadWheel.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side_dead);
+                //newDeadTarget = deadWheel.getCurrentPosition() + (int) (inches * COUNTS_PER_INCH_Side_dead);
                 motorFrontLeft.setTargetPosition(-newFLTarget);
                 motorBackLeft.setTargetPosition(newBLTarget);
                 motorBackRight.setTargetPosition(-newBRTarget);
                 motorFrontRight.setTargetPosition(newFRTarget);
-                deadWheel.setTargetPosition(newDeadTarget);
+                //deadWheel.setTargetPosition(newDeadTarget);
             } else {
                 motorFrontLeft.setTargetPosition(0);
                 motorBackLeft.setTargetPosition(0);
                 motorBackRight.setTargetPosition(0);
                 motorFrontRight.setTargetPosition(0);
-                deadWheel.setTargetPosition(0);
+                //deadWheel.setTargetPosition(0);
             }
 
             motorFrontLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motorBackLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motorBackRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             motorFrontRight.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            deadWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            //deadWheel.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             runtime.reset();
             motorBackLeft.setPower(Math.abs(speed));
@@ -1109,7 +1131,7 @@ public class HardwareConfig {
             motorFrontLeft.setPower(Math.abs(speed));
             motorBackRight.setPower(Math.abs(speed));
             while (myOpMode.opModeIsActive() &&
-                    (runtime.seconds() < timeoutS) && deadWheel.isBusy()) {
+                    (runtime.seconds() < timeoutS) && motorFrontLeft.isBusy()) {
 
                 // Display it for the driver.
                 myOpMode.telemetry.addData("Running to", "%7d:%7d", motorFrontLeft.getCurrentPosition()
@@ -1135,9 +1157,35 @@ public class HardwareConfig {
             motorBackLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motorBackRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             motorFrontRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-            deadWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+            //deadWheel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
             resetEncoders();
         }
+    }
+
+    public void pitchEncoder(double pose, double speed, double timeOut, boolean isDown) {
+        int target;
+        target = (int) pose;
+        pitchMotor.setTargetPosition(target);
+        pitchMotor.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+        runtime.reset();
+        if (isDown) {
+            pitchMotor.setPower(speed);//go down
+        }
+        if (!isDown) {
+            pitchMotor.setPower(-speed);
+        }
+        while (myOpMode.opModeIsActive() &&
+                (runtime.seconds() < timeOut) && pitchMotor.isBusy()) {
+
+            // Display it for the driver.
+            myOpMode.telemetry.addData("Running to", pitchMotor.getCurrentPosition());
+            myOpMode.telemetry.addData("Currently at",
+                    pitchMotor.getCurrentPosition());
+            myOpMode.telemetry.update();
+        }
+        pitchMotor.setPower(0);
+        pitchMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        myOpMode.telemetry.update();
     }
 
     public void yArmEncoder(double pose, double speed, double timeOut, boolean isUp) {
@@ -1197,7 +1245,9 @@ public class HardwareConfig {
         motorBackRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorBackLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         motorFrontRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
-        deadWheel.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        pitchMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        yArmMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        zArmMotor.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //deadWheelL.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //deadWheelR.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         //sparkLong.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
@@ -1410,7 +1460,7 @@ public class HardwareConfig {
         runtime.reset();
         while (myOpMode.opModeIsActive() && (spot == 0)) {
             if (runtime.seconds() > timeoutS) {
-                spot = 4;
+                spot = 2;
             }
             if (tfod != null) {
                 // getUpdatedRecognitions() will return null if no new information is available since
