@@ -141,8 +141,9 @@ public class HardwareConfig {
             (WHEEL_DIAMETER_INCHES_dead * Math.PI);
     //other variables
     public boolean slowModeIsOn = false;//declaring the slowModeIsOn variable
+    public boolean slowModeIsOn2 = false;//declaring the slowModeIsOn variable
     public boolean reversed = false;//declaring the reversed variable
-
+    public int pitchMult = 2;
     //servo variables
     public double position = 0;//sets servo position to 0-1 multiplier
     public final double degree_mult = 0.00555555554;//100/180
@@ -241,6 +242,8 @@ public class HardwareConfig {
     //slow mode
     public double slowMult = 3;
     public double slowPower;
+    public double slowMult2 = 4;
+    public double slowPower2;
     //driving
     public double xControl;
     public double yControl;
@@ -501,7 +504,7 @@ public class HardwareConfig {
         doClaw(false, 0);
         drive(fieldCentric, slowPower);
         runArm();
-        //assistArm();
+        assistArm();
         tapeMeasure();
         //
         // check all the trackable targets to see which one (if any) is visible.
@@ -547,9 +550,9 @@ public class HardwareConfig {
         motorFrontRight.setPower(frontRightPower);
         motorBackRight.setPower(backRightPower);
         tapeMeasure.setPower(tapePower);
-        yArmMotor.setPower(yAxisPower);
-        zArmMotor.setPower(zAxisPower);
-        pitchMotor.setPower(pitchPower);
+        //yArmMotor.setPower(yAxisPower);
+        zArmMotor.setPower(zAxisPower * 0.5);
+        pitchMotor.setPower(pitchPower / pitchMult);
         tmServo.setPosition(setServo(tmPose));
     }
 
@@ -607,6 +610,13 @@ public class HardwareConfig {
         if ((myOpMode.gamepad1.dpad_down || myOpMode.gamepad2.dpad_left)) {// && (tapeMeasure.getCurrentPosition() > 0 + tapeLimit / 5))) {
             //retract
             tapePower = -1;
+        }
+        if (tmPose > 68 + 10 || tmPose < 68 - 10) {
+            green4.setState(false);
+            red4.setState(true);
+        } else {
+            green4.setState(true);
+            red4.setState(false);
         }
     }
 
@@ -695,8 +705,28 @@ public class HardwareConfig {
         }
         if (slowModeIsOn) {
             slowPower = slowMult;
+            green2.setState(true);
+            red2.setState(false);
         } else {
             slowPower = 1;
+            green2.setState(false);
+            red2.setState(true);
+        }
+
+        if (myOpMode.gamepad2.left_trigger > 0) {
+            slowModeIsOn2 = false;
+        }
+        if (myOpMode.gamepad1.right_trigger > 0) {
+            slowModeIsOn2 = true;
+        }
+        if (slowModeIsOn2) {
+            slowPower2 = slowMult2;
+            //green4.setState(true);
+            //red4.setState(false);
+        } else {
+            slowPower2 = 1;
+            green4.setState(false);
+            red4.setState(true);
         }
         //
     }
@@ -704,15 +734,21 @@ public class HardwareConfig {
     public void assistArm() {
         boolean assisted = false;
         if (myOpMode.gamepad2.b && !assisted) {
-            //put y in
-            yArmEncoder(0, 0.75, 2, true);
+
+            green3.setState(false);
+            red3.setState(true);
+            ////put y in
+            zArmEncoder(0, 0.6, 3, true);
             //put pitch back
-            pitchEncoder(0, 0.75, 2, true);
+            pitchEncoder(0, 0.5, 2, true);
             //let go
             openClaw();
             //put pitch out
-            pitchEncoder(100, 0.75, 2, false);
+            pitchEncoder(-40, 0.5, 2, false);
             //done
+        } else {
+            green3.setState(true);
+            red3.setState(false);
         }
     }
 
@@ -779,6 +815,7 @@ public class HardwareConfig {
                 .addData("z", String.valueOf(zArmMotor.getCurrentPosition()));
         myOpMode.telemetry.addData("reversed", reversed);
         myOpMode.telemetry.addData("slowMode", slowModeIsOn);
+        myOpMode.telemetry.addData("arm slowMode", slowModeIsOn2);
         //myOpMode.telemetry.addData("dead", deadWheel.getCurrentPosition());
         myOpMode.telemetry.addData("tmPose", tmPose);
         myOpMode.telemetry.addData("tm", tapeMeasure.getCurrentPosition());

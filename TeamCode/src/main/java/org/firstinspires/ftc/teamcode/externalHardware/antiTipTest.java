@@ -1,10 +1,11 @@
 package org.firstinspires.ftc.teamcode.externalHardware;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
 @TeleOp(name = "antiTipTest", group = "Robot")
-//@Disabled
+@Disabled
 public class antiTipTest extends LinearOpMode {
     HardwareConfig robot = new HardwareConfig(this);
 
