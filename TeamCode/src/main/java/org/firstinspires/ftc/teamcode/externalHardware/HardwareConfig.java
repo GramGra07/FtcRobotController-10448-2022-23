@@ -732,12 +732,11 @@ public class HardwareConfig {
     }
 
     public void assistArm() {
-        boolean assisted = false;
-        if (myOpMode.gamepad2.b && !assisted) {
+        while (myOpMode.gamepad2.b) {
 
             green3.setState(false);
             red3.setState(true);
-            ////put y in
+            ////put z down
             zArmEncoder(0, 0.6, 3, true);
             //put pitch back
             pitchEncoder(0, 0.5, 2, true);
@@ -746,9 +745,6 @@ public class HardwareConfig {
             //put pitch out
             pitchEncoder(-40, 0.5, 2, false);
             //done
-        } else {
-            green3.setState(true);
-            red3.setState(false);
         }
     }
 

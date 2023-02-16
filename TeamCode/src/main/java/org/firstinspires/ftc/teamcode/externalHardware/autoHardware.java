@@ -35,8 +35,7 @@ public class autoHardware extends HardwareConfig {
             tfod.activate();
             tfod.setZoom(1.0, 16.0 / 9.0);
         }
-        //TODO uncomment below
-        //runVu(6, false);
+        runVu(6, false);
         myOpMode.telemetry.update();
         closeClaw();
         tmServo.setPosition(setServo(tmPose));

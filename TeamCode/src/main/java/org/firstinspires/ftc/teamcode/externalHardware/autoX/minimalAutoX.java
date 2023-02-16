@@ -16,8 +16,7 @@ public class minimalAutoX extends LinearOpMode {
         robot.initAuto(hardwareMap);
         if (opModeIsActive()) {//while the op mode is active
             robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(robot.getColor()));
-            //robot.runVu(6, true);
-            robot.spot = 3;//TODO, delete this line and uncomment ^
+            robot.runVu(6, true);
             double fwd = 30;
             double sdw = -10;
             resetRuntime();
