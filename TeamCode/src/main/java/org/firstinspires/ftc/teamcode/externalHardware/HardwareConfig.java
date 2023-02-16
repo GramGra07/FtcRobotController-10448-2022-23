@@ -738,12 +738,24 @@ public class HardwareConfig {
             red3.setState(true);
             ////put z down
             zArmEncoder(0, 0.6, 3, true);
+            if (!myOpMode.gamepad2.b) {
+                break;
+            }
             //put pitch back
             pitchEncoder(0, 0.5, 2, true);
+            if (!myOpMode.gamepad2.b) {
+                break;
+            }
             //let go
             openClaw();
+            if (!myOpMode.gamepad2.b) {
+                break;
+            }
             //put pitch out
             pitchEncoder(-40, 0.5, 2, false);
+            if (!myOpMode.gamepad2.b) {
+                break;
+            }
             //done
         }
     }
