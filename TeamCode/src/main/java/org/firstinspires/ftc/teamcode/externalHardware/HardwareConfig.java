@@ -551,8 +551,8 @@ public class HardwareConfig {
         motorBackRight.setPower(backRightPower);
         tapeMeasure.setPower(tapePower);
         //yArmMotor.setPower(yAxisPower);
-        zArmMotor.setPower(zAxisPower * 0.5);
-        pitchMotor.setPower(pitchPower / pitchMult);
+        zArmMotor.setPower(zAxisPower / 2);
+        pitchMotor.setPower(pitchPower / 2);
         tmServo.setPosition(setServo(tmPose));
     }
 
@@ -561,15 +561,9 @@ public class HardwareConfig {
     }
 
     public void runArm() {
-        yAxisPower = myOpMode.gamepad2.left_stick_y;
+        //yAxisPower = myOpMode.gamepad2.left_stick_y;
         zAxisPower = myOpMode.gamepad2.right_stick_y;
-        if (myOpMode.gamepad2.y) {
-            pitchPower = 1;
-        } else if (myOpMode.gamepad2.a) {
-            pitchPower = -1;
-        } else {
-            pitchPower = 0;
-        }
+        pitchPower = myOpMode.gamepad2.left_stick_y;
     }
 
     public void antiTip() {
