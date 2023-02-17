@@ -563,7 +563,7 @@ public class HardwareConfig {
     public void runArm() {
         //yAxisPower = myOpMode.gamepad2.left_stick_y;
         zAxisPower = myOpMode.gamepad2.right_stick_y;
-        pitchPower = myOpMode.gamepad2.left_stick_y;
+        pitchPower = -myOpMode.gamepad2.left_stick_y;
     }
 
     public void antiTip() {
@@ -745,6 +745,8 @@ public class HardwareConfig {
             if (!myOpMode.gamepad2.b) {
                 break;
             }
+            sleep(500);
+            closeClaw();
             //put pitch out
             pitchEncoder(-40, 0.5, 2, false);
             if (!myOpMode.gamepad2.b) {
