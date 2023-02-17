@@ -1,6 +1,5 @@
 package org.firstinspires.ftc.teamcode.externalHardware.teleOpX;
 
-import com.qualcomm.hardware.rev.RevBlinkinLedDriver;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -30,7 +29,9 @@ public class maintenanceV2 extends LinearOpMode {
                 robot.runtime.reset();
             }
             if (robot.touchSensorEject.isPressed()) {
-                robot.lights.setPattern(RevBlinkinLedDriver.BlinkinPattern.valueOf(robot.getColor()));
+                robot.greenRed();
+                robot.tmPose += 2;
+                robot.tmServo.setPosition(robot.setServo(robot.tmPose));
                 robot.runtime.reset();
             }
             if (robot.touchSensorL.isPressed()) {
@@ -38,7 +39,15 @@ public class maintenanceV2 extends LinearOpMode {
                 robot.tapeOut = !robot.tapeOut;
                 robot.runtime.reset();
             }
-
+            if (robot.armUp) {
+                robot.pitchEncoder(80, 1, 6, false);
+                robot.green1.setState(true);
+                robot.red1.setState(false);
+            } else {
+                robot.pitchEncoder(0, 1, 6, true);
+                robot.green1.setState(false);
+                robot.red1.setState(true);
+            }
             if (robot.tapeOut) {
                 robot.tapeEncoder((int) (robot.countsPerInchTape * 10 * 18), 1, 6, false);//go out
                 robot.green3.setState(true);
@@ -49,11 +58,13 @@ public class maintenanceV2 extends LinearOpMode {
                 robot.red3.setState(true);
             }
             if (robot.clawOpen) {
-                robot.tmPose -= 2;
-                robot.tmServo.setPosition(robot.setServo(robot.tmPose));
+                robot.openClaw();
                 robot.green2.setState(false);
                 robot.red2.setState(true);
-                robot.clawOpen = false;
+            } else {
+                robot.closeClaw();
+                robot.green2.setState(true);
+                robot.red2.setState(false);
             }
             telemetry.addData("armUp", robot.armUp);
             telemetry.addData("clawOpen", robot.clawOpen);
